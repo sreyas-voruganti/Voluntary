@@ -23,6 +23,7 @@ const io = require("socket.io")(http, {
 
 // Define Namespaces
 const chatNamespace = io.of("/chat");
+const notifNamespace = io.of("/notifications");
 
 // Middleware and Settings
 app.use(cors());
@@ -32,6 +33,7 @@ app.disable("x-powered-by");
 app.use(morgan(":method :url :status - :response-time"));
 app.use("/uploads", express.static("uploads"));
 chatNamespace.use(socket_auth);
+notifNamespace.use(socket_auth);
 
 // Routes
 app.use("/auth", AuthRoutes);
@@ -79,4 +81,23 @@ chatNamespace.on("connection", async (socket) => {
   }
 });
 
-exports.http = http;
+notifNamespace.on("connection", async (socket) => {
+  try {
+    socket.join(`notif_${socket.user._id}`);
+    await client.sadd("active_users", socket.user._id.toString());
+    socket.on("disconnect", async () => {
+      try {
+        await client.srem("active_users", socket.user._id.toString());
+      } catch (e) {
+        console.log(e);
+      }
+    });
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+module.exports = {
+  http,
+  notifNamespace,
+};

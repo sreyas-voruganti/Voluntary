@@ -38,8 +38,15 @@
 
 <script>
 import marked from "marked";
+import { io } from "socket.io-client";
+import moment from "moment";
 export default {
   name: "Navbar",
+  data() {
+    return {
+      socket: null,
+    };
+  },
   computed: {
     getUserId() {
       return localStorage.getItem("user_id");
@@ -48,6 +55,13 @@ export default {
   methods: {
     parseNotification(notification) {
       return marked(notification);
+    },
+    intiSocket() {
+      this.socket = io(`http://127.0.0.1:8000/notifications`, {
+        auth: {
+          token: localStorage.getItem("token"),
+        },
+      });
     },
   },
 };
