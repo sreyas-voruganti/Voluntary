@@ -1,5 +1,6 @@
 const { google } = require("googleapis");
 const User = require("../models/User.model");
+const Notification = require("../models/Notification.model");
 const jwt = require("jsonwebtoken");
 const config = require("../../config");
 const axios = require("axios");
@@ -59,6 +60,17 @@ module.exports = {
       res.status(200).json(user);
     } catch (err) {
       res.status(500).json({ error: err.message });
+    }
+  },
+  user_notifications: async (req, res) => {
+    try {
+      const notifications = await Notification.find({
+        user: req.user._id,
+      }).lean();
+      res.status(200).json(notifications);
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({ error: e.message });
     }
   },
 };
