@@ -7,6 +7,7 @@ const UserRoutes = require("./routes/user.routes");
 const cors = require("cors");
 const morgan = require("morgan");
 const socket_auth = require("./middleware/socket.middleware");
+const socket_chat = require("./middleware/socket_chat");
 const Message = require("./models/Message.model");
 const asyncRedis = require("async-redis");
 const client = asyncRedis.createClient();
@@ -33,6 +34,7 @@ app.disable("x-powered-by");
 app.use(morgan(":method :url :status - :response-time"));
 app.use("/uploads", express.static("uploads"));
 chatNamespace.use(socket_auth);
+chatNamespace.use(socket_chat);
 notifNamespace.use(socket_auth);
 
 // Routes
@@ -43,17 +45,16 @@ app.use("/users", UserRoutes);
 // Listen to Events
 chatNamespace.on("connection", async (socket) => {
   try {
-    socket.chat_id = socket.handshake.query.chat;
-    await client.sadd(socket.chat_id.toString(), socket.user._id.toString());
-    socket.join(`chat_${socket.chat_id}`);
+    await client.sadd(socket.chat._id.toString(), socket.user._id.toString());
+    socket.join(`chat_${socket.chat._id}`);
     socket.on("send_message", async (msg) => {
       try {
         const message = await Message.create({
           user: socket.user._id,
-          chat: socket.chat_id,
+          chat: socket.chat._id,
           content: msg,
         });
-        chatNamespace.to(`chat_${socket.chat_id}`).emit("new_message", {
+        chatNamespace.to(`chat_${socket.chat._id}`).emit("new_message", {
           _id: message._id,
           user: {
             _id: socket.user._id,
@@ -62,6 +63,7 @@ chatNamespace.on("connection", async (socket) => {
           content: message.content,
           createdAt: message.createdAt,
         });
+        //notifNamespace.to(`notif_${}`)
       } catch (e) {
         console.log(e);
       }
@@ -69,7 +71,7 @@ chatNamespace.on("connection", async (socket) => {
     socket.on("disconnect", async () => {
       try {
         await client.srem(
-          socket.chat_id.toString(),
+          socket.chat._id.toString(),
           socket.user._id.toString()
         );
       } catch (e) {
