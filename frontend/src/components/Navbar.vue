@@ -39,13 +39,16 @@
 <script>
 import marked from "marked";
 import { io } from "socket.io-client";
-import moment from "moment";
+//import moment from "moment";
 export default {
   name: "Navbar",
   data() {
     return {
       socket: null,
     };
+  },
+  created() {
+    this.initSocket();
   },
   computed: {
     getUserId() {
@@ -56,11 +59,15 @@ export default {
     parseNotification(notification) {
       return marked(notification);
     },
-    intiSocket() {
+    initSocket() {
       this.socket = io(`http://127.0.0.1:8000/notifications`, {
         auth: {
           token: localStorage.getItem("token"),
         },
+        forceNew: true,
+      });
+      this.socket.on("new_notif", (notif) => {
+        console.log(notif);
       });
     },
   },

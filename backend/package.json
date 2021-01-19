@@ -21,6 +21,7 @@
     "nodemon": "^2.0.7"
   },
   "scripts": {
-    "serve": "nodemon --exec \"yarn run eslint src/** && node src/index.js\""
+    "serve": "nodemon src/index.js",
+    "lint": "yarn run eslint src/**"
   }
 }

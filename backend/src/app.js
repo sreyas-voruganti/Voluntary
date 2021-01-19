@@ -63,7 +63,9 @@ chatNamespace.on("connection", async (socket) => {
           content: message.content,
           createdAt: message.createdAt,
         });
-        //notifNamespace.to(`notif_${}`)
+        notifNamespace
+          .to(`notif_${socket.chat.service.user}`)
+          .emit("new_notif", "new chat message test");
       } catch (e) {
         console.log(e);
       }

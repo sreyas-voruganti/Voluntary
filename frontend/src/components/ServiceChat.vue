@@ -15,6 +15,7 @@
       {{ show ? "Hide" : "Show" }} chat with {{ chat.user.name }}
     </button>
     <div class="my-3 chat-box p-4" v-show="show">
+      <span v-show="!messages.length">You have no messages yet.</span>
       <ul
         style="max-height: 300px; overflow-y: scroll"
         ref="message_box"
@@ -84,11 +85,15 @@ export default {
       .get(`/services/chats/${this.chat_id}/messages`)
       .then((res) => (this.messages = res.data))
       .catch((err) => console.log(err));
-    this.socket = io(`http://127.0.0.1:8000/chat?chat=${this.chat_id}`, {
-      auth: {
-        token: localStorage.getItem("token"),
-      },
-    });
+    this.socket = io(
+      `http://127.0.0.1:8000/chat?chat=${this.chat_id.toString()}`,
+      {
+        auth: {
+          token: localStorage.getItem("token"),
+        },
+        forceNew: true,
+      }
+    );
     this.socket.on("new_message", (message) => this.messages.push(message));
   },
   methods: {
