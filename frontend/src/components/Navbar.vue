@@ -48,7 +48,9 @@ export default {
     };
   },
   created() {
-    this.initSocket();
+    if (localStorage.getItem("token")) {
+      this.initSocket();
+    }
   },
   computed: {
     getUserId() {

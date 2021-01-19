@@ -9,12 +9,19 @@ const morgan = require("morgan");
 const socket_auth = require("./middleware/socket.middleware");
 const socket_chat = require("./middleware/socket_chat");
 const Message = require("./models/Message.model");
+const Notification = require("./models/Notification.model");
+const User = require("./models/User.model");
 const asyncRedis = require("async-redis");
 const client = asyncRedis.createClient();
 
 client.on("error", (err) => {
   console.log("Redis Error " + err);
 });
+
+client
+  .flushall()
+  .then(() => console.log("Redis flushed"))
+  .catch((err) => console.log(err));
 
 const io = require("socket.io")(http, {
   cors: {
@@ -63,9 +70,34 @@ chatNamespace.on("connection", async (socket) => {
           content: message.content,
           createdAt: message.createdAt,
         });
-        notifNamespace
-          .to(`notif_${socket.chat.service.user}`)
-          .emit("new_notif", "new chat message test");
+        const users = [
+          socket.chat.user.toString(), // from
+          socket.chat.service.user.toString(), // to
+        ];
+        const current_user = users.indexOf(socket.user._id.toString());
+        const user_objs = await User.find(
+          { _id: { $in: users } },
+          "_id name"
+        ).lean();
+        if (current_user === 0) {
+          sendNotif(
+            [users[1]],
+            "new_message",
+            `New message from **${
+              user_objs[user_objs.findIndex((user) => user._id == users[0])]
+                .name
+            }** on **${socket.chat.service.title}**`
+          );
+        } else {
+          sendNotif(
+            [users[0]],
+            "new_message",
+            `New message from **${
+              user_objs[user_objs.findIndex((user) => user._id == users[1])]
+                .name
+            }** on **${socket.chat.service.title}**`
+          );
+        }
       } catch (e) {
         console.log(e);
       }
@@ -101,7 +133,34 @@ notifNamespace.on("connection", async (socket) => {
   }
 });
 
+// Utils
+function sendNotif(userIds, type, content) {
+  userIds.forEach(async (userId) => {
+    try {
+      const notification = await Notification.create({
+        user: userId,
+        content,
+        type,
+      });
+      notifNamespace.to(`notif_${userId}`).emit("new_notif", notification);
+    } catch (e) {
+      console.log(e);
+    }
+  });
+}
+
+async function isChatActive(chatId, userId) {
+  try {
+    console.log(await client.sismember(chatId, userId));
+    if (await client.sismember(chatId, userId)) return true;
+    return false;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 module.exports = {
   http,
   notifNamespace,
+  sendNotif,
 };

@@ -85,23 +85,13 @@ export default {
       .get(`/services/chats/${this.chat_id}/messages`)
       .then((res) => (this.messages = res.data))
       .catch((err) => console.log(err));
-    this.socket = io(
-      `http://127.0.0.1:8000/chat?chat=${this.chat_id.toString()}`,
-      {
-        auth: {
-          token: localStorage.getItem("token"),
-        },
-        forceNew: true,
-      }
-    );
-    this.socket.on("new_message", (message) => this.messages.push(message));
   },
   methods: {
     sendMessage() {
       if (this.message && this.seconds === 0) {
         this.socket.emit("send_message", this.message);
         this.message = null;
-        this.seconds = 7;
+        this.seconds = 10;
         this.countDown();
       }
     },
@@ -130,10 +120,34 @@ export default {
         this.message = ` https://meet.jit.si/${Date.now()}`;
       }
     },
+    closeSocket() {
+      this.socket.close();
+    },
+    initSocket() {
+      this.socket = io(
+        `http://127.0.0.1:8000/chat?chat=${this.chat_id.toString()}`,
+        {
+          auth: {
+            token: localStorage.getItem("token"),
+          },
+          forceNew: true,
+        }
+      );
+      this.socket.on("new_message", (message) => this.messages.push(message));
+    },
   },
   computed: {
     getUserId() {
       return localStorage.getItem("user_id") || null;
+    },
+  },
+  watch: {
+    show(newShow) {
+      if (newShow) {
+        this.initSocket();
+      } else {
+        this.closeSocket();
+      }
     },
   },
 };
