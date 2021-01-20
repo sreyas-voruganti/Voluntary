@@ -1,19 +1,19 @@
 <template>
   <div>
-    <button
-      class="button is-light is-primary my-2"
-      @click="show = !show"
-      v-if="!chat"
-    >
-      {{ show ? "Hide" : "Show" }} Chat
-    </button>
-    <button
-      class="button is-light is-primary my-2"
-      @click="show = !show"
-      v-else
-    >
-      {{ show ? "Hide" : "Show" }} chat with {{ chat.user.name }}
-    </button>
+    <a class="my-2" @click="show = !show" v-if="!chat">
+      <span class="mr-1">{{ show ? "Hide" : "Show" }} Chat</span>
+      <span v-show="getNewMessages" class="has-text-danger"
+        >{{ getNewMessages }} New Message(s)</span
+      >
+    </a>
+    <a class="my-2" @click="show = !show" v-else>
+      <span class="mr-1"
+        >{{ show ? "Hide" : "Show" }} chat with {{ chat.user.name }}</span
+      >
+      <span v-show="getNewMessages" class="has-text-danger"
+        >{{ getNewMessages }} New Message(s)</span
+      >
+    </a>
     <div class="my-3 chat-box p-4" v-show="show">
       <span v-show="!messages.length">You have no messages yet.</span>
       <ul
@@ -58,7 +58,7 @@
         <button
           class="button is-light is-link"
           style="min-width: 100px"
-          :disabled="!message || seconds !== 0"
+          :disabled="!message || seconds !== 0 || !isNotEmty"
           @click="sendMessage"
         >
           <span class="icon">
@@ -98,10 +98,12 @@ export default {
       .get(`/services/chats/${this.chat_id}/messages`)
       .then((res) => (this.messages = res.data))
       .catch((err) => console.log(err));
+    this.initSocket();
   },
   methods: {
     sendMessage() {
-      if (this.message && this.seconds === 0) {
+      if (this.message && this.seconds === 0 && this.isNotEmty) {
+        this.markAll();
         this.socket.emit("send_message", this.message);
         this.message = null;
         this.seconds = 10;
@@ -133,9 +135,9 @@ export default {
         this.message = ` https://meet.jit.si/${Date.now()}`;
       }
     },
-    closeSocket() {
-      this.socket.close();
-    },
+    // closeSocket() {
+    //   this.socket.close();
+    // },
     initSocket() {
       this.socket = io(
         `http://127.0.0.1:8000/chat?chat=${this.chat_id.toString()}`,
@@ -166,16 +168,19 @@ export default {
       }
       return count;
     },
-  },
-  watch: {
-    show(newShow) {
-      if (newShow) {
-        this.initSocket();
-      } else {
-        this.closeSocket();
-      }
+    isNotEmty() {
+      return this.message.trim() !== "";
     },
   },
+  // watch: {
+  //   show(newShow) {
+  //     if (newShow) {
+  //       this.initSocket();
+  //     } else {
+  //       this.closeSocket();
+  //     }
+  //   },
+  // },
 };
 </script>
 
