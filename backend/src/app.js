@@ -55,6 +55,11 @@ chatNamespace.on("connection", async (socket) => {
     await client.sadd(socket.chat._id.toString(), socket.user._id.toString());
     socket.join(`chat_${socket.chat._id}`);
     socket.on("send_message", async (msg) => {
+      const users = [
+        socket.chat.user.toString(), // from
+        socket.chat.service.user.toString(), // to
+      ];
+      const current_user = users.indexOf(socket.user._id.toString());
       try {
         const message = await Message.create({
           user: socket.user._id,
@@ -69,35 +74,45 @@ chatNamespace.on("connection", async (socket) => {
           },
           content: message.content,
           createdAt: message.createdAt,
+          read: message.read,
         });
-        const users = [
-          socket.chat.user.toString(), // from
-          socket.chat.service.user.toString(), // to
-        ];
-        const current_user = users.indexOf(socket.user._id.toString());
         const user_objs = await User.find(
           { _id: { $in: users } },
           "_id name"
         ).lean();
         if (current_user === 0) {
-          sendNotif(
-            [users[1]],
-            "new_message",
-            `New message from **${
-              user_objs[user_objs.findIndex((user) => user._id == users[0])]
-                .name
-            }** on **${socket.chat.service.title}**`
-          );
+          if (!(await client.sismember(socket.chat._id.toString(), users[1]))) {
+            sendNotif(
+              [users[1]],
+              "new_message",
+              `New message from **${
+                user_objs[user_objs.findIndex((user) => user._id == users[0])]
+                  .name
+              }** on **${socket.chat.service.title}**`
+            );
+          }
         } else {
-          sendNotif(
-            [users[0]],
-            "new_message",
-            `New message from **${
-              user_objs[user_objs.findIndex((user) => user._id == users[1])]
-                .name
-            }** on **${socket.chat.service.title}**`
-          );
+          if (!(await client.sismember(socket.chat._id.toString(), users[0]))) {
+            sendNotif(
+              [users[0]],
+              "new_message",
+              `New message from **${
+                user_objs[user_objs.findIndex((user) => user._id == users[1])]
+                  .name
+              }** on **${socket.chat.service.title}**`
+            );
+          }
         }
+      } catch (e) {
+        console.log(e);
+      }
+    });
+    socket.on("read_all", async () => {
+      try {
+        await Message.updateMany(
+          { chat: socket.chat._id, user: { $ne: socket.user._id } },
+          { read: true }
+        );
       } catch (e) {
         console.log(e);
       }
@@ -147,16 +162,6 @@ function sendNotif(userIds, type, content) {
       console.log(e);
     }
   });
-}
-
-async function isChatActive(chatId, userId) {
-  try {
-    console.log(await client.sismember(chatId, userId));
-    if (await client.sismember(chatId, userId)) return true;
-    return false;
-  } catch (e) {
-    console.log(e);
-  }
 }
 
 module.exports = {

@@ -19,9 +19,17 @@
       <ul
         style="max-height: 300px; overflow-y: scroll"
         ref="message_box"
-        class="chat-container"
+        class="chat-container mb-1"
       >
-        <li v-for="message in messages" :key="message._id">
+        <li
+          v-for="message in messages"
+          :key="message._id"
+          :class="{
+            'has-background-info-light':
+              !message.read && message.user._id != getUserId,
+            'p-1': true,
+          }"
+        >
           <span class="has-text-weight-medium">{{
             message.user._id != getUserId ? message.user.name : "You"
           }}</span>
@@ -30,7 +38,13 @@
           <span v-html="parseMessage(message.content)"></span>
         </li>
       </ul>
-      <div class="is-flex is-flex-direction-row mt-3">
+      <span
+        ><a @click="createMeetLink" class="mr-4">Generate Meeting</a>
+        <a @click="markAll" v-show="getNewMessages"
+          >Mark all as Read ({{ getNewMessages }})</a
+        ></span
+      >
+      <div class="is-flex is-flex-direction-row mt-1">
         <input
           class="input mr-1"
           type="text"
@@ -52,7 +66,6 @@
           </span>
         </button>
       </div>
-      <a @click="createMeetLink">Generate Meeting</a>
     </div>
   </div>
 </template>
@@ -135,10 +148,23 @@ export default {
       );
       this.socket.on("new_message", (message) => this.messages.push(message));
     },
+    markAll() {
+      this.messages.forEach((message) => {
+        message.read = true;
+      });
+      this.socket.emit("read_all");
+    },
   },
   computed: {
     getUserId() {
       return localStorage.getItem("user_id") || null;
+    },
+    getNewMessages() {
+      let count = 0;
+      for (const message of this.messages) {
+        if (!message.read && message.user._id != this.getUserId) count++;
+      }
+      return count;
     },
   },
   watch: {
