@@ -1,6 +1,7 @@
 const Service = require("../models/Service.model");
 const Chat = require("../models/Chat.model");
 const Message = require("../models/Message.model");
+const Session = require("../models/Session.model");
 
 module.exports = {
   create: async (req, res) => {
@@ -87,6 +88,20 @@ module.exports = {
         user: req.params.user_id,
       }).populate("user", "_id name pp");
       res.status(200).json(services);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
+  create_session: async (req, res) => {
+    try {
+      const session = await Session.create({
+        user: req.user._id,
+        service: req.params.service_id,
+        time: req.body.time,
+        duration: req.body.duration,
+        satisfaction: req.body.satisfaction,
+      });
+      res.status(201).json(session);
     } catch (e) {
       res.status(500).json({ error: e.message });
     }

@@ -4,6 +4,10 @@
     class="container"
     style="max-width: 700px; margin-top: 25px"
   >
+    <div class="notification is-success mb-0" v-show="showSessionSuccess">
+      <button class="delete" @click="showSessionSuccess = false"></button>
+      Session claim successfully submitted
+    </div>
     <p class="is-size-2">{{ service.title }}</p>
     <p class="mb-3">
       <span
@@ -27,11 +31,18 @@
     <img :src="service.image" class="image-container" />
     <div class="buttons">
       <button
-        class="button is-outlined"
+        class="button is-outlined is-success"
         v-if="!owns && !has_chat"
         @click="startChat"
       >
         Start Chat
+      </button>
+      <button
+        class="button is-outlined is-info"
+        v-if="!owns && has_chat"
+        @click="showSessionModal = true"
+      >
+        Submit Session
       </button>
     </div>
     <p class="is-size-6 mt-3">{{ service.description }}</p>
@@ -46,6 +57,88 @@
         :key="chat._id"
         :chat="chat"
       />
+    </div>
+    <div :class="{ modal: true, 'is-active': showSessionModal }">
+      <div class="modal-background" @click="cancelSession"></div>
+      <div class="modal-content box">
+        <div class="field">
+          <label class="label"
+            >Time
+            <span class="has-text-weight-medium"
+              >(when was it [local time])</span
+            ></label
+          >
+          <div class="control">
+            <input class="input" type="datetime-local" v-model="session.time" />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label"
+            >Duration
+            <span class="has-text-weight-medium"
+              >(how long was it [mins])</span
+            ></label
+          >
+          <div class="control">
+            <input
+              class="input"
+              type="number"
+              min="30"
+              v-model="session.duration"
+              step="30"
+              onkeydown="return false"
+              max="120"
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label"
+            >Satisfaction
+            <span class="has-text-weight-medium"
+              >(how satisfied were you [1 - lowest, 5 - highest])</span
+            ></label
+          >
+          <div class="control">
+            <input
+              class="input"
+              type="number"
+              min="1"
+              max="5"
+              v-model="session.satisfaction"
+              onkeydown="return false"
+            />
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            <label class="checkbox">
+              <input type="checkbox" v-model="agreeSessionTerms" />
+              I agree that this session claim is genuine
+            </label>
+          </div>
+        </div>
+        <div class="field is-grouped">
+          <div class="control">
+            <button
+              class="button is-link"
+              :disabled="checkSubmit"
+              @click="submitSession"
+            >
+              Submit
+            </button>
+          </div>
+          <div class="control">
+            <button class="button is-link is-light" @click="cancelSession">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+      <button
+        class="modal-close is-large"
+        aria-label="close"
+        @click="cancelSession"
+      ></button>
     </div>
   </div>
 </template>
@@ -65,6 +158,13 @@ export default {
       has_chat: false,
       chat_id: null,
       chats: null,
+      showSessionModal: false,
+      session: {
+        duration: 60,
+        satisfaction: 3,
+      },
+      agreeSessionTerms: false,
+      showSessionSuccess: false,
     };
   },
   created() {
@@ -97,12 +197,29 @@ export default {
         console.log(err);
       }
     },
+    cancelSession() {
+      this.showSessionModal = false;
+      this.session = {
+        duration: 30,
+        satisfaction: 1,
+      };
+      this.agreeSessionTerms = false;
+    },
     startChat() {
       this.$http
         .post(`/services/${this.service.id}/chats/start`)
         .then((res) => {
           this.has_chat = true;
           this.chat_id = res.data._id;
+        })
+        .catch((err) => console.log(err));
+    },
+    submitSession() {
+      this.$http
+        .post(`/services/${this.service._id}/sessions`, this.session)
+        .then(() => {
+          this.cancelSession();
+          this.showSessionSuccess = true;
         })
         .catch((err) => console.log(err));
     },
@@ -113,6 +230,16 @@ export default {
     },
     owns() {
       return this.service.user._id == localStorage.getItem("user_id");
+    },
+    checkSubmit() {
+      if (
+        this.session.time &&
+        this.session.duration &&
+        this.session.satisfaction &&
+        this.agreeSessionTerms
+      )
+        return false;
+      return true;
     },
   },
 };
