@@ -91,7 +91,7 @@ export default {
       this.socket.emit("mark_one", notifId);
     },
     initSocket() {
-      this.socket = io(`http://127.0.0.1:8000/notifications`, {
+      this.socket = io(`http://127.0.0.1:8001/notifications`, {
         auth: {
           token: localStorage.getItem("token"),
         },

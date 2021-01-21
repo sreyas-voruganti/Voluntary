@@ -143,7 +143,7 @@ export default {
     },
     initSocket() {
       this.socket = io(
-        `http://127.0.0.1:8000/chat?chat=${this.chat_id.toString()}`,
+        `http://127.0.0.1:8001/chat?chat=${this.chat_id.toString()}`,
         {
           auth: {
             token: localStorage.getItem("token"),
