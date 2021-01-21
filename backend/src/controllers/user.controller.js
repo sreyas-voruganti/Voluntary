@@ -66,7 +66,9 @@ module.exports = {
     try {
       const notifications = await Notification.find({
         user: req.user._id,
-      }).lean();
+      })
+        .sort("-createdAt")
+        .lean();
       res.status(200).json(notifications);
     } catch (e) {
       console.log(e);

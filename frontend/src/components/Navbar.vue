@@ -23,8 +23,27 @@
             Notifications
           </a>
           <div class="navbar-dropdown p-3">
-            <div style="width: 200px">
-              <span v-html="parseNotification('Hello *world*')"></span>
+            <div
+              style="width: 250px"
+              class="is-flex is-flex-direction-column notif-container"
+            >
+              <a v-if="notifications.length" @click="markAll"
+                >Mark All As Read</a
+              >
+              <span v-else>You have no notifications</span>
+              <div
+                v-for="notification in notifications"
+                :key="notification._id"
+                class="notif-box p-1 my-1"
+              >
+                <span v-html="parseNotification(notification.content)"></span>
+                <span class="has-text-weight-medium"
+                  >{{ getDate(notification.createdAt) }}
+                  <a class="ml-1" @click="markOne(notification._id)"
+                    >Mark As Read</a
+                  ></span
+                >
+              </div>
             </div>
           </div>
         </div>
@@ -39,17 +58,19 @@
 <script>
 import marked from "marked";
 import { io } from "socket.io-client";
-//import moment from "moment";
+import moment from "moment";
 export default {
   name: "Navbar",
   data() {
     return {
       socket: null,
+      notifications: [],
     };
   },
   created() {
     if (localStorage.getItem("token")) {
       this.initSocket();
+      this.fetchNotifications();
     }
   },
   computed: {
@@ -60,6 +81,16 @@ export default {
   methods: {
     parseNotification(notification) {
       return marked(notification);
+    },
+    markAll() {
+      this.notifications = [];
+      this.socket.emit("mark_all");
+    },
+    markOne(notifId) {
+      this.notifications = this.notifications.filter((obj) => {
+        return obj._id !== notifId;
+      });
+      this.socket.emit("mark_one", notifId);
     },
     initSocket() {
       this.socket = io(`http://127.0.0.1:8000/notifications`, {
@@ -72,6 +103,28 @@ export default {
         console.log(notif);
       });
     },
+    fetchNotifications() {
+      this.$http
+        .get("/users/me/notifications")
+        .then((res) => (this.notifications = res.data))
+        .catch((err) => console.log(err));
+    },
+    getDate(date) {
+      return moment(date).fromNow();
+    },
   },
 };
 </script>
+
+<style scoped>
+.notif-box {
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 3px;
+  border-color: rgb(184, 184, 184);
+}
+.notif-container {
+  overflow-y: scroll;
+  max-height: 300px;
+}
+</style>

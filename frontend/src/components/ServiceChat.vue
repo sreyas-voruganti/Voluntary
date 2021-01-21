@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="my-3">
     <a class="my-2" @click="show = !show" v-if="!chat">
       <span class="mr-1">{{ show ? "Hide" : "Show" }} Chat</span>
       <span v-show="getNewMessages" class="has-text-danger"
@@ -198,7 +198,6 @@ export default {
   border-radius: 6px;
   background-color: aliceblue;
 }
-
 .chat-container::-webkit-scrollbar-thumb {
   border-radius: 10px;
   background-color: rgb(170, 170, 170);

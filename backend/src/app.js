@@ -136,6 +136,20 @@ notifNamespace.on("connection", async (socket) => {
   try {
     socket.join(`notif_${socket.user._id}`);
     await client.sadd("active_users", socket.user._id.toString());
+    socket.on("mark_all", async () => {
+      try {
+        await Notification.deleteMany({ user: socket.user._id });
+      } catch (e) {
+        console.log(e);
+      }
+    });
+    socket.on("mark_one", async (notifId) => {
+      try {
+        await Notification.findByIdAndDelete(notifId);
+      } catch (e) {
+        console.log(e);
+      }
+    });
     socket.on("disconnect", async () => {
       try {
         await client.srem("active_users", socket.user._id.toString());
