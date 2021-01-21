@@ -44,6 +44,9 @@
       >
         Submit Session
       </button>
+      <button class="button is-outlined is-warning" v-if="owns">
+        View Sessions
+      </button>
     </div>
     <p class="is-size-6 mt-3">{{ service.description }}</p>
     <div v-if="!owns">
