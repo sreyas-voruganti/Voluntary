@@ -100,6 +100,9 @@ export default {
       .catch((err) => console.log(err));
     this.initSocket();
   },
+  beforeDestroy() {
+    this.closeSocket();
+  },
   methods: {
     sendMessage() {
       if (this.message && this.seconds === 0 && this.isNotEmty) {
@@ -135,9 +138,9 @@ export default {
         this.message = ` https://meet.jit.si/${Date.now()}`;
       }
     },
-    // closeSocket() {
-    //   this.socket.close();
-    // },
+    closeSocket() {
+      this.socket.close();
+    },
     initSocket() {
       this.socket = io(
         `http://127.0.0.1:8000/chat?chat=${this.chat_id.toString()}`,

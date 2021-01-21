@@ -19,9 +19,7 @@
           Profile
         </a>
         <div class="navbar-item has-dropdown is-hoverable">
-          <a class="navbar-link">
-            Notifications
-          </a>
+          <a class="navbar-link"> {{ notifications.length }} Notifications </a>
           <div class="navbar-dropdown p-3">
             <div
               style="width: 250px"
@@ -30,7 +28,7 @@
               <a v-if="notifications.length" @click="markAll"
                 >Mark All As Read</a
               >
-              <span v-else>You have no notifications</span>
+              <span v-else>You have no new notifications</span>
               <div
                 v-for="notification in notifications"
                 :key="notification._id"
@@ -100,7 +98,7 @@ export default {
         forceNew: true,
       });
       this.socket.on("new_notif", (notif) => {
-        console.log(notif);
+        this.notifications.push(notif);
       });
     },
     fetchNotifications() {

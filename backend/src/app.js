@@ -85,10 +85,15 @@ chatNamespace.on("connection", async (socket) => {
             sendNotif(
               [users[1]],
               "new_message",
-              `New message from **${
+              `New message from [${
                 user_objs[user_objs.findIndex((user) => user._id == users[0])]
                   .name
-              }** on **${socket.chat.service.title}**`
+              }](http://localhost:8080/users/${
+                user_objs[user_objs.findIndex((user) => user._id == users[0])]
+                  ._id
+              }) on [${
+                socket.chat.service.title
+              }](http://localhost:8080/services/${socket.chat.service._id})`
             );
           }
         } else {
@@ -96,10 +101,15 @@ chatNamespace.on("connection", async (socket) => {
             sendNotif(
               [users[0]],
               "new_message",
-              `New message from **${
+              `New message from [${
                 user_objs[user_objs.findIndex((user) => user._id == users[1])]
                   .name
-              }** on **${socket.chat.service.title}**`
+              }](http://localhost:8080/users/${
+                user_objs[user_objs.findIndex((user) => user._id == users[1])]
+                  ._id
+              }) on [${
+                socket.chat.service.title
+              }](http://localhost:8080/services/${socket.chat.service._id})`
             );
           }
         }
