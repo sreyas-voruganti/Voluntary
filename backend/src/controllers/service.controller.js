@@ -2,6 +2,7 @@ const Service = require("../models/Service.model");
 const Chat = require("../models/Chat.model");
 const Message = require("../models/Message.model");
 const Session = require("../models/Session.model");
+const { sendNotif } = require("../socket");
 
 module.exports = {
   create: async (req, res) => {
@@ -94,15 +95,26 @@ module.exports = {
   },
   create_session: async (req, res) => {
     try {
+      const service = await Service.findById(req.params.service_id).lean();
+      if (req.user._id == service.user)
+        return res
+          .status(400)
+          .json({ error: "You cannot submit a session for your own service." });
       const session = await Session.create({
         user: req.user._id,
-        service: req.params.service_id,
+        service: service._id,
         time: req.body.time,
         duration: req.body.duration,
         satisfaction: req.body.satisfaction,
       });
+      sendNotif(
+        [service.user.toString()],
+        "new_session_claim",
+        `New session claim on [${service.title}](http://localhost:8080/services/${service._id})`
+      );
       res.status(201).json(session);
     } catch (e) {
+      console.log(e);
       res.status(500).json({ error: e.message });
     }
   },

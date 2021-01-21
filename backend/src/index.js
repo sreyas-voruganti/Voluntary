@@ -1,5 +1,6 @@
 const config = require("../config");
-const { http } = require("./app");
+const app = require("./app");
+const { socket } = require("./socket");
 const mongoose = require("mongoose");
 
 mongoose
@@ -8,10 +9,16 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => {
-    http.listen(config.port, () => {
-      console.log(
-        `Server successfully started at http://localhost:${config.port}`
-      );
+    app.listen(config.port, () => {
+      socket.listen(config.socket_port, () => {
+        console.log(
+          `
+          Voluntary Backend Successfully Started: 
+          HTTP Server Port: ${config.port}
+          Socket Server Port: ${config.socket_port}
+          `
+        );
+      });
     });
   })
   .catch((err) => console.log(err));
