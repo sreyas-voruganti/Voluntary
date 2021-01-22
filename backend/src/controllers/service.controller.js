@@ -118,7 +118,7 @@ module.exports = {
       res.status(500).json({ error: e.message });
     }
   },
-  pending_sessions: async (req, res) => {
+  service_sessions: async (req, res) => {
     try {
       const pending_sessions = await Session.find(
         {

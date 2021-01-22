@@ -46,7 +46,6 @@
       </button>
       <button
         class="button is-outlined is-warning"
-        v-if="owns"
         @click="showSessionsModal = true"
       >
         View Sessions
@@ -150,7 +149,8 @@
     <div :class="{ modal: true, 'is-active': showSessionsModal }">
       <div class="modal-background" @click="showSessionsModal = false"></div>
       <div class="modal-content">
-        <ServiceSessions :service_id="this.service._id" />
+        <ServiceSessions :service_id="this.service._id" v-if="owns" />
+        <ClientSessions :service_id="this.service._id" v-else />
       </div>
       <button
         class="modal-close is-large"
@@ -165,11 +165,13 @@
 import moment from "moment";
 import ServiceChat from "@/components/ServiceChat.vue";
 import ServiceSessions from "@/components/ServiceSessions.vue";
+import ClientSessions from "@/components/ClientSessions.vue";
 export default {
   name: "ServiceDetail",
   components: {
     ServiceChat,
     ServiceSessions,
+    ClientSessions,
   },
   data() {
     return {

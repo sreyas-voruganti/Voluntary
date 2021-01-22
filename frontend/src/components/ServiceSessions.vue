@@ -74,7 +74,7 @@ export default {
   },
   created() {
     this.$http
-      .get(`/services/${this.service_id}/sessions/pending`)
+      .get(`/services/${this.service_id}/sessions`)
       .then((res) => (this.sessions = res.data))
       .catch((err) => console.log(err));
   },
