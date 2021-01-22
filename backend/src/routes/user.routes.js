@@ -11,5 +11,6 @@ router.get("/:user_id", UserController.detail);
 router.get("/:user_id/services", ServiceController.user_services);
 router.get("/me/notifications", UserController.user_notifications);
 router.put("/me/update", UserController.update_user);
+router.post("/me/sync", UserController.sync_user);
 
 module.exports = router;

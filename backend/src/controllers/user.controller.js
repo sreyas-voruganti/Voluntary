@@ -90,4 +90,36 @@ module.exports = {
       res.status(500).json({ error: e.message });
     }
   },
+  sync_user: async (req, res) => {
+    try {
+      const access_token = (
+        await axios.post("https://oauth2.googleapis.com/token", {
+          client_id:
+            "836522334018-qed384ump69o2g0fvubmkuidvt44bbgv.apps.googleusercontent.com",
+          client_secret: "_wskslSNb_7J0nwVEnqTmh36",
+          grant_type: "refresh_token",
+          refresh_token: req.user.google_refresh_token,
+        })
+      ).data.access_token;
+      const { data } = await axios.get(
+        `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`
+      );
+      const user = await User.findByIdAndUpdate(
+        req.user._id,
+        {
+          name: data.name,
+          pp: data.picture,
+          email: data.email,
+        },
+        { new: true }
+      );
+      res.status(200).json({
+        name: user.name,
+        pp: user.pp,
+        email: user.email,
+      });
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
 };

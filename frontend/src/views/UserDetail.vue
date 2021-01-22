@@ -100,6 +100,21 @@
             </button>
           </div>
         </div>
+        <div class="buttons">
+          <button
+            class="button is-light is-danger"
+            @click="syncAccount"
+            :disabled="synced"
+          >
+            Sync Account With Google
+          </button>
+          <button class="button is-light is-info" @click="logout">
+            <span class="icon">
+              <i class="fas fa-sign-out-alt"></i>
+            </span>
+            <span>Logout</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -119,6 +134,7 @@ export default {
       own_user: null,
       tab: "About",
       services: [],
+      synced: false,
     };
   },
   created() {
@@ -153,6 +169,33 @@ export default {
           alert("Profile updated successfully.");
         })
         .catch((err) => alert(`An error occurred: ${err}`));
+    },
+    logout() {
+      if (confirm("Are you sure you want to logout?")) {
+        delete this.$http.defaults.headers.common["Authorization"];
+        localStorage.removeItem("token");
+        localStorage.removeItem("user_id");
+        this.$router.push("/auth");
+      }
+    },
+    syncAccount() {
+      if (
+        confirm(
+          "Warning this will resync your email, name, and profile picture with your Google account."
+        )
+      ) {
+        this.$http
+          .post("/users/me/sync")
+          .then((res) => {
+            this.own_user.name = res.data.name;
+            this.user.name = res.data.name;
+            this.user.pp = res.data.pp;
+            this.user.email = res.data.email;
+            this.synced = true;
+            alert("Profile successfully synced with Google");
+          })
+          .catch((err) => alert(`An error occurred: ${err}`));
+      }
     },
   },
   computed: {
