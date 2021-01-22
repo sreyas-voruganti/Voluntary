@@ -75,4 +75,19 @@ module.exports = {
       res.status(500).json({ error: e.message });
     }
   },
+  update_user: async (req, res) => {
+    try {
+      const user = await User.findByIdAndUpdate(
+        req.user._id,
+        {
+          name: req.body.name,
+          bio: req.body.bio,
+        },
+        { new: true }
+      );
+      res.status(200).json({ name: user.name, bio: user.bio });
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
 };

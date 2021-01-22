@@ -62,21 +62,42 @@
         <div class="field">
           <label class="label">Name</label>
           <div class="control">
-            <input class="input" type="text" placeholder="Name" />
+            <input
+              class="input"
+              type="text"
+              placeholder="Name"
+              v-model="own_user.name"
+            />
           </div>
         </div>
         <div class="field">
           <label class="label">Bio</label>
           <div class="control">
-            <textarea class="textarea" placeholder="Bio"></textarea>
+            <textarea
+              class="textarea"
+              placeholder="Bio"
+              v-model="own_user.bio"
+            ></textarea>
           </div>
         </div>
         <div class="field is-grouped">
           <div class="control">
-            <button class="button is-link">Update</button>
+            <button
+              class="button is-link"
+              :disabled="!checkUpdate"
+              @click="updateProfile"
+            >
+              Update
+            </button>
           </div>
           <div class="control">
-            <button class="button is-link is-light">Cancel</button>
+            <button
+              class="button is-link is-light"
+              @click="own_user = { ...user }"
+              :disabled="checkCancel"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       </div>
@@ -95,6 +116,7 @@ export default {
   data() {
     return {
       user: null,
+      own_user: null,
       tab: "About",
       services: [],
     };
@@ -108,12 +130,29 @@ export default {
         this.user = (
           await this.$http.get(`/users/${this.$route.params.user_id}`)
         ).data;
+        this.own_user = { ...this.user };
         this.services = (
           await this.$http.get(`/users/${this.$route.params.user_id}/services`)
         ).data;
       } catch (e) {
         console.log(e);
       }
+    },
+    updateProfile() {
+      // check for emtpy valus and disable update button
+      this.$http
+        .put("/users/me/update", {
+          name: this.own_user.name,
+          bio: this.own_user.bio,
+        })
+        .then((res) => {
+          this.own_user.name = res.data.name;
+          this.own_user.bio = res.data.bio;
+          this.user.name = res.data.name;
+          this.user.bio = res.data.bio;
+          alert("Profile updated successfully.");
+        })
+        .catch((err) => alert(`An error occurred: ${err}`));
     },
   },
   computed: {
@@ -122,6 +161,16 @@ export default {
     },
     owns() {
       return this.user._id == localStorage.getItem("user_id");
+    },
+    checkCancel() {
+      return JSON.stringify(this.user) === JSON.stringify(this.own_user);
+    },
+    checkUpdate() {
+      return (
+        JSON.stringify(this.user) !== JSON.stringify(this.own_user) &&
+        this.own_user.bio &&
+        this.own_user.name
+      );
     },
   },
 };
