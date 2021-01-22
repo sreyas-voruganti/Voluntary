@@ -118,4 +118,54 @@ module.exports = {
       res.status(500).json({ error: e.message });
     }
   },
+  pending_sessions: async (req, res) => {
+    try {
+      const pending_sessions = await Session.find(
+        {
+          service: req.params.service_id,
+          status: "pend_conf",
+        },
+        "-satisfaction"
+      )
+        .populate("user", "id name")
+        .lean();
+      const confirmed_sessions = await Session.find(
+        {
+          service: req.params.service_id,
+          status: "conf",
+        },
+        "-satisfaction"
+      )
+        .populate("user", "id name")
+        .lean();
+      res
+        .status(200)
+        .json({ pending: pending_sessions, confirmed: confirmed_sessions });
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
+  confirm_session: async (req, res) => {
+    // add auth check
+    try {
+      const session = await Session.findByIdAndUpdate(req.params.session_id, {
+        status: "conf",
+      });
+      const new_session = await Session.findById(session._id, "-satisfaction")
+        .populate("user", "id name")
+        .lean();
+      res.status(204).json(new_session);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
+  decline_session: async (req, res) => {
+    // add auth check
+    try {
+      await Session.findByIdAndDelete(req.params.session_id);
+      res.sendStatus(200);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
 };

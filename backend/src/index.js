@@ -7,16 +7,13 @@ mongoose
   .connect(config.db.url, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useFindAndModify: false,
   })
   .then(() => {
     app.listen(config.port, () => {
       socket.listen(config.socket_port, () => {
         console.log(
-          `
-          Voluntary Backend Successfully Started: 
-          HTTP Server Port: ${config.port}
-          Socket Server Port: ${config.socket_port}
-          `
+          `Voluntary Backend Successfully Started: (HTTP: ${config.port}, SOCKET: ${config.socket_port})`
         );
       });
     });

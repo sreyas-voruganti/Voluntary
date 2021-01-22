@@ -44,7 +44,11 @@
       >
         Submit Session
       </button>
-      <button class="button is-outlined is-warning" v-if="owns">
+      <button
+        class="button is-outlined is-warning"
+        v-if="owns"
+        @click="showSessionsModal = true"
+      >
         View Sessions
       </button>
     </div>
@@ -143,17 +147,29 @@
         @click="cancelSession"
       ></button>
     </div>
+    <div :class="{ modal: true, 'is-active': showSessionsModal }">
+      <div class="modal-background" @click="showSessionsModal = false"></div>
+      <div class="modal-content">
+        <ServiceSessions :service_id="this.service._id" />
+      </div>
+      <button
+        class="modal-close is-large"
+        aria-label="close"
+        @click="showSessionsModal = false"
+      ></button>
+    </div>
   </div>
 </template>
 
 <script>
 import moment from "moment";
 import ServiceChat from "@/components/ServiceChat.vue";
-
+import ServiceSessions from "@/components/ServiceSessions.vue";
 export default {
   name: "ServiceDetail",
   components: {
     ServiceChat,
+    ServiceSessions,
   },
   data() {
     return {
@@ -168,6 +184,7 @@ export default {
       },
       agreeSessionTerms: false,
       showSessionSuccess: false,
+      showSessionsModal: false,
     };
   },
   created() {
