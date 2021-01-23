@@ -46,6 +46,11 @@ const routes = [
     name: "UserDetail",
     component: () => import("../views/UserDetail.vue"),
   },
+  {
+    path: "/contributions",
+    name: "UserContributions",
+    component: () => import("../views/UserContributions.vue"),
+  },
 ];
 
 const router = new VueRouter({

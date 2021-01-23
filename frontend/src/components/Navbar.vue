@@ -48,6 +48,9 @@
         <a class="navbar-item" @click="$router.push(`/services/create`)">
           Create Service
         </a>
+        <a class="navbar-item" @click="$router.push(`/contributions`)">
+          Your Contributions
+        </a>
       </div>
     </div>
   </nav>

@@ -1,5 +1,7 @@
 const { google } = require("googleapis");
 const User = require("../models/User.model");
+const Session = require("../models/Session.model");
+const Service = require("../models/Service.model");
 const Notification = require("../models/Notification.model");
 const jwt = require("jsonwebtoken");
 const config = require("../../config");
@@ -118,6 +120,33 @@ module.exports = {
         pp: user.pp,
         email: user.email,
       });
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
+  user_sessions: async (req, res) => {
+    try {
+      const services = await Service.find(
+        {
+          user: req.user._id,
+        },
+        "_id"
+      ).lean();
+      const service_ids = [];
+      services.forEach((service) => {
+        service_ids.push(service._id);
+      });
+      const sessions = await Session.find(
+        {
+          service: { $in: service_ids },
+          status: "conf",
+        },
+        "-satisfaction"
+      )
+        .populate("user", "_id name")
+        .populate("service", "_id title")
+        .lean();
+      res.status(200).json(sessions);
     } catch (e) {
       res.status(500).json({ error: e.message });
     }
