@@ -51,6 +51,9 @@
         <a class="navbar-item" @click="$router.push(`/contributions`)">
           Your Contributions
         </a>
+        <a class="navbar-item" @click="$router.push(`/services/explore`)">
+          Explore
+        </a>
       </div>
     </div>
   </nav>

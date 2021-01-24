@@ -168,4 +168,25 @@ module.exports = {
       res.status(500).json({ error: e.message });
     }
   },
+  search_services: async (req, res) => {
+    try {
+      const services = await Service.find({
+        $or: [
+          { title: { $regex: req.query.q, $options: "i" } },
+          { description: { $regex: req.query.q, $options: "i" } },
+        ],
+      }).populate("user", "_id name pp");
+      res.status(200).json(services);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
+  all_services: async (req, res) => {
+    try {
+      const services = await Service.find().populate("user", "_id name pp");
+      res.status(200).json(services);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
 };

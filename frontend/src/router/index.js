@@ -37,6 +37,11 @@ const routes = [
     component: () => import("../views/ServiceForm.vue"),
   },
   {
+    path: "/services/explore",
+    name: "ServiceExplore",
+    component: () => import("../views/ServiceExplore.vue"),
+  },
+  {
     path: "/services/:service_id",
     name: "ServiceDetail",
     component: () => import("../views/ServiceDetail.vue"),
