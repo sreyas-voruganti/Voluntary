@@ -189,4 +189,14 @@ module.exports = {
       res.status(500).json({ error: e.message });
     }
   },
+  tag_services: async (req, res) => {
+    try {
+      const services = await Service.find({
+        tags: { $in: req.query.t },
+      }).populate("user", "_id name pp");
+      res.status(200).json(services);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
 };

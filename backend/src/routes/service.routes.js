@@ -9,6 +9,7 @@ router.use(authMiddleware);
 
 router.post("/create", upload.single("image"), ServiceController.create);
 router.get("/search", ServiceController.search_services);
+router.get("/tags", ServiceController.tag_services);
 router.get("/all", ServiceController.all_services);
 router.get("/:service_id", ServiceController.detail);
 router.post("/:service_id/chats/start", ServiceController.create_chat);

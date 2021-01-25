@@ -42,6 +42,11 @@ const routes = [
     component: () => import("../views/ServiceExplore.vue"),
   },
   {
+    path: "/services/tags",
+    name: "ServiceTags",
+    component: () => import("../views/ServiceTags.vue"),
+  },
+  {
     path: "/services/:service_id",
     name: "ServiceDetail",
     component: () => import("../views/ServiceDetail.vue"),

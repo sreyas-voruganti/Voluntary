@@ -1,0 +1,42 @@
+<template>
+  <div class="container mt-6" style="max-width: 1200px" v-if="services">
+    <p class="is-size-3 tag">{{ $route.query.t }}</p>
+    <p class="is-size-5">{{ services.length }} services have this tag</p>
+    <div class="service-grid">
+      <SmallService
+        v-for="service in services"
+        :key="service._id"
+        :service="service"
+      />
+    </div>
+  </div>
+</template>
+
+<script>
+import SmallService from "@/components/SmallService.vue";
+export default {
+  name: "ServiceTags",
+  components: {
+    SmallService,
+  },
+  data() {
+    return {
+      services: [],
+    };
+  },
+  created() {
+    this.$http
+      .get(`/services/tags?t=${this.$route.query.t}`)
+      .then((res) => (this.services = res.data))
+      .catch((err) => alert(`An error occurred: ${err}`));
+  },
+};
+</script>
+
+<style scoped>
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 360px);
+  grid-gap: 20px;
+}
+</style>

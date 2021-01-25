@@ -26,9 +26,11 @@
         </div>
       </div>
       <div class="tags mb-0">
-        <span class="tag" v-for="(tag, index) in service.tags" :key="index">{{
-          tag
-        }}</span>
+        <span class="tag" v-for="(tag, index) in service.tags" :key="index"
+          ><router-link :to="`/services/tags?t=${tag}`">{{
+            tag
+          }}</router-link></span
+        >
       </div>
       <div class="content">{{ service.description.substring(0, 60) }}...</div>
     </div>

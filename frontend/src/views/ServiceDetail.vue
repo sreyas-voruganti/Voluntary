@@ -22,10 +22,12 @@
     </p>
     <div class="tags mb-2">
       <span
-        class="tag is-info is-light"
+        class="tag is-light is-light"
         v-for="(tag, index) in service.tags"
         :key="index"
-        >{{ tag }}</span
+        ><router-link :to="`/services/tags?t=${tag}`">{{
+          tag
+        }}</router-link></span
       >
     </div>
     <img :src="service.image" class="image-container" />
