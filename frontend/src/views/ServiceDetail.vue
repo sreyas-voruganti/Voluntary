@@ -55,7 +55,12 @@
     </div>
     <p class="is-size-6 mt-3">{{ service.description }}</p>
     <div v-if="!owns">
-      <ServiceChat v-if="has_chat" :service="service" :chat_id="chat_id" />
+      <ServiceChat
+        v-if="has_chat"
+        :service="service"
+        :chat_id="chat_id"
+        @chat-deleted="has_chat = false"
+      />
     </div>
     <div v-else>
       <ServiceChat

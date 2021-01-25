@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Message = require("./Message.model");
 
 const chatSchema = new mongoose.Schema({
   service: {
@@ -15,6 +16,16 @@ const chatSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+});
+
+chatSchema.pre("remove", function (next) {
+  Message.deleteMany({ chat: this._id })
+    .then(() => {
+      next();
+    })
+    .catch((err) => {
+      next(new Error(err));
+    });
 });
 
 module.exports = mongoose.model("Chat", chatSchema);

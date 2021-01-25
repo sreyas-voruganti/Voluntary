@@ -15,6 +15,7 @@ router.get("/:service_id", ServiceController.detail);
 router.post("/:service_id/chats/start", ServiceController.create_chat);
 router.get("/:service_id/chats/check", ServiceController.check_chat);
 router.get("/chats/:chat_id/messages", ServiceController.chat_messages);
+router.delete("/chats/:chat_id/delete", ServiceController.delete_chat);
 router.get("/:service_id/chats/all", ServiceController.service_chats);
 router.post("/:service_id/sessions", ServiceController.create_session);
 router.get("/:service_id/sessions", ServiceController.service_sessions);

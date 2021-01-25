@@ -39,7 +39,8 @@
         </li>
       </ul>
       <span
-        ><a @click="createMeetLink" class="mr-4">Generate Meeting</a>
+        ><a @click="createMeetLink" class="mr-2">Generate Meeting</a>
+        <a @click="deleteChat" class="mr-2 has-text-danger">Delete Chat</a>
         <a @click="markAll" v-show="getNewMessages"
           >Mark all as Read ({{ getNewMessages }})</a
         ></span
@@ -119,6 +120,22 @@ export default {
           this.seconds--;
           this.countDown();
         }, 1000);
+      }
+    },
+    deleteChat() {
+      if (
+        confirm(
+          "Are you sure you want to delete this chat? All associated messages will also be deleted."
+        )
+      ) {
+        this.$http
+          .delete(`/services/chats/${this.chat_id}/delete`)
+          .then(() => {
+            this.closeSocket();
+            this.$emit("chat-deleted");
+            alert("Chat Successfully deleted.");
+          })
+          .catch((err) => alert(`An error occurred: ${err}`));
       }
     },
     parseMessage(rawMessage) {

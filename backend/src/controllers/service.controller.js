@@ -47,6 +47,17 @@ module.exports = {
       res.status(500).json({ error: err.message });
     }
   },
+  delete_chat: async (req, res) => {
+    try {
+      const chat = await Chat.findById(req.params.chat_id);
+      if (chat.user.toString() != req.user._id.toString())
+        return res.sendStatus(401);
+      await chat.remove();
+      res.sendStatus(200);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  },
   check_chat: async (req, res) => {
     try {
       const chat = await Chat.find({
