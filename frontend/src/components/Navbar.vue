@@ -54,6 +54,9 @@
         <a class="navbar-item" @click="$router.push(`/services/explore`)">
           Explore
         </a>
+        <a class="navbar-item" @click="$router.push(`/services/own`)">
+          Your Services
+        </a>
       </div>
     </div>
   </nav>

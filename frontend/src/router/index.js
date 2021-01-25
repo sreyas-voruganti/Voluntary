@@ -47,6 +47,11 @@ const routes = [
     component: () => import("../views/ServiceTags.vue"),
   },
   {
+    path: "/services/own",
+    name: "OwnServices",
+    component: () => import("../views/services/OwnServices.vue"),
+  },
+  {
     path: "/services/:service_id",
     name: "ServiceDetail",
     component: () => import("../views/ServiceDetail.vue"),
