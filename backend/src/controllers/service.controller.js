@@ -1,8 +1,10 @@
 const Service = require("../models/Service.model");
 const Chat = require("../models/Chat.model");
 const Message = require("../models/Message.model");
+const User = require("../models/User.model");
 const Session = require("../models/Session.model");
 const { sendNotif } = require("../socket");
+const config = require("../../config");
 
 module.exports = {
   create: async (req, res) => {
@@ -210,6 +212,39 @@ module.exports = {
       res.status(200).json(services);
     } catch (e) {
       res.status(500).json({ error: e.message });
+    }
+  },
+  home: async (req, res) => {
+    try {
+      const featured_service = await Service.findById(
+        config.site_vars.featured_service
+      ).populate("user", "_id name pp");
+      const raw_popular_services = await Service.aggregate([
+        {
+          $lookup: {
+            from: "sessions",
+            localField: "_id",
+            foreignField: "service",
+            as: "sessions",
+          },
+        },
+        {
+          $set: { sessions: { $size: "$sessions" } },
+        },
+        {
+          $sort: { sessions: -1 },
+        },
+        {
+          $limit: 5,
+        },
+      ]);
+      const popular_services = await User.populate(raw_popular_services, {
+        path: "user",
+        select: ["_id", "name", "pp"],
+      });
+      res.status(200).json({ featured_service, popular_services });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
     }
   },
 };

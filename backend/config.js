@@ -7,4 +7,7 @@ module.exports = {
   db: {
     url: "mongodb://localhost/voluntary_test",
   },
+  site_vars: {
+    featured_service: "6005e5b382b3f15e74b30c48",
+  },
 };
