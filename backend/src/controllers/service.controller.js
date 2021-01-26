@@ -23,10 +23,12 @@ module.exports = {
     try {
       const service = await Service.findById(req.params.service_id).populate(
         "user",
-        "id name pp"
+        "_id name pp"
       );
       if (!service) return res.sendStatus(404);
-      res.status(200).json(service);
+      res
+        .status(200)
+        .json({ service: service, avg_satis: await service.getAvgSatis() });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }

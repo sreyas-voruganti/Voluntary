@@ -19,6 +19,9 @@
       <span class="ml-3"
         ><i class="far fa-calendar-alt"></i> &nbsp; {{ getCreatedDate }}</span
       >
+      <span class="ml-3"
+        ><i class="far fa-smile"></i> &nbsp; {{ avg_satis }}/5</span
+      >
     </p>
     <div class="tags mb-2">
       <span
@@ -194,6 +197,7 @@ export default {
       agreeSessionTerms: false,
       showSessionSuccess: false,
       showSessionsModal: false,
+      avg_satis: 3,
     };
   },
   created() {
@@ -202,9 +206,11 @@ export default {
   methods: {
     async fetchData() {
       try {
-        this.service = (
+        const service_data = (
           await this.$http.get(`/services/${this.$route.params.service_id}`)
         ).data;
+        this.service = service_data.service;
+        this.avg_satis = service_data.avg_satis;
         if (!this.owns) {
           const chat_data = (
             await this.$http.get(
