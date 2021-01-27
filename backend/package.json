@@ -22,6 +22,7 @@
   },
   "scripts": {
     "serve": "nodemon src/index.js",
-    "lint": "yarn run eslint src/**"
+    "lint": "yarn run eslint src/**",
+    "start": "node src/index.js"
   }
 }
