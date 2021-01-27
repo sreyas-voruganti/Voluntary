@@ -20,7 +20,7 @@
         ><i class="far fa-calendar-alt"></i> &nbsp; {{ getCreatedDate }}</span
       >
       <span class="ml-3"
-        ><i class="far fa-smile"></i> &nbsp; {{ avg_satis }}/5</span
+        ><i class="far fa-smile"></i> &nbsp; {{ avg_satis || "-" }}/5</span
       >
     </p>
     <div class="tags mb-2">

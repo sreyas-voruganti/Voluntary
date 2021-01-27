@@ -37,6 +37,10 @@ module.exports = {
   },
   create_chat: async (req, res) => {
     try {
+      const service = await Service.findById(
+        req.params.service_id,
+        "_id user title"
+      ).lean();
       let chat = await Chat.find({
         service: req.params.service_id,
         user: req.user._id,
@@ -46,6 +50,11 @@ module.exports = {
         service: req.params.service_id,
         user: req.user._id,
       });
+      sendNotif(
+        [service.user.toString()],
+        "new_chat",
+        `New chat on ${service.title}`
+      );
       res.status(201).json(chat);
     } catch (err) {
       res.status(500).json({ error: err.message });
