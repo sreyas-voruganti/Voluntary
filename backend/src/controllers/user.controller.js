@@ -151,4 +151,25 @@ module.exports = {
       res.status(500).json({ error: e.message });
     }
   },
+  user_search: async (req, res) => {
+    try {
+      const users = await User.find(
+        {
+          name: { $regex: req.query.q, $options: "i" },
+        },
+        "-google_id -google_refresh_token"
+      );
+      res.status(200).json(users);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
+  all: async (req, res) => {
+    try {
+      const users = await User.find({}, "-google_id -google_refresh_token");
+      res.status(200).json(users);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
 };
