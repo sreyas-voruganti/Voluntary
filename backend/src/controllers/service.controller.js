@@ -198,7 +198,6 @@ module.exports = {
         $or: [
           { title: { $regex: req.query.q, $options: "i" } },
           { description: { $regex: req.query.q, $options: "i" } },
-          { tag: { $in: req.query.q } },
         ],
       }).populate("user", "_id name pp");
       res.status(200).json(services);

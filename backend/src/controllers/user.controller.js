@@ -126,9 +126,10 @@ module.exports = {
   },
   user_sessions: async (req, res) => {
     try {
+      const user = await User.findById(req.params.user_id, "_id name").lean();
       const services = await Service.find(
         {
-          user: req.user._id,
+          user: req.params.user_id,
         },
         "_id"
       ).lean();
@@ -146,7 +147,7 @@ module.exports = {
         .populate("user", "_id name")
         .populate("service", "_id title")
         .lean();
-      res.status(200).json(sessions);
+      res.status(200).json({ sessions, user });
     } catch (e) {
       res.status(500).json({ error: e.message });
     }

@@ -45,19 +45,22 @@
             </div>
           </div>
         </div>
-        <a class="navbar-item" @click="$router.push(`/services/create`)">
+        <a class="navbar-item" @click="$router.push('/services/create')">
           Create Service
         </a>
-        <a class="navbar-item" @click="$router.push(`/contributions`)">
+        <a
+          class="navbar-item"
+          @click="$router.push(`/users/${getUserId}/contributions`)"
+        >
           Your Contributions
         </a>
-        <a class="navbar-item" @click="$router.push(`/services/explore`)">
+        <a class="navbar-item" @click="$router.push('/services/explore')">
           Explore Services
         </a>
-        <a class="navbar-item" @click="$router.push(`/users/explore`)">
+        <a class="navbar-item" @click="$router.push('/users/explore')">
           Explore Users
         </a>
-        <a class="navbar-item" @click="$router.push(`/services/own`)">
+        <a class="navbar-item" @click="$router.push('/services/own')">
           Your Services
         </a>
       </div>
