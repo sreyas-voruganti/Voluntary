@@ -52,7 +52,10 @@
           Your Contributions
         </a>
         <a class="navbar-item" @click="$router.push(`/services/explore`)">
-          Explore
+          Explore Services
+        </a>
+        <a class="navbar-item" @click="$router.push(`/users/explore`)">
+          Explore Users
         </a>
         <a class="navbar-item" @click="$router.push(`/services/own`)">
           Your Services
