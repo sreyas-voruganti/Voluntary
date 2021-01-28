@@ -251,7 +251,14 @@ module.exports = {
         path: "user",
         select: ["_id", "name", "pp"],
       });
-      res.status(200).json({ featured_service, popular_services });
+      const sessions = await Session.find({ status: "conf" }, "_id").lean();
+      res
+        .status(200)
+        .json({
+          featured_service,
+          popular_services,
+          total_contrib: sessions.length,
+        });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
