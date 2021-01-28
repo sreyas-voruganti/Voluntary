@@ -3,7 +3,7 @@
     <span class="has-text-weight-medium is-size-4"
       >{{ getTotalHours }} Hours Contributed</span
     >
-    <div class="table-container">
+    <div class="table-container" v-if="sessions.length">
       <table class="table is-bordered">
         <tr>
           <th>Duration (mins)</th>
