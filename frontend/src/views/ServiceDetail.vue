@@ -230,6 +230,9 @@ export default {
         }
       } catch (err) {
         console.log(err);
+        if (err.response.status == 404) {
+          this.$router.push("/404?msg=Service not found");
+        }
       }
     },
     cancelSession() {

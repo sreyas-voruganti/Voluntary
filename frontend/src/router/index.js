@@ -71,6 +71,11 @@ const routes = [
     name: "UserContributions",
     component: () => import("../views/UserContributions.vue"),
   },
+  {
+    path: "*",
+    name: "NotFound",
+    component: () => import("../views/NotFound.vue"),
+  },
 ];
 
 const router = new VueRouter({

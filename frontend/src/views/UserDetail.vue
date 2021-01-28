@@ -152,6 +152,9 @@ export default {
         ).data;
       } catch (e) {
         console.log(e);
+        if (e.response.status == 404) {
+          this.$router.push("/404?msg=User not found");
+        }
       }
     },
     updateProfile() {
