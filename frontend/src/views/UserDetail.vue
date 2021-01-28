@@ -9,6 +9,11 @@
       <div class="is-flex is-flex-direction-column ml-5 mt-1">
         <span class="is-size-3 has-text-weight-medium">{{ user.name }}</span>
         <span class="is-size-5">Joined {{ getCreated }}</span>
+        <span class="is-size-6"
+          ><router-link :to="`/users/${user._id}/contributions`"
+            >View Contributions</router-link
+          ></span
+        >
       </div>
     </div>
     <div class="container mt-4">

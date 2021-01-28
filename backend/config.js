@@ -8,6 +8,6 @@ module.exports = {
     url: "mongodb://localhost/voluntary_test",
   },
   site_vars: {
-    featured_service: "6005e5b382b3f15e74b30c48",
+    featured_service: "6012e0ddba20ce47d09f5d6b",
   },
 };

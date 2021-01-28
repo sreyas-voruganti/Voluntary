@@ -49,11 +49,11 @@
       >
         Submit Session
       </button>
-      <button
-        class="button is-outlined is-warning"
-        @click="showSessionsModal = true"
-      >
+      <button class="button is-light" @click="showSessionsModal = true">
         View Sessions
+      </button>
+      <button class="button is-light is-danger">
+        Report Session
       </button>
     </div>
     <p class="is-size-6 mt-3">{{ service.description }}</p>
@@ -253,6 +253,13 @@ export default {
         .catch((err) => console.log(err));
     },
     submitSession() {
+      if (
+        moment().toDate() <
+        moment(this.session.time)
+          .add(this.session.duration, "m")
+          .toDate()
+      )
+        return alert("You cannot submit a session until it is completed.");
       this.$http
         .post(`/services/${this.service._id}/sessions`, this.session)
         .then(() => {

@@ -1,13 +1,13 @@
 <template>
-  <div class="container mt-6" style="width: 700px">
+  <div class="container mt-6" style="width: 700px" v-if="user">
     <span class="has-text-weight-medium is-size-4"
-      >{{ getTotalHours }} Hours Contributed</span
+      >{{ user.name }} contributed {{ getTotalHours }} total hours</span
     >
     <div class="table-container" v-if="sessions.length">
       <table class="table is-bordered">
         <tr>
           <th>Duration (mins)</th>
-          <th>User</th>
+          <th>Client</th>
           <th>Date</th>
           <th>Service</th>
         </tr>
@@ -37,12 +37,16 @@ export default {
   data() {
     return {
       sessions: [],
+      user: null,
     };
   },
   created() {
     this.$http
-      .get("/users/me/sessions")
-      .then((res) => (this.sessions = res.data))
+      .get(`/users/${this.$route.params.user_id}/sessions`)
+      .then((res) => {
+        this.sessions = res.data.sessions;
+        this.user = res.data.user;
+      })
       .catch((err) => alert(`An error occurred: ${err}`));
   },
   methods: {
