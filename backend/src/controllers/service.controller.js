@@ -3,7 +3,7 @@ const Chat = require("../models/Chat.model");
 const Message = require("../models/Message.model");
 const User = require("../models/User.model");
 const Session = require("../models/Session.model");
-const { sendNotif } = require("../socket");
+const { sendNotif, chatNamespace } = require("../socket");
 const config = require("../../config");
 
 module.exports = {
@@ -66,6 +66,7 @@ module.exports = {
       if (chat.user.toString() != req.user._id.toString())
         return res.sendStatus(401);
       await chat.remove();
+      chatNamespace.to(`chat_${chat._id}`).emit("chat_deleted");
       res.sendStatus(200);
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -252,13 +253,11 @@ module.exports = {
         select: ["_id", "name", "pp"],
       });
       const sessions = await Session.find({ status: "conf" }, "_id").lean();
-      res
-        .status(200)
-        .json({
-          featured_service,
-          popular_services,
-          total_contrib: sessions.length,
-        });
+      res.status(200).json({
+        featured_service,
+        popular_services,
+        total_contrib: sessions.length,
+      });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }

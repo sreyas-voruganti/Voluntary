@@ -75,6 +75,7 @@
         :chat_id="chat._id"
         :key="chat._id"
         :chat="chat"
+        owns_service
       />
     </div>
     <div :class="{ modal: true, 'is-active': showSessionModal }">

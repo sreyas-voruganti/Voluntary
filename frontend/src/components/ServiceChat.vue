@@ -1,5 +1,5 @@
 <template>
-  <div class="my-3">
+  <div class="my-3" v-if="delChat">
     <a class="my-2" @click="show = !show" v-if="!chat">
       <span class="mr-1">{{ show ? "Hide" : "Show" }} Chat</span>
       <span v-show="getNewMessages" class="has-text-danger"
@@ -40,7 +40,9 @@
       </ul>
       <span
         ><a @click="createMeetLink" class="mr-2">Generate Meeting</a>
-        <a @click="deleteChat" class="mr-2 has-text-danger">Delete Chat</a>
+        <a @click="deleteChat" class="mr-2 has-text-danger" v-if="!owns_service"
+          >Delete Chat</a
+        >
         <a @click="markAll" v-show="getNewMessages"
           >Mark all as Read ({{ getNewMessages }})</a
         ></span
@@ -80,6 +82,7 @@ export default {
     service: Object,
     chat_id: String,
     chat: Object,
+    owns_service: Boolean,
   },
   data() {
     return {
@@ -88,6 +91,7 @@ export default {
       message: null,
       seconds: 0,
       show: false,
+      delChat: true,
     };
   },
   updated() {
@@ -169,6 +173,13 @@ export default {
         }
       );
       this.socket.on("new_message", (message) => this.messages.push(message));
+      this.socket.on("chat_deleted", () => {
+        if (this.owns_service) {
+          this.closeSocket();
+          this.delChat = false;
+          alert("The client has deleted their chat.");
+        }
+      });
     },
     markAll() {
       this.messages.forEach((message) => {
@@ -192,15 +203,6 @@ export default {
       return this.message.trim() !== "";
     },
   },
-  // watch: {
-  //   show(newShow) {
-  //     if (newShow) {
-  //       this.initSocket();
-  //     } else {
-  //       this.closeSocket();
-  //     }
-  //   },
-  // },
 };
 </script>
 

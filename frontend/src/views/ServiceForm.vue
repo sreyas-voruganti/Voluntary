@@ -1,5 +1,6 @@
 <template>
   <div class="container mt-6" style="max-width: 700px">
+    <p class="title is-3 mb-3">Create Service</p>
     <div class="box">
       <div class="field">
         <label class="label">Title</label>
@@ -106,6 +107,11 @@ export default {
       this.service.image = this.$refs.image_upload.files[0];
     },
     onSubmit() {
+      function hasDuplicates(array) {
+        return new Set(array).size !== array.length;
+      }
+      if (hasDuplicates(this.service.tags.split(", ")))
+        return alert("Tags cannot contain duplicate values"); //ADD DELETE SOCKET EVENT
       const fd = new FormData();
       fd.append("title", this.service.title);
       fd.append("tags", this.service.tags);
