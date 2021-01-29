@@ -22,9 +22,15 @@ module.exports = {
       let user = await User.findOne({ google_id: user_data.id });
       if (user) {
         const token = jwt.sign({ id: user._id }, config.secret);
-        res.redirect(
-          `http://localhost:8080/authenticate?token=${token}&id=${user._id}`
-        );
+        if (!req.query.state) {
+          res.redirect(
+            `http://localhost:8080/authenticate?token=${token}&id=${user._id}`
+          );
+        } else {
+          res.redirect(
+            `http://localhost:8080/authenticate?token=${token}&id=${user._id}&r=${req.query.state}`
+          );
+        }
       } else {
         user = await User.create({
           name: user_data.name,

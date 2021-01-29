@@ -21,7 +21,11 @@ export default {
             this.$http.defaults.headers.common["Authorization"] = token;
             localStorage.setItem("token", token);
             localStorage.setItem("user_id", this.$route.query.id);
-            this.$router.push("/");
+            if (!this.$route.query.r) {
+              this.$router.push("/");
+            } else {
+              this.$router.push(this.$route.query.r);
+            }
           } else {
             this.$router.push("/auth");
           }

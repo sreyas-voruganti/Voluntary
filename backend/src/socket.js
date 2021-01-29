@@ -173,4 +173,5 @@ function sendNotif(userIds, type, content) {
 module.exports = {
   sendNotif,
   socket: http,
+  chatNamespace,
 };
