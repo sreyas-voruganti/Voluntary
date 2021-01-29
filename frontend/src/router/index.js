@@ -93,7 +93,7 @@ router.beforeEach((to, from, next) => {
   if (!to.meta.authPage && !isLoggedIn()) {
     next({
       path: "/auth",
-      //query: { redirect: to.fullPath }
+      query: { r: to.fullPath },
     });
   } else {
     next();
@@ -104,7 +104,6 @@ router.beforeEach((to, from, next) => {
   if (to.meta.authPage && isLoggedIn()) {
     next({
       path: "/",
-      //query: { redirect: to.fullPath }
     });
   } else {
     next();
