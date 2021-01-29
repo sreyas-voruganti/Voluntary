@@ -1,6 +1,8 @@
 <template>
   <div class="container mt-6" style="max-width: 1200px" v-if="services">
-    <p class="is-size-3 tag">{{ $route.query.t }}</p>
+    <p class="is-size-3 tag">
+      <i class="fas fa-tags mr-2"></i> {{ $route.query.t }}
+    </p>
     <p class="is-size-5">{{ services.length }} services have this tag</p>
     <div class="service-grid">
       <SmallService

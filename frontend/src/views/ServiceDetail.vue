@@ -43,17 +43,20 @@
         Start Chat
       </button>
       <button
-        class="button is-outlined is-info"
+        class="button is-light is-info"
         v-if="!owns && has_chat"
         @click="showSessionModal = true"
       >
-        Submit Session
+        <i class="fas fa-plus mr-1"></i> Submit Session
       </button>
-      <button class="button is-light" @click="showSessionsModal = true">
-        View Sessions
+      <button
+        class="button is-primary is-light"
+        @click="showSessionsModal = true"
+      >
+        <i class="fas fa-eye mr-1"></i> View Sessions
       </button>
       <button class="button is-light is-danger">
-        Report Session
+        <i class="fas fa-flag-checkered mr-1"></i> Report Session
       </button>
     </div>
     <p class="is-size-6 mt-3">{{ service.description }}</p>

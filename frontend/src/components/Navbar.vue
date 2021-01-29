@@ -13,13 +13,42 @@
     <div class="navbar-menu" v-show="!$route.meta.authPage">
       <div class="navbar-start">
         <a class="navbar-item" @click="$router.push('/')">
-          Home
+          <i class="fas fa-home mr-1"></i> Home
         </a>
         <a class="navbar-item" @click="$router.push(`/users/${getUserId}`)">
-          Profile
+          <i class="fas fa-user-alt mr-1"></i> Profile
+        </a>
+        <a
+          class="navbar-item"
+          @click="$router.push(`/users/${getUserId}/contributions`)"
+        >
+          <i class="fas fa-handshake mr-1"></i> Your Contributions
+        </a>
+        <a class="navbar-item" @click="$router.push('/users/explore')">
+          <i class="fas fa-users mr-1"></i> Explore Users
         </a>
         <div class="navbar-item has-dropdown is-hoverable">
-          <a class="navbar-link"> {{ notifications.length }} Notifications </a>
+          <a class="navbar-link">
+            <i class="far fa-newspaper mr-1"></i> Services
+          </a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" @click="$router.push('/services/own')">
+              <i class="far fa-newspaper mr-1"></i> Your Services
+            </a>
+            <a class="navbar-item" @click="$router.push('/services/explore')">
+              <i class="fas fa-globe-americas mr-1"></i> Explore Services
+            </a>
+            <hr class="navbar-divider" />
+            <a class="navbar-item" @click="$router.push('/services/create')">
+              <i class="fas fa-plus mr-1"></i> Create Service
+            </a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link"
+            ><i class="fas fa-bell mr-1"></i>
+            {{ notifications.length }} Notifications
+          </a>
           <div class="navbar-dropdown p-3">
             <div
               style="width: 250px"
@@ -43,32 +72,6 @@
                 >
               </div>
             </div>
-          </div>
-        </div>
-        <a
-          class="navbar-item"
-          @click="$router.push(`/users/${getUserId}/contributions`)"
-        >
-          Your Contributions
-        </a>
-        <a class="navbar-item" @click="$router.push('/users/explore')">
-          Explore Users
-        </a>
-        <div class="navbar-item has-dropdown is-hoverable">
-          <a class="navbar-link">
-            Services
-          </a>
-          <div class="navbar-dropdown">
-            <a class="navbar-item" @click="$router.push('/services/own')">
-              Your Services
-            </a>
-            <a class="navbar-item" @click="$router.push('/services/explore')">
-              Explore Services
-            </a>
-            <hr class="navbar-divider" />
-            <a class="navbar-item" @click="$router.push('/services/create')">
-              Create Service
-            </a>
           </div>
         </div>
       </div>

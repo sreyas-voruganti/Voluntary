@@ -10,11 +10,15 @@
       v-if="featured_service"
     >
       <div class="container" style="max-width: 50%">
-        <p class="title is-4 mb-3">Featured Service:</p>
+        <p class="title is-4 mb-3">
+          <i class="fas fa-award"></i> Today's Featured Service:
+        </p>
         <FeaturedService :service="featured_service" />
       </div>
       <div class="container" style="max-width: 50%">
-        <p class="title is-4 mb-3">Popular Services:</p>
+        <p class="title is-4 mb-3">
+          <i class="fas fa-fire"></i> Popular Services:
+        </p>
         <PopularServices :services="popular_services" />
       </div>
     </div>

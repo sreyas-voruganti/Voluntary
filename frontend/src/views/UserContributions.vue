@@ -1,7 +1,7 @@
 <template>
   <div class="container mt-6" style="width: 700px" v-if="user">
     <span class="has-text-weight-medium is-size-4"
-      >{{ user.name }} contributed {{ getTotalHours }} total hours</span
+      >{{ user.name }} contributed <u>{{ getTotalHours }}</u> total hours</span
     >
     <div class="table-container" v-if="sessions.length">
       <table class="table is-bordered">

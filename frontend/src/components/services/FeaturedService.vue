@@ -33,7 +33,8 @@
         >
       </div>
       <p class="mb-2 has-text-weight-medium">
-        Posted on {{ new Date(service.createdAt).toDateString() }}
+        <i class="far fa-calendar-alt"></i> Posted on
+        {{ new Date(service.createdAt).toDateString() }}
       </p>
       <div class="content">{{ service.description.substring(0, 260) }}...</div>
     </div>
