@@ -13,7 +13,7 @@ module.exports = {
       const oauth2Client = new google.auth.OAuth2(
         "836522334018-qed384ump69o2g0fvubmkuidvt44bbgv.apps.googleusercontent.com",
         "_wskslSNb_7J0nwVEnqTmh36",
-        "http://localhost:8000/auth/google"
+        `${config.base_url}/auth/google`
       );
       const { tokens } = await oauth2Client.getToken(req.query.code);
       const { data: user_data } = await axios.get(
@@ -24,11 +24,11 @@ module.exports = {
         const token = jwt.sign({ id: user._id }, config.secret);
         if (!req.query.state) {
           res.redirect(
-            `http://localhost:8080/authenticate?token=${token}&id=${user._id}`
+            `${config.frontend_url}/authenticate?token=${token}&id=${user._id}`
           );
         } else {
           res.redirect(
-            `http://localhost:8080/authenticate?token=${token}&id=${user._id}&r=${req.query.state}`
+            `${config.frontend_url}/authenticate?token=${token}&id=${user._id}&r=${req.query.state}`
           );
         }
       } else {
@@ -42,11 +42,11 @@ module.exports = {
         });
         const token = jwt.sign({ id: user._id }, config.secret);
         res.redirect(
-          `http://localhost:8080/authenticate?token=${token}&id=${user._id}`
+          `${config.frontend_url}/authenticate?token=${token}&id=${user._id}`
         );
       }
     } catch (err) {
-      res.redirect(`http://localhost:8080/authenticate?err=true`);
+      res.redirect(`${config.frontend_url}/authenticate?err=true`);
     }
   },
   token_valid: (req, res) => {

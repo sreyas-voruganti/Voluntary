@@ -76,6 +76,7 @@
 <script>
 import { io } from "socket.io-client";
 import moment from "moment";
+import config from "../../config";
 export default {
   name: "ServiceChat",
   props: {
@@ -164,7 +165,7 @@ export default {
     },
     initSocket() {
       this.socket = io(
-        `http://127.0.0.1:8001/chat?chat=${this.chat_id.toString()}`,
+        `${config.socketBaseUrl}/chat?chat=${this.chat_id.toString()}`,
         {
           auth: {
             token: localStorage.getItem("token"),

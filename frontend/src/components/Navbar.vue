@@ -83,6 +83,7 @@
 import marked from "marked";
 import { io } from "socket.io-client";
 import moment from "moment";
+import config from "../../config";
 export default {
   name: "Navbar",
   data() {
@@ -117,7 +118,7 @@ export default {
       this.socket.emit("mark_one", notifId);
     },
     initSocket() {
-      this.socket = io(`http://127.0.0.1:8001/notifications`, {
+      this.socket = io(`${config.socketBaseUrl}/notifications`, {
         auth: {
           token: localStorage.getItem("token"),
         },

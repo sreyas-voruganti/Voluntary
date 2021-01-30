@@ -135,7 +135,7 @@ module.exports = {
       sendNotif(
         [service.user.toString()],
         "new_session_claim",
-        `New session claim on [${service.title}](http://localhost:8080/services/${service._id})`
+        `New session claim on [${service.title}](${config.frontend_url}/services/${service._id})`
       );
       res.status(201).json(session);
     } catch (e) {
