@@ -36,11 +36,11 @@
     <img :src="service.image" class="image-container" />
     <div class="buttons">
       <button
-        class="button is-outlined is-success"
+        class="button is-light is-success"
         v-if="!owns && !has_chat"
         @click="startChat"
       >
-        Start Chat
+        <i class="fas fa-comments mr-1"></i> Start Chat
       </button>
       <button
         class="button is-light is-info"

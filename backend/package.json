@@ -8,6 +8,7 @@
     "async-redis": "^1.1.7",
     "axios": "^0.21.1",
     "cors": "^2.8.5",
+    "date-fns": "^2.16.1",
     "express": "^4.17.1",
     "googleapis": "^67.0.0",
     "jsonwebtoken": "^8.5.1",
