@@ -13,7 +13,7 @@ module.exports = {
       const oauth2Client = new google.auth.OAuth2(
         "836522334018-qed384ump69o2g0fvubmkuidvt44bbgv.apps.googleusercontent.com",
         "_wskslSNb_7J0nwVEnqTmh36",
-        `${config.base_url}/auth/google`
+        `${config.temp_g_url}/auth/google`
       );
       const { tokens } = await oauth2Client.getToken(req.query.code);
       const { data: user_data } = await axios.get(
@@ -46,6 +46,7 @@ module.exports = {
         );
       }
     } catch (err) {
+      console.log(err);
       res.redirect(`${config.frontend_url}/authenticate?err=true`);
     }
   },
