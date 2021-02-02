@@ -66,7 +66,18 @@ module.exports = {
         "-google_refresh_token -google_access_token -google_id"
       );
       if (!user) return res.sendStatus(404);
-      res.status(200).json(user);
+      const sessions = await Session.find(
+        { user: user._id, status: "conf" },
+        "_id satisfaction"
+      ).lean();
+      let num = 0;
+      sessions.forEach((session) => (num += session.satisfaction));
+      res
+        .status(200)
+        .json({
+          user,
+          avg_satis: Math.round((num / sessions.length) * 10) / 10,
+        });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }

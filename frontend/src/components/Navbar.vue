@@ -15,7 +15,7 @@
         <a class="navbar-item" @click="$router.push('/')">
           <i class="fas fa-home mr-1"></i> Home
         </a>
-        <a class="navbar-item" @click="$router.push(`/users/${getUserId}`)">
+        <a class="navbar-item" :href="`/users/${getUserId}`">
           <i class="fas fa-user-alt mr-1"></i> Profile
         </a>
         <a
