@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const AuthRoutes = require("./routes/auth.routes");
 const ServiceRoutes = require("./routes/service.routes");
-const UserRoutes = require("./routes/user.routes");
+const { UserRoutes, no_cache_router } = require("./routes/user.routes");
 const cors = require("cors");
 const morgan = require("morgan");
 
@@ -18,5 +18,6 @@ app.use("/uploads", express.static("uploads"));
 app.use("/auth", AuthRoutes);
 app.use("/services", ServiceRoutes);
 app.use("/users", UserRoutes);
+app.use("/no_cache", no_cache_router);
 
 module.exports = app;
