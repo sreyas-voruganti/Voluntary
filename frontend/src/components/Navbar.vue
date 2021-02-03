@@ -93,14 +93,25 @@ export default {
     };
   },
   created() {
-    if (localStorage.getItem("token")) {
+    if (this.isAuthenticated) {
       this.initSocket();
       this.fetchNotifications();
     }
   },
+  watch: {
+    isAuthenticated(newVal) {
+      if (newVal) {
+        this.initSocket();
+        this.fetchNotifications();
+      }
+    },
+  },
   computed: {
     getUserId() {
       return localStorage.getItem("user_id");
+    },
+    isAuthenticated() {
+      return this.$store.state.isAuthenticated;
     },
   },
   methods: {
@@ -130,7 +141,7 @@ export default {
     },
     fetchNotifications() {
       this.$http
-        .get("/users/me/notifications")
+        .get("/no_cache/users/me/notifications")
         .then((res) => (this.notifications = res.data))
         .catch((err) => console.log(err));
     },
