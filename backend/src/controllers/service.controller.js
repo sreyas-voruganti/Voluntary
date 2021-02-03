@@ -62,11 +62,19 @@ module.exports = {
   },
   delete_chat: async (req, res) => {
     try {
-      const chat = await Chat.findById(req.params.chat_id);
-      if (chat.user.toString() != req.user._id.toString())
+      const chat = await Chat.findById(req.params.chat_id).populate(
+        "service",
+        "_id user"
+      );
+      if (
+        chat.user.toString() != req.user._id.toString() &&
+        chat.service.user.toString() != req.user._id.toString()
+      )
         return res.sendStatus(401);
       await chat.remove();
-      chatNamespace.to(`chat_${chat._id}`).emit("chat_deleted");
+      chatNamespace
+        .to(`chat_${chat._id}`)
+        .emit("chat_deleted", { _id: req.user._id, name: req.user.name });
       res.sendStatus(200);
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -135,7 +143,7 @@ module.exports = {
       sendNotif(
         [service.user.toString()],
         "new_session_claim",
-        `New session claim on [${service.title}](http://localhost:8080/services/${service._id})`
+        `New session claim on [${service.title}](${config.frontend_url}/services/${service._id})`
       );
       res.status(201).json(session);
     } catch (e) {

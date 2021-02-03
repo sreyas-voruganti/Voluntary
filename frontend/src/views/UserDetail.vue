@@ -10,6 +10,9 @@
         <span class="is-size-3 has-text-weight-medium">{{ user.name }}</span>
         <span class="is-size-5">Joined {{ getCreated }}</span>
         <span class="is-size-6"
+          >Average Satisfaction: {{ avg_satis || "-" }}/5</span
+        >
+        <span class="is-size-6"
           ><router-link :to="`/users/${user._id}/contributions`"
             >View Contributions</router-link
           ></span
@@ -140,6 +143,7 @@ export default {
       tab: "About",
       services: [],
       synced: false,
+      avg_satis: null,
     };
   },
   created() {
@@ -148,9 +152,11 @@ export default {
   methods: {
     async fetchData() {
       try {
-        this.user = (
+        const m_data = (
           await this.$http.get(`/users/${this.$route.params.user_id}`)
         ).data;
+        this.user = m_data.user;
+        this.avg_satis = m_data.avg_satis;
         this.own_user = { ...this.user };
         this.services = (
           await this.$http.get(`/users/${this.$route.params.user_id}/services`)
@@ -183,6 +189,7 @@ export default {
         delete this.$http.defaults.headers.common["Authorization"];
         localStorage.removeItem("token");
         localStorage.removeItem("user_id");
+        this.$store.commit("logout");
         this.$router.push("/auth");
       }
     },

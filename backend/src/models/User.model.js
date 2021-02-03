@@ -26,6 +26,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    fraud_strikes: {
+      type: Number,
+      default: 0,
+    },
+    reverse_strikes: {
+      type: Number,
+      default: 3,
+    },
   },
   {
     timestamps: true,

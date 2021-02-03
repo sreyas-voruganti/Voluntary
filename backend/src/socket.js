@@ -6,6 +6,7 @@ const User = require("./models/User.model");
 const Notification = require("./models/Notification.model");
 const asyncRedis = require("async-redis");
 const client = asyncRedis.createClient();
+const config = require("../config");
 
 client.on("error", (err) => {
   console.log("Redis Error " + err);
@@ -70,12 +71,12 @@ chatNamespace.on("connection", async (socket) => {
               `New message from [${
                 user_objs[user_objs.findIndex((user) => user._id == users[0])]
                   .name
-              }](http://localhost:8080/users/${
+              }](${config.frontend_url}/users/${
                 user_objs[user_objs.findIndex((user) => user._id == users[0])]
                   ._id
-              }) on [${
-                socket.chat.service.title
-              }](http://localhost:8080/services/${socket.chat.service._id})`
+              }) on [${socket.chat.service.title}](${
+                config.frontend_url
+              }/services/${socket.chat.service._id})`
             );
           }
         } else {
@@ -86,12 +87,12 @@ chatNamespace.on("connection", async (socket) => {
               `New message from [${
                 user_objs[user_objs.findIndex((user) => user._id == users[1])]
                   .name
-              }](http://localhost:8080/users/${
+              }](${config.frontend_url}/users/${
                 user_objs[user_objs.findIndex((user) => user._id == users[1])]
                   ._id
-              }) on [${
-                socket.chat.service.title
-              }](http://localhost:8080/services/${socket.chat.service._id})`
+              }) on [${socket.chat.service.title}](${
+                config.frontend_url
+              }/services/${socket.chat.service._id})`
             );
           }
         }

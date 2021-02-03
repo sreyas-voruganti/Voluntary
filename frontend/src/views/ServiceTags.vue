@@ -1,5 +1,16 @@
 <template>
   <div class="container mt-6" style="max-width: 1200px" v-if="services">
+    <div class="mb-4 is-flex is-flex-direction-row">
+      <input
+        class="input"
+        type="text"
+        placeholder="Search for a tag"
+        v-model="tag"
+      />
+      <a class="button ml-1" :href="tag ? `?t=${tag}` : ''" :disabled="!tag"
+        >Search</a
+      >
+    </div>
     <p class="is-size-3 tag">
       <i class="fas fa-tags mr-2"></i> {{ $route.query.t }}
     </p>
@@ -24,6 +35,7 @@ export default {
   data() {
     return {
       services: [],
+      tag: null,
     };
   },
   created() {

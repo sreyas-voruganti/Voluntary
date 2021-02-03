@@ -1,12 +1,9 @@
 <template>
   <div class="box p-3">
-    <div v-for="service in services" :key="service._id" class="box p-2 m-2">
+    <div v-for="service in services" :key="service._id" class="p-2 m-2">
       <article class="media">
         <figure class="media-left">
-          <img
-            :src="`http://127.0.0.1:8000/uploads/${service.image}`"
-            style="max-width: 100px"
-          />
+          <img :src="getImage(service.image)" style="max-width: 100px" />
         </figure>
         <div class="media-content">
           <div class="content">
@@ -31,10 +28,16 @@
 </template>
 
 <script>
+import config from "../../../config";
 export default {
   name: "PopularServices",
   props: {
     services: Array,
+  },
+  methods: {
+    getImage(image) {
+      return `${config.apiBaseUrl}/uploads/${image}`;
+    },
   },
 };
 </script>

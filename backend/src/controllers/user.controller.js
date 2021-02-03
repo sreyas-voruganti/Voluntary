@@ -13,7 +13,7 @@ module.exports = {
       const oauth2Client = new google.auth.OAuth2(
         "836522334018-qed384ump69o2g0fvubmkuidvt44bbgv.apps.googleusercontent.com",
         "_wskslSNb_7J0nwVEnqTmh36",
-        "http://localhost:8000/auth/google"
+        `${config.temp_g_url}/auth/google`
       );
       const { tokens } = await oauth2Client.getToken(req.query.code);
       const { data: user_data } = await axios.get(
@@ -24,11 +24,11 @@ module.exports = {
         const token = jwt.sign({ id: user._id }, config.secret);
         if (!req.query.state) {
           res.redirect(
-            `http://localhost:8080/authenticate?token=${token}&id=${user._id}`
+            `${config.frontend_url}/authenticate?token=${token}&id=${user._id}`
           );
         } else {
           res.redirect(
-            `http://localhost:8080/authenticate?token=${token}&id=${user._id}&r=${req.query.state}`
+            `${config.frontend_url}/authenticate?token=${token}&id=${user._id}&r=${req.query.state}`
           );
         }
       } else {
@@ -42,11 +42,12 @@ module.exports = {
         });
         const token = jwt.sign({ id: user._id }, config.secret);
         res.redirect(
-          `http://localhost:8080/authenticate?token=${token}&id=${user._id}`
+          `${config.frontend_url}/authenticate?token=${token}&id=${user._id}`
         );
       }
     } catch (err) {
-      res.redirect(`http://localhost:8080/authenticate?err=true`);
+      console.log(err);
+      res.redirect(`${config.frontend_url}/authenticate?err=true`);
     }
   },
   token_valid: (req, res) => {
@@ -65,7 +66,18 @@ module.exports = {
         "-google_refresh_token -google_access_token -google_id"
       );
       if (!user) return res.sendStatus(404);
-      res.status(200).json(user);
+      const sessions = await Session.find(
+        { user: user._id, status: "conf" },
+        "_id satisfaction"
+      ).lean();
+      let num = 0;
+      sessions.forEach((session) => (num += session.satisfaction));
+      res
+        .status(200)
+        .json({
+          user,
+          avg_satis: Math.round((num / sessions.length) * 10) / 10,
+        });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }

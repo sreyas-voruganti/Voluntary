@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="navbar has-shadow is-fixed-top"
+    class="navbar has-shadow is-fixed-top has-background-success-light"
     role="navigation"
     aria-label="main navigation"
   >
@@ -15,7 +15,7 @@
         <a class="navbar-item" @click="$router.push('/')">
           <i class="fas fa-home mr-1"></i> Home
         </a>
-        <a class="navbar-item" @click="$router.push(`/users/${getUserId}`)">
+        <a class="navbar-item" :href="`/users/${getUserId}`">
           <i class="fas fa-user-alt mr-1"></i> Profile
         </a>
         <a
@@ -83,6 +83,7 @@
 import marked from "marked";
 import { io } from "socket.io-client";
 import moment from "moment";
+import config from "../../config";
 export default {
   name: "Navbar",
   data() {
@@ -92,14 +93,30 @@ export default {
     };
   },
   created() {
-    if (localStorage.getItem("token")) {
+    if (this.isAuthenticated) {
       this.initSocket();
       this.fetchNotifications();
     }
   },
+  watch: {
+    isAuthenticated(newVal) {
+      if (newVal) {
+        this.initSocket();
+        this.fetchNotifications();
+      } else {
+        this.socket.close();
+      }
+    },
+  },
+  beforeDestroy() {
+    this.socket.close();
+  },
   computed: {
     getUserId() {
       return localStorage.getItem("user_id");
+    },
+    isAuthenticated() {
+      return this.$store.state.isAuthenticated;
     },
   },
   methods: {
@@ -117,7 +134,7 @@ export default {
       this.socket.emit("mark_one", notifId);
     },
     initSocket() {
-      this.socket = io(`http://127.0.0.1:8001/notifications`, {
+      this.socket = io(`${config.socketBaseUrl}/notifications`, {
         auth: {
           token: localStorage.getItem("token"),
         },
@@ -129,7 +146,7 @@ export default {
     },
     fetchNotifications() {
       this.$http
-        .get("/users/me/notifications")
+        .get("/no_cache/users/me/notifications")
         .then((res) => (this.notifications = res.data))
         .catch((err) => console.log(err));
     },
