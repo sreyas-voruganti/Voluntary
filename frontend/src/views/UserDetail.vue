@@ -189,6 +189,7 @@ export default {
         delete this.$http.defaults.headers.common["Authorization"];
         localStorage.removeItem("token");
         localStorage.removeItem("user_id");
+        this.$store.commit("logout");
         this.$router.push("/auth");
       }
     },
