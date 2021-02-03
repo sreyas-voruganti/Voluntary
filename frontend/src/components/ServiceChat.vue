@@ -40,9 +40,7 @@
       </ul>
       <span
         ><a @click="createMeetLink" class="mr-2">Generate Meeting</a>
-        <a @click="deleteChat" class="mr-2 has-text-danger" v-if="!owns_service"
-          >Delete Chat</a
-        >
+        <a @click="deleteChat" class="mr-2 has-text-danger">Delete Chat</a>
         <a @click="markAll" v-show="getNewMessages"
           >Mark all as Read ({{ getNewMessages }})</a
         ></span
@@ -95,16 +93,13 @@ export default {
       delChat: true,
     };
   },
-  updated() {
-    const element = this.$refs.message_box;
-    element.scrollTop = element.scrollHeight;
-  },
   created() {
     this.$http
       .get(`/services/chats/${this.chat_id}/messages`)
       .then((res) => (this.messages = res.data))
       .catch((err) => console.log(err));
     this.initSocket();
+    this.scrollToBottom();
   },
   beforeDestroy() {
     this.closeSocket();
@@ -118,6 +113,10 @@ export default {
         this.seconds = 10;
         this.countDown();
       }
+    },
+    scrollToBottom() {
+      const element = this.$refs.message_box;
+      element.scrollTop = element.scrollHeight;
     },
     countDown() {
       if (this.seconds > 0) {
@@ -135,11 +134,6 @@ export default {
       ) {
         this.$http
           .delete(`/services/chats/${this.chat_id}/delete`)
-          .then(() => {
-            this.closeSocket();
-            this.$emit("chat-deleted");
-            alert("Chat Successfully deleted.");
-          })
           .catch((err) => alert(`An error occurred: ${err}`));
       }
     },
@@ -173,12 +167,28 @@ export default {
           forceNew: true,
         }
       );
-      this.socket.on("new_message", (message) => this.messages.push(message));
-      this.socket.on("chat_deleted", () => {
-        if (this.owns_service) {
-          this.closeSocket();
-          this.delChat = false;
-          alert("The client has deleted their chat.");
+      this.socket.on("new_message", (message) => {
+        this.messages.push(message);
+        setTimeout(() => this.scrollToBottom(), 300);
+      });
+      this.socket.on("chat_deleted", (user) => {
+        this.closeSocket();
+        if (localStorage.getItem("user_id") == user._id.toString()) {
+          if (this.owns_service) {
+            this.delChat = false;
+            alert("The chat has been successfully deleted.");
+          } else {
+            this.$emit("chat-deleted");
+            alert("The chat has been successfully deleted.");
+          }
+        } else {
+          if (this.owns_service) {
+            this.delChat = false;
+            alert(`${user.name} has deleted their chat with you.`);
+          } else {
+            this.$emit("chat-deleted");
+            alert("The mentor has deleted their chat with you.");
+          }
         }
       });
     },

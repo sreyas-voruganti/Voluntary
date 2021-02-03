@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="navbar has-shadow is-fixed-top"
+    class="navbar has-shadow is-fixed-top has-background-success-light"
     role="navigation"
     aria-label="main navigation"
   >
