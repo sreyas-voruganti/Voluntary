@@ -103,8 +103,13 @@ export default {
       if (newVal) {
         this.initSocket();
         this.fetchNotifications();
+      } else {
+        this.socket.close();
       }
     },
+  },
+  beforeDestroy() {
+    this.socket.close();
   },
   computed: {
     getUserId() {
