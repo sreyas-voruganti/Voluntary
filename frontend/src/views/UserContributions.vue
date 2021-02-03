@@ -42,7 +42,9 @@ export default {
   },
   created() {
     this.$http
-      .get(`/users/${this.$route.params.user_id}/sessions`)
+      .get(
+        `/users/${this.$route.params.user_id}/sessions?contrib_key=${this.$route.query.contrib_key}`
+      )
       .then((res) => {
         this.sessions = res.data.sessions;
         this.user = res.data.user;

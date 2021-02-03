@@ -72,12 +72,14 @@ module.exports = {
       ).lean();
       let num = 0;
       sessions.forEach((session) => (num += session.satisfaction));
-      res
-        .status(200)
-        .json({
-          user,
-          avg_satis: Math.round((num / sessions.length) * 10) / 10,
-        });
+      res.status(200).json({
+        user,
+        contrib_key:
+          req.user._id.toString() == user._id.toString()
+            ? await user.getContribHash()
+            : null,
+        avg_satis: Math.round((num / sessions.length) * 10) / 10,
+      });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -144,7 +146,9 @@ module.exports = {
   },
   user_sessions: async (req, res) => {
     try {
-      const user = await User.findById(req.params.user_id, "_id name").lean();
+      const user = await User.findById(req.params.user_id, "_id name");
+      if (!(await user.isContribHashValid(req.query.contrib_key)))
+        return res.sendStatus(400);
       const services = await Service.find(
         {
           user: req.params.user_id,

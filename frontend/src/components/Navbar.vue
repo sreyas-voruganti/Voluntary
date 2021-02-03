@@ -18,12 +18,6 @@
         <a class="navbar-item" :href="`/users/${getUserId}`">
           <i class="fas fa-user-alt mr-1"></i> Profile
         </a>
-        <a
-          class="navbar-item"
-          @click="$router.push(`/users/${getUserId}/contributions`)"
-        >
-          <i class="fas fa-handshake mr-1"></i> Your Contributions
-        </a>
         <a class="navbar-item" @click="$router.push('/users/explore')">
           <i class="fas fa-users mr-1"></i> Explore Users
         </a>

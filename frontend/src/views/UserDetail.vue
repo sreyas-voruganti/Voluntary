@@ -12,8 +12,9 @@
         <span class="is-size-6"
           >Average Satisfaction: {{ avg_satis || "-" }}/5</span
         >
-        <span class="is-size-6"
-          ><router-link :to="`/users/${user._id}/contributions`"
+        <span class="is-size-6" v-if="owns"
+          ><router-link
+            :to="`/users/${user._id}/contributions?contrib_key=${contrib_key}`"
             >View Contributions</router-link
           ></span
         >
@@ -144,6 +145,7 @@ export default {
       services: [],
       synced: false,
       avg_satis: null,
+      contrib_key: null,
     };
   },
   created() {
@@ -157,6 +159,7 @@ export default {
         ).data;
         this.user = m_data.user;
         this.avg_satis = m_data.avg_satis;
+        this.contrib_key = m_data.contrib_key;
         this.own_user = { ...this.user };
         this.services = (
           await this.$http.get(`/users/${this.$route.params.user_id}/services`)
