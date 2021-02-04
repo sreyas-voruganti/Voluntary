@@ -80,6 +80,12 @@
           </div>
         </div>
         <div class="field">
+          <label class="label">Birthday</label>
+          <div class="control">
+            <input class="input" type="date" v-model="compDob" />
+          </div>
+        </div>
+        <div class="field">
           <label class="label">Bio</label>
           <div class="control">
             <textarea
@@ -153,6 +159,7 @@ export default {
   },
   methods: {
     async fetchData() {
+      // DOB NOT WORKING ON RELOAD
       try {
         const m_data = (
           await this.$http.get(`/users/${this.$route.params.user_id}`)
@@ -172,17 +179,19 @@ export default {
       }
     },
     updateProfile() {
-      // check for emtpy valus and disable update button
       this.$http
         .put("/users/me/update", {
           name: this.own_user.name,
           bio: this.own_user.bio,
+          dob: this.own_user.dob,
         })
         .then((res) => {
           this.own_user.name = res.data.name;
           this.own_user.bio = res.data.bio;
+          this.own_user.dob = res.data.dob;
           this.user.name = res.data.name;
           this.user.bio = res.data.bio;
+          this.user.dob = res.data.dob;
           alert("Profile updated successfully.");
         })
         .catch((err) => alert(`An error occurred: ${err}`));
@@ -230,8 +239,19 @@ export default {
       return (
         JSON.stringify(this.user) !== JSON.stringify(this.own_user) &&
         this.own_user.bio &&
-        this.own_user.name
+        this.own_user.name &&
+        this.own_user.dob
       );
+    },
+    compDob: {
+      get() {
+        return this.own_user.dob
+          ? new Date(this.own_user.dob).toISOString().split("T")[0]
+          : null;
+      },
+      set(newValue) {
+        this.own_user.dob = newValue;
+      },
     },
   },
 };

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const { raw } = require("express");
+const { differenceInYears } = require("date-fns");
 
 const userSchema = new mongoose.Schema(
   {
@@ -28,13 +28,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
-    fraud_strikes: {
-      type: Number,
-      default: 0,
-    },
-    reverse_strikes: {
-      type: Number,
-      default: 3,
+    dob: {
+      type: Date,
+      default: null,
     },
   },
   {
@@ -57,5 +53,9 @@ userSchema.methods.isContribHashValid = async function (rawHash) {
     throw new Error(e);
   }
 };
+
+userSchema.virtual("age").get(function () {
+  return this.date ? differenceInYears(new Date(), new Date(this.dob)) : null;
+});
 
 module.exports = mongoose.model("User", userSchema);

@@ -104,10 +104,11 @@ module.exports = {
         {
           name: req.body.name,
           bio: req.body.bio,
+          dob: req.body.dob,
         },
         { new: true }
       );
-      res.status(200).json({ name: user.name, bio: user.bio });
+      res.status(200).json({ name: user.name, bio: user.bio, dob: user.dob });
     } catch (e) {
       res.status(500).json({ error: e.message });
     }
