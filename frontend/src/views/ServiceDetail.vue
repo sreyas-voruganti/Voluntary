@@ -55,8 +55,13 @@
       >
         <i class="fas fa-eye mr-1"></i> View Sessions
       </button>
-      <button class="button is-light is-danger">
-        <i class="fas fa-flag-checkered mr-1"></i> Report Session
+      <button
+        class="button is-light is-danger"
+        :disabled="did_report"
+        @click="reportSession"
+      >
+        <i class="fas fa-flag-checkered mr-1"></i>
+        {{ did_report ? "Reported" : "Report Session" }}
       </button>
     </div>
     <p class="is-size-6 mt-3">{{ service.description }}</p>
@@ -202,18 +207,35 @@ export default {
       showSessionSuccess: false,
       showSessionsModal: false,
       avg_satis: 3,
+      did_report: false,
     };
   },
   created() {
     this.fetchData();
   },
   methods: {
+    reportSession() {
+      if (
+        confirm(
+          "Are you sure you want to report this session for innapropriate content or fraud?"
+        )
+      ) {
+        this.$http
+          .post(`/services/${this.service._id}/report`)
+          .then(() => {
+            this.did_report = true;
+            alert("Service reported");
+          })
+          .catch((err) => alert(`An error occurred: ${err}`));
+      }
+    },
     async fetchData() {
       try {
         const service_data = (
           await this.$http.get(`/services/${this.$route.params.service_id}`)
         ).data;
         this.service = service_data.service;
+        this.did_report = service_data.did_report;
         this.avg_satis = service_data.avg_satis;
         if (!this.owns) {
           const chat_data = (

@@ -28,9 +28,11 @@ module.exports = {
         "_id name pp"
       );
       if (!service) return res.sendStatus(404);
-      res
-        .status(200)
-        .json({ service: service, avg_satis: await service.getAvgSatis() });
+      res.status(200).json({
+        service: service,
+        avg_satis: await service.getAvgSatis(),
+        did_report: service.didReport(req.user._id),
+      });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -268,6 +270,16 @@ module.exports = {
       });
     } catch (err) {
       res.status(500).json({ error: err.message });
+    }
+  },
+  report_service: async (req, res) => {
+    try {
+      const service = await Service.findById(req.params.service_id);
+      if (!service) return res.sendStatus(404);
+      await service.userReport(req.user._id);
+      res.sendStatus(200);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
     }
   },
 };
