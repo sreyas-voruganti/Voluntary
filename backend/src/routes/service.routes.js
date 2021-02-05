@@ -26,5 +26,6 @@ router.delete(
   ServiceController.decline_session
 );
 router.post("/:service_id/report", ServiceController.report_service);
+router.put("/:service_id/update", ServiceController.update_service);
 
 module.exports = router;

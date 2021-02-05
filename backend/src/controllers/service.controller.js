@@ -282,4 +282,26 @@ module.exports = {
       res.status(500).json({ error: e.message });
     }
   },
+  update_service: async (req, res) => {
+    try {
+      const service_check = await Service.findById(
+        req.params.service_id,
+        "_id user"
+      ).lean();
+      if (service_check.user.toString() != req.user._id.toString())
+        return res.sendStatus(401);
+      await Service.findByIdAndUpdate(req.params.service_id, {
+        title: req.body.title,
+        tags: req.body.tags.split(", "),
+        description: req.body.description,
+      });
+      const service = await Service.findById(req.params.service_id).populate(
+        "user",
+        "_id name pp"
+      );
+      res.status(200).json(service);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
 };
