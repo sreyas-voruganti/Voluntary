@@ -1,12 +1,15 @@
 <template>
   <div class="container px-6">
-    <section class="hero is-light mt-6" style="border-radius: 10px">
+    <section
+      class="hero is-light mt-6"
+      style="border-radius: 10px; background: linear-gradient(0deg, rgba(189,255,225,1) 0%, rgba(184,246,255,1) 100%)"
+    >
       <div class="hero-body">
         <p class="title">
-          Welcome to Voluntary
+          Welcome to Voluntary (Early Beta)
         </p>
-        <p class="subtitle">
-          Continue with Google to continue
+        <p class="subtitle is-4">
+          Free Lessons From Teenage Mentors
         </p>
         <a class="button is-light is-danger is-large mt-3" :href="getUrl">
           <span class="icon">

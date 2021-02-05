@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
 const { differenceInYears } = require("date-fns");
 
 const userSchema = new mongoose.Schema(
@@ -32,27 +31,15 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    contrib_key: {
+      type: String,
+      default: Math.random().toString(36).substring(2),
+    },
   },
   {
     timestamps: true,
   }
 );
-
-userSchema.methods.getContribHash = async function () {
-  try {
-    return await bcrypt.hash(this._id.toString().substring(5, 10), 2);
-  } catch (e) {
-    throw new Error(e);
-  }
-};
-
-userSchema.methods.isContribHashValid = async function (rawHash) {
-  try {
-    return await bcrypt.compare(this._id.toString().substring(5, 10), rawHash);
-  } catch (e) {
-    throw new Error(e);
-  }
-};
 
 userSchema.virtual("age").get(function () {
   return this.date ? differenceInYears(new Date(), new Date(this.dob)) : null;

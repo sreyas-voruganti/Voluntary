@@ -76,7 +76,7 @@ module.exports = {
         user,
         contrib_key:
           req.user._id.toString() == user._id.toString()
-            ? await user.getContribHash()
+            ? user.contrib_key
             : null,
         avg_satis: Math.round((num / sessions.length) * 10) / 10,
       });
@@ -147,8 +147,12 @@ module.exports = {
   },
   user_sessions: async (req, res) => {
     try {
-      const user = await User.findById(req.params.user_id, "_id name");
-      if (!(await user.isContribHashValid(req.query.contrib_key)))
+      const user = await User.findById(
+        req.params.user_id,
+        "_id name contrib_key"
+      ).lean();
+      console.log(user.contrib_key);
+      if (user.contrib_key !== req.query.contrib_key)
         return res.sendStatus(400);
       const services = await Service.find(
         {
@@ -181,8 +185,8 @@ module.exports = {
         {
           name: { $regex: req.query.q, $options: "i" },
         },
-        "-google_id -google_refresh_token"
-      );
+        "-google_id -google_refresh_token -contrib_key"
+      ).lean();
       res.status(200).json(users);
     } catch (e) {
       res.status(500).json({ error: e.message });
@@ -190,7 +194,10 @@ module.exports = {
   },
   all: async (req, res) => {
     try {
-      const users = await User.find({}, "-google_id -google_refresh_token");
+      const users = await User.find(
+        {},
+        "-google_id -google_refresh_token -contrib_key"
+      ).lean();
       res.status(200).json(users);
     } catch (e) {
       res.status(500).json({ error: e.message });
