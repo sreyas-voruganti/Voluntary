@@ -30,6 +30,12 @@ const serviceSchema = new mongoose.Schema(
         return `${config.base_url}/uploads/${rawImage}`;
       },
     },
+    user_reports: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     timestamps: true,
@@ -49,6 +55,22 @@ serviceSchema.methods.getAvgSatis = async function () {
   } catch (err) {
     throw new Error(err);
   }
+};
+
+serviceSchema.methods.userReport = async function (user_id) {
+  try {
+    if (this.user_reports.includes(user_id))
+      throw new Error("You already reported this service.");
+    this.user_reports.push(user_id);
+    await this.save();
+    return;
+  } catch (e) {
+    throw new Error(e);
+  }
+};
+
+serviceSchema.methods.didReport = function (user_id) {
+  return this.user_reports.includes(user_id);
 };
 
 module.exports = mongoose.model("Service", serviceSchema);

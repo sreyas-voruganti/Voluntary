@@ -55,8 +55,20 @@
       >
         <i class="fas fa-eye mr-1"></i> View Sessions
       </button>
-      <button class="button is-light is-danger">
-        <i class="fas fa-flag-checkered mr-1"></i> Report Session
+      <button
+        class="button is-warning is-light"
+        @click="showEditModal = true"
+        v-if="owns"
+      >
+        <i class="fas fa-eye mr-1"></i> Edit Service
+      </button>
+      <button
+        class="button is-light is-danger"
+        :disabled="did_report"
+        @click="reportSession"
+      >
+        <i class="fas fa-flag-checkered mr-1"></i>
+        {{ did_report ? "Reported" : "Report Session" }}
       </button>
     </div>
     <p class="is-size-6 mt-3">{{ service.description }}</p>
@@ -172,6 +184,72 @@
         @click="showSessionsModal = false"
       ></button>
     </div>
+    <div :class="{ modal: true, 'is-active': showEditModal }">
+      <div class="modal-background" @click="cancelEdit"></div>
+      <div class="modal-content box">
+        <div class="field">
+          <label class="label">Title</label>
+          <div class="control">
+            <input
+              class="input"
+              type="text"
+              placeholder="Title"
+              v-model="own_service.title"
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Tags</label>
+          <div class="tags mb-1" v-if="own_service.tags">
+            <span
+              class="tag"
+              v-for="(tag, index) in own_service.tags.split(', ')"
+              :key="index"
+              >{{ tag }}</span
+            >
+          </div>
+          <div class="control">
+            <input
+              class="input"
+              type="text"
+              placeholder='Tags (ex. "Piano, Music")'
+              v-model="own_service.tags"
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Description</label>
+          <div class="control">
+            <textarea
+              class="textarea"
+              placeholder="Description"
+              v-model="own_service.description"
+            ></textarea>
+          </div>
+        </div>
+        <div class="field is-grouped">
+          <div class="control">
+            <button
+              class="button is-link"
+              :disabled="checkUpdate"
+              @click="updateService"
+            >
+              Update
+            </button>
+          </div>
+          <div class="control">
+            <button class="button is-link is-light" @click="cancelEdit">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+      <button
+        class="modal-close is-large"
+        aria-label="close"
+        @click="cancelEdit"
+      ></button>
+    </div>
   </div>
 </template>
 
@@ -190,6 +268,7 @@ export default {
   data() {
     return {
       service: null,
+      own_service: null,
       has_chat: false,
       chat_id: null,
       chats: null,
@@ -202,18 +281,43 @@ export default {
       showSessionSuccess: false,
       showSessionsModal: false,
       avg_satis: 3,
+      did_report: false,
+      showEditModal: false,
     };
   },
   created() {
     this.fetchData();
   },
   methods: {
+    cancelEdit() {
+      this.showEditModal = false;
+      this.own_service = { ...this.service };
+      this.own_service.tags = this.own_service.tags.join(", ");
+    },
+    reportSession() {
+      if (
+        confirm(
+          "Are you sure you want to report this session for innapropriate content or fraud?"
+        )
+      ) {
+        this.$http
+          .post(`/services/${this.service._id}/report`)
+          .then(() => {
+            this.did_report = true;
+            alert("Service reported");
+          })
+          .catch((err) => alert(`An error occurred: ${err}`));
+      }
+    },
     async fetchData() {
       try {
         const service_data = (
           await this.$http.get(`/services/${this.$route.params.service_id}`)
         ).data;
         this.service = service_data.service;
+        this.own_service = { ...this.service };
+        this.own_service.tags = this.own_service.tags.join(", ");
+        this.did_report = service_data.did_report;
         this.avg_satis = service_data.avg_satis;
         if (!this.owns) {
           const chat_data = (
@@ -272,8 +376,33 @@ export default {
         })
         .catch((err) => console.log(err));
     },
+    updateService() {
+      this.$http
+        .put(`/services/${this.service._id}/update`, {
+          title: this.own_service.title,
+          tags: this.own_service.tags,
+          description: this.own_service.description,
+        })
+        .then((res) => {
+          this.showEditModal = false;
+          this.service = res.data;
+          this.own_service = { ...this.service };
+          this.own_service.tags = this.own_service.tags.join(", ");
+          alert("Service successfully updated.");
+        })
+        .catch((err) => alert(`An error occurred: ${err}`));
+    },
   },
   computed: {
+    checkUpdate() {
+      if (
+        this.own_service.title &&
+        this.own_service.tags &&
+        this.own_service.description
+      )
+        return false;
+      return true;
+    },
     getCreatedDate() {
       return moment(this.service.createdAt).fromNow();
     },

@@ -12,8 +12,9 @@
         <span class="is-size-6"
           >Average Satisfaction: {{ avg_satis || "-" }}/5</span
         >
-        <span class="is-size-6"
-          ><router-link :to="`/users/${user._id}/contributions`"
+        <span class="is-size-6" v-if="owns"
+          ><router-link
+            :to="`/users/${user._id}/contributions?contrib_key=${contrib_key}`"
             >View Contributions</router-link
           ></span
         >
@@ -76,6 +77,12 @@
               placeholder="Name"
               v-model="own_user.name"
             />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Birthday</label>
+          <div class="control">
+            <input class="input" type="date" v-model="compDob" />
           </div>
         </div>
         <div class="field">
@@ -144,6 +151,7 @@ export default {
       services: [],
       synced: false,
       avg_satis: null,
+      contrib_key: null,
     };
   },
   created() {
@@ -151,12 +159,14 @@ export default {
   },
   methods: {
     async fetchData() {
+      // DOB NOT WORKING ON RELOAD
       try {
         const m_data = (
           await this.$http.get(`/users/${this.$route.params.user_id}`)
         ).data;
         this.user = m_data.user;
         this.avg_satis = m_data.avg_satis;
+        this.contrib_key = m_data.contrib_key;
         this.own_user = { ...this.user };
         this.services = (
           await this.$http.get(`/users/${this.$route.params.user_id}/services`)
@@ -169,17 +179,19 @@ export default {
       }
     },
     updateProfile() {
-      // check for emtpy valus and disable update button
       this.$http
         .put("/users/me/update", {
           name: this.own_user.name,
           bio: this.own_user.bio,
+          dob: this.own_user.dob,
         })
         .then((res) => {
           this.own_user.name = res.data.name;
           this.own_user.bio = res.data.bio;
+          this.own_user.dob = res.data.dob;
           this.user.name = res.data.name;
           this.user.bio = res.data.bio;
+          this.user.dob = res.data.dob;
           alert("Profile updated successfully.");
         })
         .catch((err) => alert(`An error occurred: ${err}`));
@@ -227,8 +239,19 @@ export default {
       return (
         JSON.stringify(this.user) !== JSON.stringify(this.own_user) &&
         this.own_user.bio &&
-        this.own_user.name
+        this.own_user.name &&
+        this.own_user.dob
       );
+    },
+    compDob: {
+      get() {
+        return this.own_user.dob
+          ? new Date(this.own_user.dob).toISOString().split("T")[0]
+          : null;
+      },
+      set(newValue) {
+        this.own_user.dob = newValue;
+      },
     },
   },
 };

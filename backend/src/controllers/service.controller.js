@@ -28,9 +28,11 @@ module.exports = {
         "_id name pp"
       );
       if (!service) return res.sendStatus(404);
-      res
-        .status(200)
-        .json({ service: service, avg_satis: await service.getAvgSatis() });
+      res.status(200).json({
+        service: service,
+        avg_satis: await service.getAvgSatis(),
+        did_report: service.didReport(req.user._id),
+      });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -268,6 +270,38 @@ module.exports = {
       });
     } catch (err) {
       res.status(500).json({ error: err.message });
+    }
+  },
+  report_service: async (req, res) => {
+    try {
+      const service = await Service.findById(req.params.service_id);
+      if (!service) return res.sendStatus(404);
+      await service.userReport(req.user._id);
+      res.sendStatus(200);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
+  update_service: async (req, res) => {
+    try {
+      const service_check = await Service.findById(
+        req.params.service_id,
+        "_id user"
+      ).lean();
+      if (service_check.user.toString() != req.user._id.toString())
+        return res.sendStatus(401);
+      await Service.findByIdAndUpdate(req.params.service_id, {
+        title: req.body.title,
+        tags: req.body.tags.split(", "),
+        description: req.body.description,
+      });
+      const service = await Service.findById(req.params.service_id).populate(
+        "user",
+        "_id name pp"
+      );
+      res.status(200).json(service);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
     }
   },
 };

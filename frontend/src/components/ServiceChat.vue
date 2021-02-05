@@ -99,6 +99,8 @@ export default {
       .then((res) => (this.messages = res.data))
       .catch((err) => console.log(err));
     this.initSocket();
+  },
+  mounted() {
     this.scrollToBottom();
   },
   beforeDestroy() {

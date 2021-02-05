@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { differenceInYears } = require("date-fns");
 
 const userSchema = new mongoose.Schema(
   {
@@ -26,18 +27,22 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
-    fraud_strikes: {
-      type: Number,
-      default: 0,
+    dob: {
+      type: Date,
+      default: null,
     },
-    reverse_strikes: {
-      type: Number,
-      default: 3,
+    contrib_key: {
+      type: String,
+      default: Math.random().toString(36).substring(2),
     },
   },
   {
     timestamps: true,
   }
 );
+
+userSchema.virtual("age").get(function () {
+  return this.date ? differenceInYears(new Date(), new Date(this.dob)) : null;
+});
 
 module.exports = mongoose.model("User", userSchema);

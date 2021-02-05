@@ -72,12 +72,14 @@ module.exports = {
       ).lean();
       let num = 0;
       sessions.forEach((session) => (num += session.satisfaction));
-      res
-        .status(200)
-        .json({
-          user,
-          avg_satis: Math.round((num / sessions.length) * 10) / 10,
-        });
+      res.status(200).json({
+        user,
+        contrib_key:
+          req.user._id.toString() == user._id.toString()
+            ? user.contrib_key
+            : null,
+        avg_satis: Math.round((num / sessions.length) * 10) / 10,
+      });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -102,10 +104,11 @@ module.exports = {
         {
           name: req.body.name,
           bio: req.body.bio,
+          dob: req.body.dob,
         },
         { new: true }
       );
-      res.status(200).json({ name: user.name, bio: user.bio });
+      res.status(200).json({ name: user.name, bio: user.bio, dob: user.dob });
     } catch (e) {
       res.status(500).json({ error: e.message });
     }
@@ -144,7 +147,13 @@ module.exports = {
   },
   user_sessions: async (req, res) => {
     try {
-      const user = await User.findById(req.params.user_id, "_id name").lean();
+      const user = await User.findById(
+        req.params.user_id,
+        "_id name contrib_key"
+      ).lean();
+      console.log(user.contrib_key);
+      if (user.contrib_key !== req.query.contrib_key)
+        return res.sendStatus(400);
       const services = await Service.find(
         {
           user: req.params.user_id,
@@ -176,8 +185,8 @@ module.exports = {
         {
           name: { $regex: req.query.q, $options: "i" },
         },
-        "-google_id -google_refresh_token"
-      );
+        "-google_id -google_refresh_token -contrib_key"
+      ).lean();
       res.status(200).json(users);
     } catch (e) {
       res.status(500).json({ error: e.message });
@@ -185,7 +194,10 @@ module.exports = {
   },
   all: async (req, res) => {
     try {
-      const users = await User.find({}, "-google_id -google_refresh_token");
+      const users = await User.find(
+        {},
+        "-google_id -google_refresh_token -contrib_key"
+      ).lean();
       res.status(200).json(users);
     } catch (e) {
       res.status(500).json({ error: e.message });
