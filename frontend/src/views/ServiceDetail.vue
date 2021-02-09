@@ -17,10 +17,16 @@
         }}</router-link></span
       >
       <span class="ml-3"
-        ><i class="far fa-calendar-alt"></i> &nbsp; {{ getCreatedDate }}</span
+        ><i class="far fa-calendar-alt"></i> &nbsp; Posted
+        {{ getCreatedDate }}</span
       >
       <span class="ml-3"
-        ><i class="far fa-smile"></i> &nbsp; {{ avg_satis || "-" }}/5</span
+        ><i class="far fa-smile"></i> &nbsp; {{ avg_satis || "-" }}/5 Average
+        Satisfaction</span
+      >
+      <span class="ml-3"
+        ><i class="far fa-check-circle"></i> &nbsp; {{ num_sessions }} Confirmed
+        Sessions</span
       >
     </p>
     <div class="tags mb-2">
@@ -250,6 +256,36 @@
         @click="cancelEdit"
       ></button>
     </div>
+    <a @click="showComments = !showComments">
+      {{ showComments ? "Hide" : "Show" }} Comments
+    </a>
+    <div class="my-3" v-show="showComments">
+      <p class="title is-4 mb-2">Comments ({{ comments.length }})</p>
+      <div class="box">
+        <div class="is-flex has-flex-direction-row mb-4">
+          <input
+            type="text"
+            placeholder="Add a comment"
+            class="input mr-2"
+            v-model="new_comment"
+          />
+          <button
+            class="button is-light"
+            :disabled="!new_comment"
+            @click="addComment"
+          >
+            Post
+          </button>
+        </div>
+        <span v-if="!comments.length">There are no comments yet.</span>
+        <ServiceComment
+          v-for="comment in comments"
+          :comment="comment"
+          :service_id="service._id"
+          :key="comment._id"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -258,12 +294,14 @@ import moment from "moment";
 import ServiceChat from "@/components/ServiceChat.vue";
 import ServiceSessions from "@/components/ServiceSessions.vue";
 import ClientSessions from "@/components/ClientSessions.vue";
+import ServiceComment from "@/components/services/ServiceComment.vue";
 export default {
   name: "ServiceDetail",
   components: {
     ServiceChat,
     ServiceSessions,
     ClientSessions,
+    ServiceComment,
   },
   data() {
     return {
@@ -283,6 +321,10 @@ export default {
       avg_satis: 3,
       did_report: false,
       showEditModal: false,
+      num_sessions: 0,
+      showComments: false,
+      new_comment: null,
+      comments: [],
     };
   },
   created() {
@@ -315,6 +357,8 @@ export default {
           await this.$http.get(`/services/${this.$route.params.service_id}`)
         ).data;
         this.service = service_data.service;
+        this.num_sessions = service_data.num_sessions;
+        this.comments = service_data.comments;
         this.own_service = { ...this.service };
         this.own_service.tags = this.own_service.tags.join(", ");
         this.did_report = service_data.did_report;
@@ -391,6 +435,17 @@ export default {
           alert("Service successfully updated.");
         })
         .catch((err) => alert(`An error occurred: ${err}`));
+    },
+    addComment() {
+      this.$http
+        .post(`/services/${this.service._id}/comment`, {
+          content: this.new_comment,
+        })
+        .then((res) => {
+          this.new_comment = null;
+          this.comments.unshift(res.data);
+        })
+        .catch((err) => console.log(err));
     },
   },
   computed: {

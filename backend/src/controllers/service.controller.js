@@ -3,6 +3,7 @@ const Chat = require("../models/Chat.model");
 const Message = require("../models/Message.model");
 const User = require("../models/User.model");
 const Session = require("../models/Session.model");
+const Comment = require("../models/Comment.model");
 const { sendNotif, chatNamespace } = require("../socket");
 const config = require("../../config");
 
@@ -28,10 +29,20 @@ module.exports = {
         "_id name pp"
       );
       if (!service) return res.sendStatus(404);
+      const num_sessions = await Session.countDocuments({
+        service: service._id,
+        status: "conf",
+      });
+      const comments = await Comment.find({ service: req.params.service_id })
+        .populate("user", "_id name pp")
+        .sort("-createdAt")
+        .lean();
       res.status(200).json({
-        service: service,
+        service,
         avg_satis: await service.getAvgSatis(),
         did_report: service.didReport(req.user._id),
+        num_sessions,
+        comments,
       });
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -300,6 +311,30 @@ module.exports = {
         "_id name pp"
       );
       res.status(200).json(service);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
+  add_comment: async (req, res) => {
+    try {
+      let comment = await Comment.create({
+        user: req.user._id,
+        service: req.params.service_id,
+        content: req.body.content,
+      });
+      comment = await Comment.populate(comment, {
+        path: "user",
+        select: "_id name pp",
+      });
+      res.status(200).json(comment);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
+  delete_comment: async (req, res) => {
+    try {
+      await Comment.findByIdAndDelete(req.params.comment_id);
+      res.sendStatus(200);
     } catch (e) {
       res.status(500).json({ error: e.message });
     }

@@ -1,8 +1,8 @@
 <template>
   <div class="container mt-6" v-if="services">
-    <div class="is-flex has-flex-direction-row">
+    <div>
       <input
-        class="input mr-2"
+        class="input"
         type="text"
         placeholder="Search for services"
         v-model="search"
