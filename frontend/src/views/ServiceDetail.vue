@@ -30,6 +30,9 @@
       >
     </p>
     <div class="tags mb-2">
+      <span class="tag is-primary is-light" v-show="service.unlisted"
+        ><i class="fas fa-link mr-1"></i> Unlisted</span
+      >
       <span
         class="tag is-light is-light"
         v-for="(tag, index) in service.tags"
@@ -233,6 +236,14 @@
             ></textarea>
           </div>
         </div>
+        <div class="field">
+          <div class="control">
+            <label class="checkbox">
+              <input type="checkbox" v-model="own_service.unlisted" />
+              Unlisted (publicly unavailable without url)
+            </label>
+          </div>
+        </div>
         <div class="field is-grouped">
           <div class="control">
             <button
@@ -426,6 +437,7 @@ export default {
           title: this.own_service.title,
           tags: this.own_service.tags,
           description: this.own_service.description,
+          unlisted: this.own_service.unlisted,
         })
         .then((res) => {
           this.showEditModal = false;

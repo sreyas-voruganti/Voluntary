@@ -16,6 +16,7 @@ module.exports = {
         description: req.body.description,
         tags: req.body.tags.split(", "),
         image: req.file.filename,
+        unlisted: req.body.unlisted,
       });
       res.status(201).json(service);
     } catch (err) {
@@ -131,9 +132,15 @@ module.exports = {
   },
   user_services: async (req, res) => {
     try {
-      const services = await Service.find({
+      const filter = {
         user: req.params.user_id,
-      }).populate("user", "_id name pp");
+      };
+      if (req.user._id.toString() != req.params.user_id)
+        filter.unlisted = false;
+      const services = await Service.find(filter).populate(
+        "user",
+        "_id name pp"
+      );
       res.status(200).json(services);
     } catch (e) {
       res.status(500).json({ error: e.message });
@@ -221,6 +228,7 @@ module.exports = {
           { title: { $regex: req.query.q, $options: "i" } },
           { description: { $regex: req.query.q, $options: "i" } },
         ],
+        unlisted: false,
       }).populate("user", "_id name pp");
       res.status(200).json(services);
     } catch (e) {
@@ -229,7 +237,10 @@ module.exports = {
   },
   all_services: async (req, res) => {
     try {
-      const services = await Service.find().populate("user", "_id name pp");
+      const services = await Service.find({ unlisted: false }).populate(
+        "user",
+        "_id name pp"
+      );
       res.status(200).json(services);
     } catch (e) {
       res.status(500).json({ error: e.message });
@@ -239,6 +250,7 @@ module.exports = {
     try {
       const services = await Service.find({
         tags: { $in: req.query.t },
+        unlisted: false,
       }).populate("user", "_id name pp");
       res.status(200).json(services);
     } catch (e) {
@@ -251,6 +263,9 @@ module.exports = {
         config.site_vars.featured_service
       ).populate("user", "_id name pp");
       const raw_popular_services = await Service.aggregate([
+        {
+          $match: { unlisted: false },
+        },
         {
           $lookup: {
             from: "sessions",
@@ -305,6 +320,7 @@ module.exports = {
         title: req.body.title,
         tags: req.body.tags.split(", "),
         description: req.body.description,
+        unlisted: req.body.unlisted,
       });
       const service = await Service.findById(req.params.service_id).populate(
         "user",

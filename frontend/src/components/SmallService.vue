@@ -26,6 +26,9 @@
         </div>
       </div>
       <div class="tags mb-0">
+        <span class="tag is-primary is-light" v-show="service.unlisted"
+          ><i class="fas fa-link mr-1"></i> Unlisted</span
+        >
         <span class="tag" v-for="(tag, index) in service.tags" :key="index"
           ><router-link :to="`/services/tags?t=${tag}`">{{
             tag
