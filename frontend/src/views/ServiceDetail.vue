@@ -74,7 +74,7 @@
         @click="reportSession"
       >
         <i class="fas fa-flag-checkered mr-1"></i>
-        {{ did_report ? "Reported" : "Report Session" }}
+        {{ did_report ? "Reported" : "Report Service" }}
       </button>
     </div>
     <p class="is-size-6 mt-3">{{ service.description }}</p>
