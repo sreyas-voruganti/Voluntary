@@ -27,7 +27,7 @@
           <input
             class="input"
             type="text"
-            placeholder='Tags (ex. "Piano, Music")'
+            placeholder='Tags (ex. "piano, music")'
             v-model="service.tags"
           />
         </div>

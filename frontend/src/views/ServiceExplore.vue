@@ -7,6 +7,26 @@
         placeholder="Search for services"
         v-model="search"
       />
+      <div class="my-1">
+        <p class="has-text-weight-medium">
+          <router-link to="/services/tags">Search for Tags</router-link> or
+          Popular Tags:
+        </p>
+        <div class="tags mt-1">
+          <span class="tag"
+            ><router-link to="/services/tags?t=music">music</router-link></span
+          >
+          <span class="tag"
+            ><router-link to="/services/tags?t=math">math</router-link></span
+          >
+          <span class="tag"
+            ><router-link to="tags?t=english">english</router-link></span
+          >
+          <span class="tag"
+            ><router-link to="tags?t=art">art</router-link></span
+          >
+        </div>
+      </div>
     </div>
     <div>
       <span class="is-size-4" v-show="isLoading">Loading your results...</span>
@@ -74,6 +94,5 @@ export default {
 .service-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, 360px);
-  grid-gap: 20px;
 }
 </style>

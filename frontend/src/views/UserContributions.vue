@@ -5,6 +5,13 @@
         >{{ user.name }} contributed <u>{{ getTotalHours }}</u> total
         hours</span
       >
+      <p>
+        <a @click="share" class="mr-2">Share</a>
+        <a @click="integrity" class="mr-2">Our Integrity System</a>
+        <span class="has-text-weight-medium"
+          >Generate Certificate (coming soon)</span
+        >
+      </p>
       <label class="checkbox mt-2">
         <input type="checkbox" v-model="filterByDate" />
         Filter By Date
@@ -98,6 +105,16 @@ export default {
   methods: {
     getTime(time) {
       return moment(time).format("ddd, MMM D YYYY, h:mm A");
+    },
+    share() {
+      alert(
+        "To share your contributions send them the current url. Only people with this link can view your contributions."
+      );
+    },
+    integrity() {
+      alert(
+        "Our integrity system is designed to minimize fraudulant sessions with cross time validation, user validation, frequency validation and moderation. We gaurentee that the sessions shown here are genuine."
+      );
     },
     getTimeframe() {
       this.$http
