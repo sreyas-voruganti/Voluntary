@@ -51,6 +51,7 @@
           <span class="has-text-weight-medium">not</span> allow adult-rated
           content on this site.
         </p>
+        <img src="how.png" alt="How Voluntary Works" />
       </div>
       <button
         class="modal-close is-large"
