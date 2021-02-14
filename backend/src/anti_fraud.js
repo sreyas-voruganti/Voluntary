@@ -1,14 +1,17 @@
 const Session = require("./models/Session.model");
-const User = require("./models/User.model");
+const { add } = require("date-fns");
 
-async function antiFraud(session, requsting_user) {
+async function antiFraud(client_id, session_time, session_duration, host_id) {
   try {
-    // Declare Scope Vars
-    const SERVICE = await Service.findById(session.service)
-      .populate("user", "_id")
-      .lean();
-    const REQUESTING_USER_ID = requsting_user;
-    const END_USER_ID = SERVICE.user._id;
+    const start_time = new Date(session_time);
+    const end_time = add(start_time, { minutes: session_duration });
+    const num_sessions = await Session.countDocuments({
+      user: { $in: [client_id, host_id] },
+      time: { $gte: start_time, $lte: end_time },
+      status: "conf",
+    });
+    if (num_sessions) return true;
+    return false;
   } catch (err) {
     throw new Error(err);
   }

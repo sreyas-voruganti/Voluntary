@@ -268,7 +268,7 @@
       ></button>
     </div>
     <a @click="showComments = !showComments">
-      {{ showComments ? "Hide" : "Show" }} Comments
+      {{ showComments ? "Hide" : "Show" }} Comments ({{ comments.length }})
     </a>
     <div class="my-3" v-show="showComments">
       <p class="title is-4 mb-2">Comments ({{ comments.length }})</p>
@@ -423,13 +423,30 @@ export default {
           .toDate()
       )
         return alert("You cannot submit a session until it is completed.");
+      if (
+        moment(this.session.time).toDate() <
+        moment()
+          .subtract(1, "d")
+          .toDate()
+      )
+        return alert(
+          "You cannot submit a session that started more than 24 hours ago."
+        );
       this.$http
         .post(`/services/${this.service._id}/sessions`, this.session)
         .then(() => {
           this.cancelSession();
           this.showSessionSuccess = true;
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          if (err.response.data.code === 230) {
+            alert(
+              "You or the host have another recorded session at this time, please make sure all sessions are genuine."
+            );
+          } else {
+            alert(`An error occurred: ${err}`);
+          }
+        });
     },
     updateService() {
       this.$http

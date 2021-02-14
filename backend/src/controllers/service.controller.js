@@ -6,6 +6,7 @@ const Session = require("../models/Session.model");
 const Comment = require("../models/Comment.model");
 const { sendNotif, chatNamespace } = require("../socket");
 const config = require("../../config");
+const antiFraud = require("../anti_fraud");
 
 module.exports = {
   create: async (req, res) => {
@@ -153,6 +154,18 @@ module.exports = {
         return res
           .status(400)
           .json({ error: "You cannot submit a session for your own service." });
+      if (
+        await antiFraud(
+          req.user._id.toString(),
+          req.body.time,
+          req.body.duration,
+          service.user.toString()
+        )
+      )
+        return res.status(400).json({
+          error: "One of the users has another session at this time.",
+          code: 230,
+        });
       const session = await Session.create({
         user: req.user._id,
         service: service._id,
