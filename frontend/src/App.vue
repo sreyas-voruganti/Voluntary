@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <Navbar />
+      <Navbar :rcd="rand_degree" />
     </div>
     <router-view />
   </div>
@@ -14,11 +14,18 @@ export default {
   components: {
     Navbar,
   },
+  data() {
+    return {
+      rand_degree: null,
+    };
+  },
   created() {
-    const rand_degree = Math.floor(Math.random() * 355) + 1;
+    const urlParams = new URLSearchParams(window.location.search);
+    this.rand_degree =
+      parseInt(urlParams.get("rcd")) || Math.floor(Math.random() * 355) + 1;
     document.querySelector(
       "html"
-    ).style.backgroundColor = `hsl(${rand_degree}, 100%, 93%)`;
+    ).style.backgroundColor = `hsl(${this.rand_degree}, 100%, 96%)`;
   },
 };
 </script>

@@ -27,7 +27,7 @@
           <input
             class="input"
             type="text"
-            placeholder='Tags (ex. "Piano, Music")'
+            placeholder='Tags (ex. "piano, music")'
             v-model="service.tags"
           />
         </div>
@@ -69,6 +69,14 @@
           ></textarea>
         </div>
       </div>
+      <div class="field">
+        <div class="control">
+          <label class="checkbox">
+            <input type="checkbox" v-model="service.unlisted" />
+            Make this service unlisted (publicly unavailable without url)
+          </label>
+        </div>
+      </div>
       <div class="field is-grouped">
         <div class="control">
           <button
@@ -76,13 +84,13 @@
             :disabled="checkSubmit"
             @click="onSubmit"
           >
-            Submit
+            Create
           </button>
         </div>
         <div class="control">
           <button
             class="button is-link is-light"
-            @click="service = { image: null }"
+            @click="service = { image: null, unlisted: false }"
           >
             Cancel
           </button>
@@ -99,6 +107,7 @@ export default {
     return {
       service: {
         image: null,
+        unlisted: false,
       },
     };
   },
@@ -111,16 +120,17 @@ export default {
         return new Set(array).size !== array.length;
       }
       if (hasDuplicates(this.service.tags.split(", ")))
-        return alert("Tags cannot contain duplicate values"); //ADD DELETE SOCKET EVENT
+        return alert("Tags cannot contain duplicate values");
       const fd = new FormData();
       fd.append("title", this.service.title);
       fd.append("tags", this.service.tags);
       fd.append("image", this.service.image);
       fd.append("description", this.service.description);
+      fd.append("unlisted", this.service.unlisted);
       this.$http
         .post("/services/create", fd)
         .then((res) => {
-          this.service = { image: null };
+          this.service = { image: null, unlisted: false };
           this.$router.push(`/services/${res.data._id}`);
         })
         .catch((err) => console.log(err));

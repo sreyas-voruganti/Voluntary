@@ -3,8 +3,10 @@ const Chat = require("../models/Chat.model");
 const Message = require("../models/Message.model");
 const User = require("../models/User.model");
 const Session = require("../models/Session.model");
+const Comment = require("../models/Comment.model");
 const { sendNotif, chatNamespace } = require("../socket");
 const config = require("../../config");
+const antiFraud = require("../anti_fraud");
 
 module.exports = {
   create: async (req, res) => {
@@ -15,6 +17,7 @@ module.exports = {
         description: req.body.description,
         tags: req.body.tags.split(", "),
         image: req.file.filename,
+        unlisted: req.body.unlisted,
       });
       res.status(201).json(service);
     } catch (err) {
@@ -28,10 +31,20 @@ module.exports = {
         "_id name pp"
       );
       if (!service) return res.sendStatus(404);
+      const num_sessions = await Session.countDocuments({
+        service: service._id,
+        status: "conf",
+      });
+      const comments = await Comment.find({ service: req.params.service_id })
+        .populate("user", "_id name pp")
+        .sort("-createdAt")
+        .lean();
       res.status(200).json({
-        service: service,
+        service,
         avg_satis: await service.getAvgSatis(),
         did_report: service.didReport(req.user._id),
+        num_sessions,
+        comments,
       });
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -120,9 +133,15 @@ module.exports = {
   },
   user_services: async (req, res) => {
     try {
-      const services = await Service.find({
+      const filter = {
         user: req.params.user_id,
-      }).populate("user", "_id name pp");
+      };
+      if (req.user._id.toString() != req.params.user_id)
+        filter.unlisted = false;
+      const services = await Service.find(filter).populate(
+        "user",
+        "_id name pp"
+      );
       res.status(200).json(services);
     } catch (e) {
       res.status(500).json({ error: e.message });
@@ -135,6 +154,18 @@ module.exports = {
         return res
           .status(400)
           .json({ error: "You cannot submit a session for your own service." });
+      if (
+        await antiFraud(
+          req.user._id.toString(),
+          req.body.time,
+          req.body.duration,
+          service.user.toString()
+        )
+      )
+        return res.status(400).json({
+          error: "One of the users has another session at this time.",
+          code: 230,
+        });
       const session = await Session.create({
         user: req.user._id,
         service: service._id,
@@ -210,6 +241,7 @@ module.exports = {
           { title: { $regex: req.query.q, $options: "i" } },
           { description: { $regex: req.query.q, $options: "i" } },
         ],
+        unlisted: false,
       }).populate("user", "_id name pp");
       res.status(200).json(services);
     } catch (e) {
@@ -218,7 +250,10 @@ module.exports = {
   },
   all_services: async (req, res) => {
     try {
-      const services = await Service.find().populate("user", "_id name pp");
+      const services = await Service.find({ unlisted: false }).populate(
+        "user",
+        "_id name pp"
+      );
       res.status(200).json(services);
     } catch (e) {
       res.status(500).json({ error: e.message });
@@ -228,6 +263,7 @@ module.exports = {
     try {
       const services = await Service.find({
         tags: { $in: req.query.t },
+        unlisted: false,
       }).populate("user", "_id name pp");
       res.status(200).json(services);
     } catch (e) {
@@ -240,6 +276,9 @@ module.exports = {
         config.site_vars.featured_service
       ).populate("user", "_id name pp");
       const raw_popular_services = await Service.aggregate([
+        {
+          $match: { unlisted: false },
+        },
         {
           $lookup: {
             from: "sessions",
@@ -294,12 +333,37 @@ module.exports = {
         title: req.body.title,
         tags: req.body.tags.split(", "),
         description: req.body.description,
+        unlisted: req.body.unlisted,
       });
       const service = await Service.findById(req.params.service_id).populate(
         "user",
         "_id name pp"
       );
       res.status(200).json(service);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
+  add_comment: async (req, res) => {
+    try {
+      let comment = await Comment.create({
+        user: req.user._id,
+        service: req.params.service_id,
+        content: req.body.content,
+      });
+      comment = await Comment.populate(comment, {
+        path: "user",
+        select: "_id name pp",
+      });
+      res.status(200).json(comment);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
+  delete_comment: async (req, res) => {
+    try {
+      await Comment.findByIdAndDelete(req.params.comment_id);
+      res.sendStatus(200);
     } catch (e) {
       res.status(500).json({ error: e.message });
     }

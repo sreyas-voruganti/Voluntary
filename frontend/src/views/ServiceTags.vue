@@ -11,10 +11,13 @@
         >Search</a
       >
     </div>
-    <p class="is-size-3 tag">
+    <p class="is-size-3 tag" v-show="$route.query.t">
       <i class="fas fa-tags mr-2"></i> {{ $route.query.t }}
     </p>
-    <p class="is-size-5">{{ services.length }} services have this tag</p>
+    <p class="is-size-5" v-if="$route.query.t">
+      {{ services.length }} services have this tag
+    </p>
+    <p class="is-size-5" v-else>Search for a Tag</p>
     <div class="service-grid">
       <SmallService
         v-for="service in services"

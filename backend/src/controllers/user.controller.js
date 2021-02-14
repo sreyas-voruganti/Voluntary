@@ -151,7 +151,6 @@ module.exports = {
         req.params.user_id,
         "_id name contrib_key"
       ).lean();
-      console.log(user.contrib_key);
       if (user.contrib_key !== req.query.contrib_key)
         return res.sendStatus(400);
       const services = await Service.find(
@@ -164,16 +163,34 @@ module.exports = {
       services.forEach((service) => {
         service_ids.push(service._id);
       });
-      const sessions = await Session.find(
-        {
-          service: { $in: service_ids },
-          status: "conf",
-        },
-        "-satisfaction"
-      )
-        .populate("user", "_id name")
-        .populate("service", "_id title")
-        .lean();
+      let sessions;
+      if (req.query.start && req.query.end) {
+        sessions = await Session.find(
+          {
+            service: { $in: service_ids },
+            status: "conf",
+            time: {
+              $gte: new Date(req.query.start),
+              $lte: new Date(req.query.end),
+            },
+          },
+          "-satisfaction"
+        )
+          .populate("user", "_id name")
+          .populate("service", "_id title")
+          .lean();
+      } else {
+        sessions = await Session.find(
+          {
+            service: { $in: service_ids },
+            status: "conf",
+          },
+          "-satisfaction"
+        )
+          .populate("user", "_id name")
+          .populate("service", "_id title")
+          .lean();
+      }
       res.status(200).json({ sessions, user });
     } catch (e) {
       res.status(500).json({ error: e.message });

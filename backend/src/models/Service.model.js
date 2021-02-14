@@ -36,6 +36,10 @@ const serviceSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    unlisted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
