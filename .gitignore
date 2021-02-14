@@ -108,3 +108,7 @@ uploads
 
 # Config File
 **/config.js
+
+# Prod Conf Files
+fconf.js
+bconf.js

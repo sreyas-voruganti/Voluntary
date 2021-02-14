@@ -87,7 +87,6 @@ export default {
         this.total_contrib = res.data.total_contrib;
       })
       .catch((err) => alert(`An error occurred: ${err}`));
-    setTimeout(() => (this.showAnnouncements = true), 3000);
   },
 };
 </script>
