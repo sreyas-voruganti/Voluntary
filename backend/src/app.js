@@ -14,7 +14,7 @@ const graphql_server = new ApolloServer({
   resolvers,
 });
 
-graphql_server.applyMiddleware({ app });
+//graphql_server.applyMiddleware({ app });
 
 // Middleware and Settings
 app.use(cors());
