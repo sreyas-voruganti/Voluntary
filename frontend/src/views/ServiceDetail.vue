@@ -62,7 +62,7 @@
         @click="showEditModal = true"
         v-if="owns"
       >
-        <i class="fas fa-eye mr-1"></i> Edit Service
+        <i class="fas fa-edit mr-1"></i> Edit Service
       </button>
       <button
         class="button is-light is-success"
@@ -187,6 +187,17 @@
               type="text"
               placeholder="Title"
               v-model="own_service.title"
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Contact</label>
+          <div class="control">
+            <input
+              class="input"
+              type="text"
+              placeholder="An email address or phone number for clients to contact you"
+              v-model="own_service.contact"
             />
           </div>
         </div>
@@ -423,6 +434,7 @@ export default {
           tags: this.own_service.tags,
           description: this.own_service.description,
           unlisted: this.own_service.unlisted,
+          contact: this.own_service.contact,
         })
         .then((res) => {
           this.showEditModal = false;

@@ -252,6 +252,7 @@ module.exports = {
         tags: req.body.tags.split(", "),
         description: req.body.description,
         unlisted: req.body.unlisted,
+        contact: req.body.contact,
       });
       const service = await Service.findById(req.params.service_id).populate(
         "user",
