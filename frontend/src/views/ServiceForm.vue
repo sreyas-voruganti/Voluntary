@@ -1,6 +1,6 @@
 <template>
-  <div class="container mt-6" style="max-width: 700px">
-    <p class="title is-3 mb-3">Create Service</p>
+  <div class="container my-6" style="max-width: 700px">
+    <p class="title is-3 mb-3">Create a Service</p>
     <div class="box">
       <div class="field">
         <label class="label">Title</label>
@@ -10,6 +10,17 @@
             type="text"
             placeholder="Title"
             v-model="service.title"
+          />
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Contact</label>
+        <div class="control">
+          <input
+            class="input"
+            type="text"
+            placeholder="An email address or phone number for clients to contact you"
+            v-model="service.contact"
           />
         </div>
       </div>
@@ -127,6 +138,7 @@ export default {
       fd.append("image", this.service.image);
       fd.append("description", this.service.description);
       fd.append("unlisted", this.service.unlisted);
+      fd.append("contact", this.service.contact);
       this.$http
         .post("/services/create", fd)
         .then((res) => {
@@ -142,6 +154,7 @@ export default {
         this.service.title &&
         this.service.tags &&
         this.service.image &&
+        this.service.contact &&
         this.service.description
       )
         return false;

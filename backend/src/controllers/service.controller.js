@@ -1,10 +1,8 @@
 const Service = require("../models/Service.model");
-const Chat = require("../models/Chat.model");
-const Message = require("../models/Message.model");
 const User = require("../models/User.model");
 const Session = require("../models/Session.model");
 const Comment = require("../models/Comment.model");
-const { sendNotif, chatNamespace } = require("../socket");
+const { sendNotif } = require("../socket");
 const config = require("../../config");
 const antiFraud = require("../anti_fraud");
 
@@ -18,6 +16,7 @@ module.exports = {
         tags: req.body.tags.split(", "),
         image: req.file.filename,
         unlisted: req.body.unlisted,
+        contact: req.body.contact,
       });
       res.status(201).json(service);
     } catch (err) {
@@ -46,87 +45,6 @@ module.exports = {
         num_sessions,
         comments,
       });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  },
-  create_chat: async (req, res) => {
-    try {
-      const service = await Service.findById(
-        req.params.service_id,
-        "_id user title"
-      ).lean();
-      let chat = await Chat.find({
-        service: req.params.service_id,
-        user: req.user._id,
-      });
-      if (chat.length) return res.sendStatus(400);
-      chat = await Chat.create({
-        service: req.params.service_id,
-        user: req.user._id,
-      });
-      sendNotif(
-        [service.user.toString()],
-        "new_chat",
-        `New chat on ${service.title}`
-      );
-      res.status(201).json(chat);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  },
-  delete_chat: async (req, res) => {
-    try {
-      const chat = await Chat.findById(req.params.chat_id).populate(
-        "service",
-        "_id user"
-      );
-      if (
-        chat.user.toString() != req.user._id.toString() &&
-        chat.service.user.toString() != req.user._id.toString()
-      )
-        return res.sendStatus(401);
-      await chat.remove();
-      chatNamespace
-        .to(`chat_${chat._id}`)
-        .emit("chat_deleted", { _id: req.user._id, name: req.user.name });
-      res.sendStatus(200);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  },
-  check_chat: async (req, res) => {
-    try {
-      const chat = await Chat.find({
-        service: req.params.service_id,
-        user: req.user._id,
-      });
-      if (chat.length)
-        return res.status(200).json({ has_chat: true, id: chat[0]._id });
-      return res.status(200).json({ has_chat: false });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  },
-  chat_messages: async (req, res) => {
-    try {
-      const messages = await Message.find({ chat: req.params.chat_id })
-        .populate("user", "id name")
-        .lean();
-      res.status(200).json(messages);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  },
-  service_chats: async (req, res) => {
-    try {
-      const chats = await Chat.find(
-        { service: req.params.service_id },
-        "_id createdAt"
-      )
-        .populate("user", "_id name")
-        .lean();
-      res.status(200).json(chats);
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -169,7 +87,7 @@ module.exports = {
       const session = await Session.create({
         user: req.user._id,
         service: service._id,
-        time: req.body.time,
+        time: new Date(req.body.time).toISOString(),
         duration: req.body.duration,
         satisfaction: req.body.satisfaction,
       });
