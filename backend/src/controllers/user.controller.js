@@ -2,7 +2,6 @@ const { google } = require("googleapis");
 const User = require("../models/User.model");
 const Session = require("../models/Session.model");
 const Service = require("../models/Service.model");
-const Notification = require("../models/Notification.model");
 const jwt = require("jsonwebtoken");
 const config = require("../../config");
 const axios = require("axios");
@@ -82,19 +81,6 @@ module.exports = {
       });
     } catch (err) {
       res.status(500).json({ error: err.message });
-    }
-  },
-  user_notifications: async (req, res) => {
-    try {
-      const notifications = await Notification.find({
-        user: req.user._id,
-      })
-        .sort("-createdAt")
-        .lean();
-      res.status(200).json(notifications);
-    } catch (e) {
-      console.log(e);
-      res.status(500).json({ error: e.message });
     }
   },
   update_user: async (req, res) => {

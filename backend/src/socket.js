@@ -28,6 +28,10 @@ notifNamespace.use(socket_auth);
 // Listen to Events
 notifNamespace.on("connection", async (socket) => {
   try {
+    const user_notifs = await Notification.find({ user: socket.user._id })
+      .sort("-createdAt")
+      .lean();
+    socket.emit("fetch_notifs", user_notifs);
     socket.join(`notif_${socket.user._id}`);
     await client.sadd("active_users", socket.user._id.toString());
     socket.on("mark_all", async () => {

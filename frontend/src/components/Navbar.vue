@@ -92,14 +92,12 @@ export default {
   created() {
     if (this.isAuthenticated) {
       this.initSocket();
-      this.fetchNotifications();
     }
   },
   watch: {
     isAuthenticated(newVal) {
       if (newVal) {
         this.initSocket();
-        this.fetchNotifications();
       } else {
         this.socket.close();
       }
@@ -140,12 +138,9 @@ export default {
       this.socket.on("new_notif", (notif) => {
         this.notifications.push(notif);
       });
-    },
-    fetchNotifications() {
-      this.$http
-        .get("/no_cache/users/me/notifications")
-        .then((res) => (this.notifications = res.data))
-        .catch((err) => console.log(err));
+      this.socket.on("fetch_notifs", (notifs) => {
+        this.notifications = notifs;
+      });
     },
     getDate(date) {
       return moment(date).fromNow();
