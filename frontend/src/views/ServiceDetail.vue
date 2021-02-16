@@ -55,7 +55,7 @@
         class="button is-primary is-light"
         @click="showSessionsModal = true"
       >
-        <i class="fas fa-eye mr-1"></i> View Sessions
+        <i class="fas fa-eye mr-1"></i> View Your Sessions
       </button>
       <button
         class="button is-warning is-light"
@@ -63,6 +63,14 @@
         v-if="owns"
       >
         <i class="fas fa-eye mr-1"></i> Edit Service
+      </button>
+      <button
+        class="button is-light is-success"
+        v-else
+        @click="showContactInfo = true"
+      >
+        <i class="fas fa-envelope mr-1"></i>
+        Contact Mentor
       </button>
       <button
         class="button is-light is-danger"
@@ -272,6 +280,21 @@
         />
       </div>
     </div>
+    <div :class="{ modal: true, 'is-active': showContactInfo }">
+      <div class="modal-background" @click="showContactInfo = false"></div>
+      <div class="modal-content box">
+        <h4 class="title is-4">Contact</h4>
+        <p class="is-size-5">
+          Contact the mentor by calling or emailing:
+          <span class="has-text-weight-medium">{{ service.contact }}</span>
+        </p>
+      </div>
+      <button
+        class="modal-close is-large"
+        aria-label="close"
+        @click="showContactInfo = false"
+      ></button>
+    </div>
   </div>
 </template>
 
@@ -306,6 +329,7 @@ export default {
       showComments: false,
       new_comment: null,
       comments: [],
+      showContactInfo: false,
     };
   },
   created() {
