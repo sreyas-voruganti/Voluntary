@@ -27,10 +27,5 @@ export default {
       "html"
     ).style.backgroundColor = `hsl(${this.rand_degree}, 100%, 97%)`;
   },
-  methods: {
-    track() {
-      this.$ga.page("/");
-    },
-  },
 };
 </script>
