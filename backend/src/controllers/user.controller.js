@@ -65,8 +65,11 @@ module.exports = {
         "-google_refresh_token -google_access_token -google_id"
       );
       if (!user) return res.sendStatus(404);
+      const services = await Service.find({ user: user._id }, "_id").lean();
+      const service_ids = [];
+      services.forEach((service) => service_ids.push(service._id.toString()));
       const sessions = await Session.find(
-        { user: user._id, status: "conf" },
+        { service: { $in: service_ids }, status: "conf" },
         "_id satisfaction"
       ).lean();
       let num = 0;

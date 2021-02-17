@@ -113,7 +113,9 @@ export default {
     };
   },
   created() {
-    setTimeout(() => (this.showHelp = true), 3500);
+    setTimeout(() => {
+      if (!this.showAnnouncements) this.showHelp = true;
+    }, 3500);
     this.$http
       .get("/services/home")
       .then((res) => {
