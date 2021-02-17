@@ -2,7 +2,6 @@ const { google } = require("googleapis");
 const User = require("../models/User.model");
 const Session = require("../models/Session.model");
 const Service = require("../models/Service.model");
-const Notification = require("../models/Notification.model");
 const jwt = require("jsonwebtoken");
 const config = require("../../config");
 const axios = require("axios");
@@ -66,8 +65,11 @@ module.exports = {
         "-google_refresh_token -google_access_token -google_id"
       );
       if (!user) return res.sendStatus(404);
+      const services = await Service.find({ user: user._id }, "_id").lean();
+      const service_ids = [];
+      services.forEach((service) => service_ids.push(service._id.toString()));
       const sessions = await Session.find(
-        { user: user._id, status: "conf" },
+        { service: { $in: service_ids }, status: "conf" },
         "_id satisfaction"
       ).lean();
       let num = 0;
@@ -82,19 +84,6 @@ module.exports = {
       });
     } catch (err) {
       res.status(500).json({ error: err.message });
-    }
-  },
-  user_notifications: async (req, res) => {
-    try {
-      const notifications = await Notification.find({
-        user: req.user._id,
-      })
-        .sort("-createdAt")
-        .lean();
-      res.status(200).json(notifications);
-    } catch (e) {
-      console.log(e);
-      res.status(500).json({ error: e.message });
     }
   },
   update_user: async (req, res) => {

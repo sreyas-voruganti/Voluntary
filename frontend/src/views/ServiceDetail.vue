@@ -45,15 +45,8 @@
     <img :src="service.image" class="image-container" />
     <div class="buttons">
       <button
-        class="button is-light is-success"
-        v-if="!owns && !has_chat"
-        @click="startChat"
-      >
-        <i class="fas fa-comments mr-1"></i> Start Chat
-      </button>
-      <button
         class="button is-light is-info"
-        v-if="!owns && has_chat"
+        v-if="!owns"
         @click="showSessionModal = true"
       >
         <i class="fas fa-plus mr-1"></i> Submit Session
@@ -62,43 +55,33 @@
         class="button is-primary is-light"
         @click="showSessionsModal = true"
       >
-        <i class="fas fa-eye mr-1"></i> View Sessions
+        <i class="fas fa-eye mr-1"></i> View Your Sessions
       </button>
       <button
         class="button is-warning is-light"
         @click="showEditModal = true"
         v-if="owns"
       >
-        <i class="fas fa-eye mr-1"></i> Edit Service
+        <i class="fas fa-edit mr-1"></i> Edit Service
+      </button>
+      <button
+        class="button is-light is-success"
+        v-else
+        @click="showContactInfo = true"
+      >
+        <i class="fas fa-envelope mr-1"></i>
+        Contact Mentor
       </button>
       <button
         class="button is-light is-danger"
         :disabled="did_report"
-        @click="reportSession"
+        @click="reportService"
       >
         <i class="fas fa-flag-checkered mr-1"></i>
         {{ did_report ? "Reported" : "Report Service" }}
       </button>
     </div>
     <p class="is-size-6 mt-3">{{ service.description }}</p>
-    <div v-if="!owns">
-      <ServiceChat
-        v-if="has_chat"
-        :service="service"
-        :chat_id="chat_id"
-        @chat-deleted="has_chat = false"
-      />
-    </div>
-    <div v-else>
-      <ServiceChat
-        v-for="chat in chats"
-        :service="service"
-        :chat_id="chat._id"
-        :key="chat._id"
-        :chat="chat"
-        owns_service
-      />
-    </div>
     <div :class="{ modal: true, 'is-active': showSessionModal }">
       <div class="modal-background" @click="cancelSession"></div>
       <div class="modal-content box">
@@ -208,6 +191,17 @@
           </div>
         </div>
         <div class="field">
+          <label class="label">Contact</label>
+          <div class="control">
+            <input
+              class="input"
+              type="text"
+              placeholder="An email address or phone number for clients to contact you"
+              v-model="own_service.contact"
+            />
+          </div>
+        </div>
+        <div class="field">
           <label class="label">Tags</label>
           <div class="tags mb-1" v-if="own_service.tags">
             <span
@@ -297,19 +291,32 @@
         />
       </div>
     </div>
+    <div :class="{ modal: true, 'is-active': showContactInfo }">
+      <div class="modal-background" @click="showContactInfo = false"></div>
+      <div class="modal-content box">
+        <h4 class="title is-4">Contact</h4>
+        <p class="is-size-5">
+          Contact the mentor by calling or emailing:
+          <span class="has-text-weight-medium">{{ service.contact }}</span>
+        </p>
+      </div>
+      <button
+        class="modal-close is-large"
+        aria-label="close"
+        @click="showContactInfo = false"
+      ></button>
+    </div>
   </div>
 </template>
 
 <script>
 import moment from "moment";
-import ServiceChat from "@/components/ServiceChat.vue";
 import ServiceSessions from "@/components/ServiceSessions.vue";
 import ClientSessions from "@/components/ClientSessions.vue";
 import ServiceComment from "@/components/services/ServiceComment.vue";
 export default {
   name: "ServiceDetail",
   components: {
-    ServiceChat,
     ServiceSessions,
     ClientSessions,
     ServiceComment,
@@ -318,9 +325,6 @@ export default {
     return {
       service: null,
       own_service: null,
-      has_chat: false,
-      chat_id: null,
-      chats: null,
       showSessionModal: false,
       session: {
         duration: 60,
@@ -336,6 +340,7 @@ export default {
       showComments: false,
       new_comment: null,
       comments: [],
+      showContactInfo: false,
     };
   },
   created() {
@@ -347,10 +352,10 @@ export default {
       this.own_service = { ...this.service };
       this.own_service.tags = this.own_service.tags.join(", ");
     },
-    reportSession() {
+    reportService() {
       if (
         confirm(
-          "Are you sure you want to report this session for innapropriate content or fraud?"
+          "Are you sure you want to report this service for innapropriate content or fraud?"
         )
       ) {
         this.$http
@@ -374,23 +379,6 @@ export default {
         this.own_service.tags = this.own_service.tags.join(", ");
         this.did_report = service_data.did_report;
         this.avg_satis = service_data.avg_satis;
-        if (!this.owns) {
-          const chat_data = (
-            await this.$http.get(
-              `/services/${this.$route.params.service_id}/chats/check`
-            )
-          ).data;
-          this.has_chat = chat_data.has_chat;
-          if (this.has_chat) {
-            this.chat_id = chat_data.id;
-          }
-        } else {
-          this.chats = (
-            await this.$http.get(
-              `/services/${this.$route.params.service_id}/chats/all`
-            )
-          ).data;
-        }
       } catch (err) {
         console.log(err);
         if (err.response.status == 404) {
@@ -405,15 +393,6 @@ export default {
         satisfaction: 1,
       };
       this.agreeSessionTerms = false;
-    },
-    startChat() {
-      this.$http
-        .post(`/services/${this.service.id}/chats/start`)
-        .then((res) => {
-          this.has_chat = true;
-          this.chat_id = res.data._id;
-        })
-        .catch((err) => console.log(err));
     },
     submitSession() {
       if (
@@ -433,7 +412,11 @@ export default {
           "You cannot submit a session that started more than 24 hours ago."
         );
       this.$http
-        .post(`/services/${this.service._id}/sessions`, this.session)
+        .post(`/services/${this.service._id}/sessions`, this.session, {
+          duration: this.session.duration,
+          satisfaction: this.session.satisfaction,
+          time: new Date(this.session.time).toUTCString(),
+        })
         .then(() => {
           this.cancelSession();
           this.showSessionSuccess = true;
@@ -455,6 +438,7 @@ export default {
           tags: this.own_service.tags,
           description: this.own_service.description,
           unlisted: this.own_service.unlisted,
+          contact: this.own_service.contact,
         })
         .then((res) => {
           this.showEditModal = false;

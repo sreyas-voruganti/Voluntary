@@ -40,6 +40,10 @@ const serviceSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    contact: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,

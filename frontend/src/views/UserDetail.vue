@@ -159,7 +159,6 @@ export default {
   },
   methods: {
     async fetchData() {
-      // DOB NOT WORKING ON RELOAD
       try {
         const m_data = (
           await this.$http.get(`/users/${this.$route.params.user_id}`)

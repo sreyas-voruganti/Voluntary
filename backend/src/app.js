@@ -2,9 +2,19 @@ const express = require("express");
 const app = express();
 const AuthRoutes = require("./routes/auth.routes");
 const ServiceRoutes = require("./routes/service.routes");
-const { UserRoutes, no_cache_router } = require("./routes/user.routes");
+const UserRoutes = require("./routes/user.routes");
+const { ApolloServer } = require("apollo-server-express");
+const { typeDefs, resolvers } = require("./schema");
 const cors = require("cors");
 const morgan = require("morgan");
+
+// GraphQl
+const graphql_server = new ApolloServer({
+  typeDefs,
+  resolvers,
+});
+
+//graphql_server.applyMiddleware({ app });
 
 // Middleware and Settings
 app.use(cors());
@@ -18,6 +28,5 @@ app.use("/uploads", express.static("uploads"));
 app.use("/auth", AuthRoutes);
 app.use("/services", ServiceRoutes);
 app.use("/users", UserRoutes);
-app.use("/no_cache", no_cache_router);
 
 module.exports = app;
