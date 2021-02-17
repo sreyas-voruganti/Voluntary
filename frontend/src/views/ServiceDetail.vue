@@ -75,7 +75,7 @@
       <button
         class="button is-light is-danger"
         :disabled="did_report"
-        @click="reportSession"
+        @click="reportService"
       >
         <i class="fas fa-flag-checkered mr-1"></i>
         {{ did_report ? "Reported" : "Report Service" }}
@@ -352,10 +352,10 @@ export default {
       this.own_service = { ...this.service };
       this.own_service.tags = this.own_service.tags.join(", ");
     },
-    reportSession() {
+    reportService() {
       if (
         confirm(
-          "Are you sure you want to report this session for innapropriate content or fraud?"
+          "Are you sure you want to report this service for innapropriate content or fraud?"
         )
       ) {
         this.$http
@@ -412,7 +412,11 @@ export default {
           "You cannot submit a session that started more than 24 hours ago."
         );
       this.$http
-        .post(`/services/${this.service._id}/sessions`, this.session)
+        .post(`/services/${this.service._id}/sessions`, this.session, {
+          duration: this.session.duration,
+          satisfaction: this.session.satisfaction,
+          time: new Date(this.session.time).toUTCString(),
+        })
         .then(() => {
           this.cancelSession();
           this.showSessionSuccess = true;
