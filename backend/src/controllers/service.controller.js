@@ -219,11 +219,16 @@ module.exports = {
         path: "user",
         select: ["_id", "name", "pp"],
       });
-      const sessions = await Session.find({ status: "conf" }, "_id").lean();
+      const sessions = await Session.find(
+        { status: "conf" },
+        "_id duration"
+      ).lean();
+      let num_mins = 0;
+      sessions.forEach((session) => (num_mins += session.duration));
       res.status(200).json({
         featured_service,
         popular_services,
-        total_contrib: sessions.length,
+        total_contrib: Math.round((num_mins / 60) * 10) / 10,
       });
     } catch (err) {
       res.status(500).json({ error: err.message });

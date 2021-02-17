@@ -3,8 +3,8 @@
     <div class="notification m-5 is-primary is-light">
       <p>
         <span class="title is-5"
-          >Welcome to Voluntary, <u>{{ total_contrib }}</u> Total Hours
-          Contributed.</span
+          >Welcome to Voluntary, <u>{{ total_contrib }}</u> Hours Contributed
+          Worldwide.</span
         >
         &nbsp;
         <a class="has-text-weight-medium" @click="showAnnouncements = true"
