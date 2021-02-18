@@ -11,6 +11,7 @@ const config = require("../config");
 const jwt = require("jsonwebtoken");
 const User = require("./models/User.model");
 const util = require("util");
+const helmet = require("helmet");
 
 const jwt_verify = util.promisify(jwt.verify);
 
@@ -41,6 +42,7 @@ app.use(express.json());
 app.disable("x-powered-by");
 app.use(morgan(":method :url :status - :response-time"));
 app.use("/uploads", express.static("uploads"));
+app.use(helmet());
 
 // Routes
 app.use("/auth", AuthRoutes);
