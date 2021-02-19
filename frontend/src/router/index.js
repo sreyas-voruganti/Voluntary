@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
+import store from "../store";
 
 Vue.use(VueRouter);
 
@@ -30,6 +31,9 @@ const routes = [
     path: "/services/create",
     name: "ServiceForm",
     component: () => import("../views/ServiceForm.vue"),
+    meta: {
+      mentorPage: true,
+    },
   },
   {
     path: "/services/explore",
@@ -45,6 +49,9 @@ const routes = [
     path: "/services/own",
     name: "OwnServices",
     component: () => import("../views/services/OwnServices.vue"),
+    meta: {
+      mentorPage: true,
+    },
   },
   {
     path: "/services/:service_id",
@@ -99,6 +106,17 @@ router.beforeEach((to, from, next) => {
   if (to.meta.authPage && isLoggedIn()) {
     next({
       path: "/",
+    });
+  } else {
+    next();
+  }
+});
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.mentorPage && store.state.user.acc_type != "mentor") {
+    next({
+      path:
+        "/404?msg=You're trying to reach a mentor page with a client account type, change this in your account settings",
     });
   } else {
     next();

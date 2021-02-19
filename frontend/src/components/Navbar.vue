@@ -19,9 +19,12 @@
           <i class="fas fa-user-alt mr-1"></i> Profile
         </a>
         <a class="navbar-item" @click="$router.push('/users/explore')">
-          <i class="fas fa-users mr-1"></i> Explore Users
+          <i class="fas fa-users mr-1"></i> Explore Mentors
         </a>
-        <div class="navbar-item has-dropdown is-hoverable">
+        <div
+          class="navbar-item has-dropdown is-hoverable"
+          v-if="getUserType == 'mentor'"
+        >
           <a class="navbar-link">
             <i class="far fa-newspaper mr-1"></i> Services
           </a>
@@ -38,6 +41,13 @@
             </a>
           </div>
         </div>
+        <a
+          class="navbar-item"
+          @click="$router.push('/services/explore')"
+          v-else
+        >
+          <i class="fas fa-users mr-1"></i> Explore Services
+        </a>
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link"
             ><i class="fas fa-bell mr-1"></i>
@@ -108,10 +118,13 @@ export default {
   },
   computed: {
     getUserId() {
-      return localStorage.getItem("user_id");
+      return this.$store.state.user._id || localStorage.getItem("user_id");
     },
     isAuthenticated() {
       return this.$store.state.isAuthenticated;
+    },
+    getUserType() {
+      return this.$store.state.user.acc_type;
     },
   },
   methods: {

@@ -94,10 +94,16 @@ module.exports = {
           name: req.body.name,
           bio: req.body.bio,
           dob: req.body.dob,
+          acc_type: req.body.acc_type,
         },
         { new: true }
       );
-      res.status(200).json({ name: user.name, bio: user.bio, dob: user.dob });
+      res.status(200).json({
+        name: user.name,
+        bio: user.bio,
+        dob: user.dob,
+        acc_type: user.acc_type,
+      });
     } catch (e) {
       res.status(500).json({ error: e.message });
     }
@@ -190,6 +196,7 @@ module.exports = {
       const users = await User.find(
         {
           name: { $regex: req.query.q, $options: "i" },
+          acc_type: "mentor",
         },
         "-google_id -google_refresh_token -contrib_key"
       ).lean();
@@ -201,10 +208,18 @@ module.exports = {
   all: async (req, res) => {
     try {
       const users = await User.find(
-        {},
+        { acc_type: "mentor" },
         "-google_id -google_refresh_token -contrib_key"
       ).lean();
       res.status(200).json(users);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
+  wc_user_init: async (req, res) => {
+    try {
+      const user = await User.findById(req.user._id).lean();
+      res.status(200).json(user);
     } catch (e) {
       res.status(500).json({ error: e.message });
     }

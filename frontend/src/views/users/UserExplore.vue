@@ -4,7 +4,7 @@
       <input
         class="input mr-2"
         type="text"
-        placeholder="Search for users"
+        placeholder="Search for mentors"
         v-model="search"
       />
     </div>
