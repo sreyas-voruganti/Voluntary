@@ -19,15 +19,16 @@ module.exports = {
         `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${tokens.access_token}`
       );
       let user = await User.findOne({ google_id: user_data.id });
+      const state = JSON.parse(req.query.state);
       if (user) {
         const token = jwt.sign({ id: user._id }, config.secret);
-        if (!req.query.state) {
+        if (!state.redirect) {
           res.redirect(
             `${config.frontend_url}/authenticate?token=${token}&id=${user._id}`
           );
         } else {
           res.redirect(
-            `${config.frontend_url}/authenticate?token=${token}&id=${user._id}&r=${req.query.state}`
+            `${config.frontend_url}/authenticate?token=${token}&id=${user._id}&r=${state.redirect}`
           );
         }
       } else {
@@ -38,6 +39,7 @@ module.exports = {
           pp: user_data.picture,
           google_refresh_token: tokens.refresh_token,
           google_access_token: tokens.access_token,
+          acc_type: state.acc_type,
         });
         const token = jwt.sign({ id: user._id }, config.secret);
         res.redirect(

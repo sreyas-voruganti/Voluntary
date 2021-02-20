@@ -415,7 +415,7 @@ export default {
         .post(`/services/${this.service._id}/sessions`, this.session, {
           duration: this.session.duration,
           satisfaction: this.session.satisfaction,
-          time: new Date(this.session.time).toUTCString(),
+          time: new Date(this.session.time).toISOString(),
         })
         .then(() => {
           this.cancelSession();
