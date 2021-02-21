@@ -141,6 +141,10 @@
             </label>
           </div>
         </div>
+        <!-- <p class="my-3 has-text-weight-medium">
+          **Support Voluntary by making a <a>contribution</a> to one of our
+          partners**
+        </p> -->
         <div class="field is-grouped">
           <div class="control">
             <button
@@ -415,7 +419,7 @@ export default {
         .post(`/services/${this.service._id}/sessions`, this.session, {
           duration: this.session.duration,
           satisfaction: this.session.satisfaction,
-          time: new Date(this.session.time).toISOString(),
+          time: moment.utc(this.session.time).format(),
         })
         .then(() => {
           this.cancelSession();

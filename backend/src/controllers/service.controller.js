@@ -292,4 +292,33 @@ module.exports = {
       res.status(500).json({ error: e.message });
     }
   },
+  user_service_sessions: async (req, res) => {
+    try {
+      const pending_sessions = await Session.find(
+        {
+          service: req.params.service_id,
+          status: "pend_conf",
+          user: req.user._id,
+        },
+        "-satisfaction"
+      )
+        .populate("user", "id name")
+        .lean();
+      const confirmed_sessions = await Session.find(
+        {
+          service: req.params.service_id,
+          status: "conf",
+          user: req.user._id,
+        },
+        "-satisfaction"
+      )
+        .populate("user", "id name")
+        .lean();
+      res
+        .status(200)
+        .json({ pending: pending_sessions, confirmed: confirmed_sessions });
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
 };

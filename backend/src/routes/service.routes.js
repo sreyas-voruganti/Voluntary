@@ -15,6 +15,10 @@ router.get("/home", ServiceController.home);
 router.get("/:service_id", ServiceController.detail);
 router.post("/:service_id/sessions", ServiceController.create_session);
 router.get("/:service_id/sessions", ServiceController.service_sessions);
+router.get(
+  "/:service_id/sessions/own",
+  ServiceController.user_service_sessions
+);
 router.post("/sessions/:session_id/confirm", ServiceController.confirm_session);
 router.delete(
   "/sessions/:session_id/decline",
