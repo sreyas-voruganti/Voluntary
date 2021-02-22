@@ -17,11 +17,11 @@ if (localStorage.getItem("token")) {
     .then((res) => store.commit("set_user", res.data))
     .catch((err) => {
       console.log(err);
-      delete this.$http.defaults.headers.common["Authorization"];
+      delete http.defaults.headers.common["Authorization"];
       localStorage.removeItem("token");
       localStorage.removeItem("user_id");
-      this.$store.commit("logout");
-      this.$router.push("/auth");
+      store.commit("logout");
+      router.push("/auth");
     });
 }
 
