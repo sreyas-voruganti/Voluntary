@@ -3,6 +3,7 @@ const app = express();
 const AuthRoutes = require("./routes/auth.routes");
 const ServiceRoutes = require("./routes/service.routes");
 const UserRoutes = require("./routes/user.routes");
+const ListingRoutes = require("./routes/listing.routes");
 const { ApolloServer, AuthenticationError } = require("apollo-server-express");
 const { typeDefs, resolvers } = require("./schema");
 const cors = require("cors");
@@ -48,5 +49,6 @@ app.use(helmet());
 app.use("/auth", AuthRoutes);
 app.use("/services", ServiceRoutes);
 app.use("/users", UserRoutes);
+app.use("/listings", ListingRoutes);
 
 module.exports = app;
