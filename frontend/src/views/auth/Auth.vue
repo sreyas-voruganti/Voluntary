@@ -1,5 +1,5 @@
 <template>
-  <div class="container px-6">
+  <div class="container px-3">
     <section
       class="hero is-light mt-6"
       style="border-radius: 10px; background: linear-gradient(0deg, rgba(189,255,225,1) 0%, rgba(184,246,255,1) 100%); box-shadow: 10px 10px 5px lightgrey;"

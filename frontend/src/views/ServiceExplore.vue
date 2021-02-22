@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-6" v-if="services">
+  <div class="container mt-6 px-3" v-if="services">
     <div>
       <input
         class="input"
@@ -91,8 +91,10 @@ export default {
 </script>
 
 <style scoped>
-.service-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 360px);
+@media (min-width: 600px) {
+  .service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 360px);
+  }
 }
 </style>

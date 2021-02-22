@@ -1,8 +1,6 @@
 <template>
   <div v-if="user">
-    <div
-      class="is-fullwidth has-background-light is-flex is-flex-direction-row p-6"
-    >
+    <div class="is-fullwidth has-background-light is-flex p-6 top-sec">
       <figure class="image is-128x128">
         <img class="is-rounded" :src="user.pp" />
       </figure>
@@ -59,7 +57,7 @@
           </li>
         </ul>
       </div>
-      <div v-if="tab == 'About'">
+      <div v-if="tab == 'About'" class="px-3">
         <span>{{ user.bio ? user.bio : "This user doesn't have a bio." }}</span>
       </div>
       <div v-else-if="tab == 'Services'">
@@ -277,9 +275,19 @@ export default {
 </script>
 
 <style scoped>
-.service-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 360px);
-  grid-gap: 20px;
+@media (min-width: 600px) {
+  .service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 360px);
+    grid-gap: 20px;
+  }
+}
+.top-sec {
+  flex-direction: row;
+}
+@media (max-width: 600px) {
+  .top-sec {
+    flex-direction: column;
+  }
 }
 </style>

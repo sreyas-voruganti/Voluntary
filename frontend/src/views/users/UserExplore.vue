@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-6" v-if="users">
+  <div class="container mt-6 px-3" v-if="users">
     <div class="is-flex has-flex-direction-row">
       <input
         class="input mr-2"

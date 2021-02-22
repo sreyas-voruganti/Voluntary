@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-6" style="width: 700px" v-if="user">
+  <div class="container mt-6 px-3" style="max-width: 700px" v-if="user">
     <div class="is-flex is-flex-direction-column mb-3">
       <span class="has-text-weight-medium is-size-4"
         >{{ user.name }} contributed <u>{{ getTotalHours }}</u> total

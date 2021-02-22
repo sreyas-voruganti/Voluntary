@@ -8,7 +8,7 @@
       <button class="delete" @click="showSessionSuccess = false"></button>
       Session claim successfully submitted
     </div>
-    <p class="is-size-2">{{ service.title }}</p>
+    <p class="is-size-3">{{ service.title }}</p>
     <p class="mb-3">
       <span
         ><i class="far fa-user"></i> &nbsp;

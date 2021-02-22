@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-6" style="max-width: 1200px" v-if="services">
+  <div class="container mt-6 px-3" style="max-width: 1200px" v-if="services">
     <div class="mb-4 is-flex is-flex-direction-row">
       <input
         class="input"
@@ -51,9 +51,11 @@ export default {
 </script>
 
 <style scoped>
-.service-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 360px);
-  grid-gap: 20px;
+@media (min-width: 600px) {
+  .service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 360px);
+    grid-gap: 20px;
+  }
 }
 </style>
