@@ -90,6 +90,7 @@ module.exports = {
         time: new Date(req.body.time),
         duration: req.body.duration,
         satisfaction: req.body.satisfaction,
+        mentor: service.user.toString(),
       });
       sendNotif(
         [service.user.toString()],

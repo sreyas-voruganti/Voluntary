@@ -416,7 +416,7 @@ export default {
           "You cannot submit a session that started more than 24 hours ago."
         );
       this.$http
-        .post(`/services/${this.service._id}/sessions`, this.session, {
+        .post(`/services/${this.service._id}/sessions`, {
           duration: this.session.duration,
           satisfaction: this.session.satisfaction,
           time: new Date(this.session.time).toISOString(),
