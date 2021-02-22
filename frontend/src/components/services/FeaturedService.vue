@@ -1,5 +1,5 @@
 <template>
-  <div class="card mr-6" style="max-width: 700px">
+  <div class="card" style="max-width: 700px">
     <div class="card-image">
       <figure class="image is-16by9">
         <img :src="service.image" />
