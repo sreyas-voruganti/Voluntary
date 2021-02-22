@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="service"
-    class="container"
+    class="container p-3"
     style="max-width: 700px; margin-top: 25px"
   >
     <div class="notification is-success mb-0" v-show="showSessionSuccess">
@@ -104,15 +104,14 @@
             ></label
           >
           <div class="control">
-            <input
-              class="input"
-              type="number"
-              min="30"
-              v-model="session.duration"
-              step="30"
-              onkeydown="return false"
-              max="120"
-            />
+            <div class="select">
+              <select v-model="session.duration">
+                <option>30</option>
+                <option>60</option>
+                <option>90</option>
+                <option>120</option>
+              </select>
+            </div>
           </div>
         </div>
         <div class="field">
@@ -123,14 +122,15 @@
             ></label
           >
           <div class="control">
-            <input
-              class="input"
-              type="number"
-              min="1"
-              max="5"
-              v-model="session.satisfaction"
-              onkeydown="return false"
-            />
+            <div class="select">
+              <select v-model="session.satisfaction">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+              </select>
+            </div>
           </div>
         </div>
         <div class="field">
@@ -419,7 +419,7 @@ export default {
         .post(`/services/${this.service._id}/sessions`, this.session, {
           duration: this.session.duration,
           satisfaction: this.session.satisfaction,
-          time: moment.utc(this.session.time).format(),
+          time: new Date(this.session.time).toISOString(),
         })
         .then(() => {
           this.cancelSession();

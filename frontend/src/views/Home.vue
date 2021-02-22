@@ -15,18 +15,15 @@
         >
       </p>
     </div>
-    <div
-      class="container my-5 is-flex has-flex-direction-row"
-      v-if="featured_service"
-    >
-      <div class="container" style="max-width: 50%">
-        <p class="title is-4 mb-3">
+    <div class="container my-5 is-flex mobile-cont p-3" v-if="featured_service">
+      <div class="container">
+        <p class="title is-4 my-3">
           <i class="fas fa-award"></i> Today's Featured Service:
         </p>
-        <FeaturedService :service="featured_service" />
+        <FeaturedService :service="featured_service" class="mobile-feat" />
       </div>
-      <div class="container" style="max-width: 50%">
-        <p class="title is-4 mb-3">
+      <div class="container">
+        <p class="title is-4 my-3">
           <i class="fas fa-fire"></i> Popular Services:
         </p>
         <PopularServices :services="popular_services" />
@@ -113,9 +110,6 @@ export default {
     };
   },
   created() {
-    setTimeout(() => {
-      if (!this.showAnnouncements) this.showHelp = true;
-    }, 3500);
     this.$http
       .get("/services/home")
       .then((res) => {
@@ -127,3 +121,20 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.mobile-cont {
+  flex-direction: row;
+}
+.mobile-feat {
+  margin-right: 30px;
+}
+@media (max-width: 600px) {
+  .mobile-cont {
+    flex-direction: column;
+  }
+  .mobile-feat {
+    margin-right: 0px;
+  }
+}
+</style>

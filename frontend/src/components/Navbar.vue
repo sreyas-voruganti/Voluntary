@@ -9,16 +9,30 @@
         <span class="mr-2"><i class="far fa-newspaper"></i></span>
         <span>Voluntary</span>
       </router-link>
+      <a
+        role="button"
+        @click="showMobileNav = !showMobileNav"
+        :class="{ 'navbar-burger': true, 'is-active': showMobileNav }"
+        data-target="navBar"
+      >
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
     </div>
-    <div class="navbar-menu" v-show="!$route.meta.authPage">
+    <div
+      :class="{ 'navbar-menu': true, 'is-active': showMobileNav }"
+      v-show="!$route.meta.authPage"
+      id="navBar"
+    >
       <div class="navbar-start">
-        <a class="navbar-item" @click="$router.push('/')">
+        <a class="navbar-item" @click="navigatePage('/')">
           <i class="fas fa-home mr-1"></i> Home
         </a>
         <a class="navbar-item" :href="`/users/${getUserId}?rcd=${rcd}`">
           <i class="fas fa-user-alt mr-1"></i> Profile
         </a>
-        <a class="navbar-item" @click="$router.push('/users/explore')">
+        <a class="navbar-item" @click="navigatePage('/users/explore')">
           <i class="fas fa-users mr-1"></i> Explore Mentors
         </a>
         <div
@@ -29,25 +43,32 @@
             <i class="far fa-newspaper mr-1"></i> Services
           </a>
           <div class="navbar-dropdown">
-            <a class="navbar-item" @click="$router.push('/services/own')">
+            <a class="navbar-item" @click="navigatePage('/services/own')">
               <i class="far fa-newspaper mr-1"></i> Your Services
             </a>
-            <a class="navbar-item" @click="$router.push('/services/explore')">
+            <a class="navbar-item" @click="navigatePage('/services/explore')">
               <i class="fas fa-globe-americas mr-1"></i> Explore Services
             </a>
             <hr class="navbar-divider" />
-            <a class="navbar-item" @click="$router.push('/services/create')">
+            <a class="navbar-item" @click="navigatePage('/services/create')">
               <i class="fas fa-plus mr-1"></i> Create Service
             </a>
           </div>
         </div>
         <a
           class="navbar-item"
-          @click="$router.push('/services/explore')"
+          @click="navigatePage('/services/explore')"
           v-else
         >
-          <i class="fas fa-users mr-1"></i> Explore Services
+          <i class="fas fa-globe-americas mr-1"></i> Explore Services
         </a>
+        <!-- <a
+          class="navbar-item"
+          @click="$router.push('/listings/create')"
+          v-show="getUserType == 'client'"
+        >
+          <i class="fas fa-plus mr-1"></i> Create Listing
+        </a> -->
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link"
             ><i class="fas fa-bell mr-1"></i>
@@ -97,6 +118,7 @@ export default {
     return {
       socket: null,
       notifications: [],
+      showMobileNav: false,
     };
   },
   created() {
@@ -157,6 +179,10 @@ export default {
     },
     getDate(date) {
       return moment(date).fromNow();
+    },
+    navigatePage(path) {
+      this.showMobileNav = false;
+      this.$router.push(path);
     },
   },
 };

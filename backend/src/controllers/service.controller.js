@@ -87,7 +87,7 @@ module.exports = {
       const session = await Session.create({
         user: req.user._id,
         service: service._id,
-        time: req.body.time,
+        time: new Date(req.body.time),
         duration: req.body.duration,
         satisfaction: req.body.satisfaction,
       });
