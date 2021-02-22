@@ -15,11 +15,14 @@ if (localStorage.getItem("token")) {
   http
     .get("/users/me/init")
     .then((res) => store.commit("set_user", res.data))
-    .catch((err) =>
-      alert(
-        `An error occurred: ${err}, try reloading or clearing your cookies.`
-      )
-    );
+    .catch((err) => {
+      console.log(err);
+      delete this.$http.defaults.headers.common["Authorization"];
+      localStorage.removeItem("token");
+      localStorage.removeItem("user_id");
+      this.$store.commit("logout");
+      this.$router.push("/auth");
+    });
 }
 
 new Vue({
