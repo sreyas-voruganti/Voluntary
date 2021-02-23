@@ -14,6 +14,7 @@
         @click="showMobileNav = !showMobileNav"
         :class="{ 'navbar-burger': true, 'is-active': showMobileNav }"
         data-target="navBar"
+        v-show="!$route.meta.authPage"
       >
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>

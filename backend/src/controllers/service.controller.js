@@ -346,4 +346,15 @@ module.exports = {
       res.status(500).json({ error: e.message });
     }
   },
+  update_image: async (req, res) => {
+    try {
+      const service = await Service.findById(req.params.service_id);
+      if (service.user.toString() != req.user._id.toString())
+        return res.sendStatus(401);
+      const new_image = await service.updateImage(req.file.filename);
+      res.status(200).json({ new_image });
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
 };

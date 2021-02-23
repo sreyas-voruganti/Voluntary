@@ -28,6 +28,11 @@ router.delete(
 router.post("/:service_id/report", ServiceController.report_service);
 router.put("/:service_id/update", ServiceController.update_service);
 router.post("/:service_id/comment", ServiceController.add_comment);
+router.put(
+  "/:service_id/update_image",
+  upload.single("image"),
+  ServiceController.update_image
+);
 router.delete("/comments/:comment_id", ServiceController.delete_comment);
 
 module.exports = router;
