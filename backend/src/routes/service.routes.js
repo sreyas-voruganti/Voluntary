@@ -12,6 +12,7 @@ router.get("/search", ServiceController.search_services);
 router.get("/tags", ServiceController.tag_services);
 router.get("/all", ServiceController.all_services);
 router.get("/home", ServiceController.home);
+router.get("/recent", ServiceController.recent_services);
 router.get("/:service_id", ServiceController.detail);
 router.post("/:service_id/sessions", ServiceController.create_session);
 router.get("/:service_id/sessions", ServiceController.service_sessions);

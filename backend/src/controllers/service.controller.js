@@ -322,4 +322,28 @@ module.exports = {
       res.status(500).json({ error: e.message });
     }
   },
+  recent_services: async (req, res) => {
+    try {
+      const recent_sessions = await Session.find(
+        {
+          user: req.user._id,
+        },
+        "_id service"
+      )
+        .sort("-createdAt")
+        .limit(5)
+        .lean();
+      const service_ids = [];
+      recent_sessions.forEach((d) => service_ids.push(d.service));
+      const services = await Service.find(
+        {
+          _id: { $in: service_ids },
+        },
+        "-user_reports"
+      ).populate("user", "_id name pp");
+      res.status(200).json(services);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
 };

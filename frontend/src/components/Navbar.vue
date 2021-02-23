@@ -49,6 +49,9 @@
             <a class="navbar-item" @click="navigatePage('/services/explore')">
               <i class="fas fa-globe-americas mr-1"></i> Explore Services
             </a>
+            <a class="navbar-item" @click="navigatePage('/services/recent')">
+              <i class="fas fa-backward mr-1"></i> Recent Services
+            </a>
             <hr class="navbar-divider" />
             <a class="navbar-item" @click="navigatePage('/services/create')">
               <i class="fas fa-plus mr-1"></i> Create Service
@@ -62,12 +65,26 @@
         >
           <i class="fas fa-globe-americas mr-1"></i> Explore Services
         </a>
+        <a
+          class="navbar-item"
+          @click="navigatePage('/services/recent')"
+          v-show="getUserType == 'client'"
+        >
+          <i class="fas fa-backward mr-1"></i> Recent Services
+        </a>
         <!-- <a
           class="navbar-item"
           @click="$router.push('/listings/create')"
           v-show="getUserType == 'client'"
         >
           <i class="fas fa-plus mr-1"></i> Create Listing
+        </a>
+        <a
+          class="navbar-item"
+          @click="$router.push('/listings/explore')"
+          v-show="getUserType == 'mentor'"
+        >
+          <i class="fas fa-plus mr-1"></i> Explore Listings
         </a> -->
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link"
