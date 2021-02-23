@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-6">
+  <div class="container mt-6 p-3">
     <span class="is-size-3" v-if="!services.length"
       >You haven't submitted a session for a service yet, find one
       <router-link to="/services/explore">here</router-link>.</span
@@ -37,9 +37,11 @@ export default {
 </script>
 
 <style scoped>
-.service-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 360px);
-  grid-gap: 20px;
+@media (min-width: 600px) {
+  .service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 360px);
+    grid-gap: 20px;
+  }
 }
 </style>

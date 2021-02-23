@@ -1,10 +1,13 @@
 <template>
   <div>
-    <div class="notification m-5 is-primary is-light">
+    <div
+      class="notification mt-5 is-primary is-light"
+      style="width: 85%; margin: 0 auto"
+    >
       <p>
         <span class="title is-5"
-          >Welcome to Voluntary, <u>{{ total_contrib }}</u> Hours Contributed
-          Worldwide.</span
+          >Welcome to Voluntary, <u>{{ total_contrib }} hours</u> contributed
+          worldwide.</span
         >
         &nbsp;
         <a class="has-text-weight-medium" @click="showAnnouncements = true"
@@ -12,6 +15,9 @@
         >
         <a class="has-text-weight-medium ml-2" @click="showHelp = true"
           >Show Help</a
+        >
+        <router-link class="has-text-weight-medium ml-2" to="/services/recent"
+          >View Recent Services</router-link
         >
       </p>
     </div>

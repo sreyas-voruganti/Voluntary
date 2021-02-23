@@ -4,7 +4,7 @@
       <input
         class="input mr-2"
         type="text"
-        placeholder="Search for mentors"
+        :placeholder="`Search ${totalMentorCount} total mentors`"
         v-model="search"
       />
     </div>
@@ -38,6 +38,7 @@ export default {
       users: [],
       search: null,
       isLoading: false,
+      totalMentorCount: 0,
     };
   },
   created() {
@@ -55,7 +56,10 @@ export default {
     onEmpty() {
       this.$http
         .get("/users/all")
-        .then((res) => (this.users = res.data))
+        .then((res) => {
+          this.users = res.data;
+          this.totalMentorCount = res.data.length;
+        })
         .catch((err) => console.log(err));
     },
   },
