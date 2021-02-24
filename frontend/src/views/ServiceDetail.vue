@@ -4,10 +4,6 @@
     class="container p-3"
     style="max-width: 700px; margin-top: 25px"
   >
-    <div class="notification is-success mb-0" v-show="showSessionSuccess">
-      <button class="delete" @click="showSessionSuccess = false"></button>
-      Session claim successfully submitted
-    </div>
     <p class="is-size-3">{{ service.title }}</p>
     <p class="mb-3">
       <span
@@ -110,11 +106,24 @@
             <div class="select">
               <select v-model="session.duration">
                 <option>30</option>
+                <option>45</option>
                 <option>60</option>
+                <option>75</option>
                 <option>90</option>
+                <option>105</option>
                 <option>120</option>
               </select>
             </div>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Short Description</label>
+          <div class="control">
+            <textarea
+              class="textarea"
+              placeholder="A short description about what happened during the session"
+              v-model="session.description"
+            ></textarea>
           </div>
         </div>
         <div class="field">
@@ -371,7 +380,6 @@ export default {
         duration: 60,
       },
       agreeSessionTerms: false,
-      showSessionSuccess: false,
       showSessionsModal: false,
       did_report: false,
       showEditModal: false,
@@ -473,11 +481,12 @@ export default {
       this.$http
         .post(`/services/${this.service._id}/sessions`, {
           duration: this.session.duration,
+          description: this.session.description,
           time: new Date(this.session.time).toISOString(),
         })
         .then(() => {
           this.cancelSession();
-          this.showSessionSuccess = true;
+          alert("Session successfully submitted");
         })
         .catch((err) => {
           if (err.response.data.code === 230) {
@@ -536,7 +545,12 @@ export default {
       return this.service.user._id == localStorage.getItem("user_id");
     },
     checkSubmit() {
-      if (this.session.time && this.session.duration && this.agreeSessionTerms)
+      if (
+        this.session.time &&
+        this.session.duration &&
+        this.session.description &&
+        this.agreeSessionTerms
+      )
         return false;
       return true;
     },

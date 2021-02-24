@@ -58,6 +58,7 @@
           <th>Client</th>
           <th>Date</th>
           <th>Service</th>
+          <th>Description</th>
         </tr>
         <tr v-for="session in sessions" :key="session._id">
           <td>{{ session.duration }}</td>
@@ -71,6 +72,15 @@
             <router-link :to="`/services/${session.service._id}`">{{
               session.service.title
             }}</router-link>
+          </td>
+          <td>
+            <a
+              @click="showDescription(session.description)"
+              v-if="session.description"
+            >
+              View Description
+            </a>
+            <span v-else>n/a</span>
           </td>
         </tr>
       </table>
@@ -103,6 +113,9 @@ export default {
     this.getPlain();
   },
   methods: {
+    showDescription(description) {
+      alert(`Description: ${description}`);
+    },
     getTime(time) {
       return moment(time).format("ddd, MMM D YYYY, h:mm A");
     },

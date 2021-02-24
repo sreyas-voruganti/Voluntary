@@ -89,6 +89,7 @@ module.exports = {
         time: new Date(req.body.time),
         duration: req.body.duration,
         mentor: service.user.toString(),
+        description: req.body.description,
       });
       sendNotif(
         [service.user.toString()],
