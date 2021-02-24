@@ -19,6 +19,13 @@
         <router-link class="has-text-weight-medium ml-2" to="/services/recent"
           >View Recent Services</router-link
         >
+        <a
+          class="has-text-weight-medium ml-2"
+          href="https://forms.gle/Ceaxu6QAJTvuqzga8"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Join Our Team</a
+        >
       </p>
     </div>
     <div class="container my-5 is-flex mobile-cont p-3" v-if="featured_service">
