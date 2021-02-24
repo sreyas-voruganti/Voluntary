@@ -21,10 +21,6 @@
         {{ getCreatedDate }}</span
       >
       <span class="ml-3"
-        ><i class="far fa-smile"></i> &nbsp; {{ avg_satis || "-" }}/5 Average
-        Satisfaction</span
-      >
-      <span class="ml-3"
         ><i class="far fa-check-circle"></i> &nbsp; {{ num_sessions }} Confirmed
         Sessions</span
       >
@@ -117,25 +113,6 @@
                 <option>60</option>
                 <option>90</option>
                 <option>120</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="field">
-          <label class="label"
-            >Satisfaction
-            <span class="has-text-weight-medium"
-              >(how satisfied were you [1 - lowest, 5 - highest])</span
-            ></label
-          >
-          <div class="control">
-            <div class="select">
-              <select v-model="session.satisfaction">
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
               </select>
             </div>
           </div>
@@ -392,12 +369,10 @@ export default {
       showSessionModal: false,
       session: {
         duration: 60,
-        satisfaction: 3,
       },
       agreeSessionTerms: false,
       showSessionSuccess: false,
       showSessionsModal: false,
-      avg_satis: 3,
       did_report: false,
       showEditModal: false,
       num_sessions: 0,
@@ -464,7 +439,6 @@ export default {
         this.own_service = { ...this.service };
         this.own_service.tags = this.own_service.tags.join(", ");
         this.did_report = service_data.did_report;
-        this.avg_satis = service_data.avg_satis;
       } catch (err) {
         console.log(err);
         if (err.response.status == 404) {
@@ -476,7 +450,6 @@ export default {
       this.showSessionModal = false;
       this.session = {
         duration: 30,
-        satisfaction: 1,
       };
       this.agreeSessionTerms = false;
     },
@@ -500,7 +473,6 @@ export default {
       this.$http
         .post(`/services/${this.service._id}/sessions`, {
           duration: this.session.duration,
-          satisfaction: this.session.satisfaction,
           time: new Date(this.session.time).toISOString(),
         })
         .then(() => {
@@ -564,12 +536,7 @@ export default {
       return this.service.user._id == localStorage.getItem("user_id");
     },
     checkSubmit() {
-      if (
-        this.session.time &&
-        this.session.duration &&
-        this.session.satisfaction &&
-        this.agreeSessionTerms
-      )
+      if (this.session.time && this.session.duration && this.agreeSessionTerms)
         return false;
       return true;
     },

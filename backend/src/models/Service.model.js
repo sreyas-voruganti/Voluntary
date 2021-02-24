@@ -56,20 +56,6 @@ const serviceSchema = new mongoose.Schema(
   }
 );
 
-serviceSchema.methods.getAvgSatis = async function () {
-  try {
-    const sessions = await Session.find(
-      { service: this._id, status: "conf" },
-      "satisfaction"
-    ).lean();
-    let num = 0;
-    sessions.forEach((session) => (num += session.satisfaction));
-    return Math.round((num / sessions.length) * 10) / 10;
-  } catch (err) {
-    throw new Error(err);
-  }
-};
-
 serviceSchema.methods.userReport = async function (user_id) {
   try {
     if (this.user_reports.includes(user_id))

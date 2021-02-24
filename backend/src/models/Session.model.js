@@ -32,10 +32,6 @@ const sessionSchema = new mongoose.Schema(
       default: "pend_conf",
       enum: ["pend_conf", "conf", "verified"],
     },
-    satisfaction: {
-      type: Number,
-      required: true,
-    },
   },
   {
     timestamps: true,

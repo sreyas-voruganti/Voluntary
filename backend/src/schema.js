@@ -35,7 +35,6 @@ module.exports = {
       time: String!
       duration: Int!
       status: String!
-      satisfaction: Int!
     }
     type Query {
       users: [User]

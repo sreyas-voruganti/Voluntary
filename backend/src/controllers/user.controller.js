@@ -67,22 +67,12 @@ module.exports = {
         "-google_refresh_token -google_access_token -google_id"
       );
       if (!user) return res.sendStatus(404);
-      const services = await Service.find({ user: user._id }, "_id").lean();
-      const service_ids = [];
-      services.forEach((service) => service_ids.push(service._id.toString()));
-      const sessions = await Session.find(
-        { service: { $in: service_ids }, status: "conf" },
-        "_id satisfaction"
-      ).lean();
-      let num = 0;
-      sessions.forEach((session) => (num += session.satisfaction));
       res.status(200).json({
         user,
         contrib_key:
           req.user._id.toString() == user._id.toString()
             ? user.contrib_key
             : null,
-        avg_satis: Math.round((num / sessions.length) * 10) / 10,
       });
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -162,28 +152,22 @@ module.exports = {
       });
       let sessions;
       if (req.query.start && req.query.end) {
-        sessions = await Session.find(
-          {
-            service: { $in: service_ids },
-            status: "conf",
-            time: {
-              $gte: new Date(req.query.start),
-              $lte: new Date(req.query.end),
-            },
+        sessions = await Session.find({
+          service: { $in: service_ids },
+          status: "conf",
+          time: {
+            $gte: new Date(req.query.start),
+            $lte: new Date(req.query.end),
           },
-          "-satisfaction"
-        )
+        })
           .populate("user", "_id name")
           .populate("service", "_id title")
           .lean();
       } else {
-        sessions = await Session.find(
-          {
-            service: { $in: service_ids },
-            status: "conf",
-          },
-          "-satisfaction"
-        )
+        sessions = await Session.find({
+          service: { $in: service_ids },
+          status: "conf",
+        })
           .populate("user", "_id name")
           .populate("service", "_id title")
           .lean();

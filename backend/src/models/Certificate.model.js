@@ -28,13 +28,10 @@ const certificateSchema = new mongoose.Schema(
 
 certificateSchema.methods.getSessions = async function () {
   try {
-    const sessions = await Session.find(
-      {
-        user: this.user,
-        time: { $gte: this.start_date, $lte: this.end_date },
-      },
-      "-satisfaction"
-    )
+    const sessions = await Session.find({
+      user: this.user,
+      time: { $gte: this.start_date, $lte: this.end_date },
+    })
       .populate("user", "_id name")
       .populate("service", "_id title")
       .lean();

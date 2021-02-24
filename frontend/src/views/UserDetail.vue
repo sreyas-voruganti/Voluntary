@@ -11,9 +11,6 @@
         >
         <span class="is-size-5" v-else><i class="far fa-user"></i> Client</span>
         <span class="is-size-5">Joined {{ getCreated }}</span>
-        <span class="is-size-6" v-show="user.acc_type == 'mentor'"
-          >Average Satisfaction: {{ avg_satis || "-" }}/5</span
-        >
         <span class="is-size-6" v-if="owns && user.acc_type == 'mentor'"
           ><router-link
             :to="`/users/${user._id}/contributions?contrib_key=${contrib_key}`"
@@ -164,7 +161,6 @@ export default {
       tab: "About",
       services: [],
       synced: false,
-      avg_satis: null,
       contrib_key: null,
     };
   },
@@ -178,7 +174,6 @@ export default {
           await this.$http.get(`/users/${this.$route.params.user_id}`)
         ).data;
         this.user = m_data.user;
-        this.avg_satis = m_data.avg_satis;
         this.contrib_key = m_data.contrib_key;
         this.own_user = { ...this.user };
         this.services = (

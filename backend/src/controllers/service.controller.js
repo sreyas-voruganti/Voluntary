@@ -40,7 +40,6 @@ module.exports = {
         .lean();
       res.status(200).json({
         service,
-        avg_satis: await service.getAvgSatis(),
         did_report: service.didReport(req.user._id),
         num_sessions,
         comments,
@@ -89,7 +88,6 @@ module.exports = {
         service: service._id,
         time: new Date(req.body.time),
         duration: req.body.duration,
-        satisfaction: req.body.satisfaction,
         mentor: service.user.toString(),
       });
       sendNotif(
@@ -105,22 +103,16 @@ module.exports = {
   },
   service_sessions: async (req, res) => {
     try {
-      const pending_sessions = await Session.find(
-        {
-          service: req.params.service_id,
-          status: "pend_conf",
-        },
-        "-satisfaction"
-      )
+      const pending_sessions = await Session.find({
+        service: req.params.service_id,
+        status: "pend_conf",
+      })
         .populate("user", "id name")
         .lean();
-      const confirmed_sessions = await Session.find(
-        {
-          service: req.params.service_id,
-          status: "conf",
-        },
-        "-satisfaction"
-      )
+      const confirmed_sessions = await Session.find({
+        service: req.params.service_id,
+        status: "conf",
+      })
         .populate("user", "id name")
         .lean();
       res
@@ -136,7 +128,7 @@ module.exports = {
       const session = await Session.findByIdAndUpdate(req.params.session_id, {
         status: "conf",
       });
-      const new_session = await Session.findById(session._id, "-satisfaction")
+      const new_session = await Session.findById(session._id)
         .populate("user", "id name")
         .lean();
       res.status(204).json(new_session);
@@ -295,24 +287,18 @@ module.exports = {
   },
   user_service_sessions: async (req, res) => {
     try {
-      const pending_sessions = await Session.find(
-        {
-          service: req.params.service_id,
-          status: "pend_conf",
-          user: req.user._id,
-        },
-        "-satisfaction"
-      )
+      const pending_sessions = await Session.find({
+        service: req.params.service_id,
+        status: "pend_conf",
+        user: req.user._id,
+      })
         .populate("user", "id name")
         .lean();
-      const confirmed_sessions = await Session.find(
-        {
-          service: req.params.service_id,
-          status: "conf",
-          user: req.user._id,
-        },
-        "-satisfaction"
-      )
+      const confirmed_sessions = await Session.find({
+        service: req.params.service_id,
+        status: "conf",
+        user: req.user._id,
+      })
         .populate("user", "id name")
         .lean();
       res
