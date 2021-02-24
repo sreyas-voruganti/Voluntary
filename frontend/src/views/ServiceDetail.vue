@@ -65,6 +65,13 @@
         <i class="fas fa-edit mr-1"></i> Edit Service
       </button>
       <button
+        class="button is-link is-light"
+        @click="showImageModal = true"
+        v-if="owns"
+      >
+        <i class="far fa-image mr-1"></i> Change Image
+      </button>
+      <button
         class="button is-light is-success"
         v-else
         @click="showContactInfo = true"
@@ -310,6 +317,59 @@
         @click="showContactInfo = false"
       ></button>
     </div>
+    <div :class="{ modal: true, 'is-active': showImageModal }">
+      <div class="modal-background" @click="cancelNewImage"></div>
+      <div class="modal-content box">
+        <div class="field">
+          <label class="label">New Image</label>
+          <div class="control">
+            <div class="file has-name is-fullwidth is-light">
+              <label class="file-label">
+                <input
+                  class="file-input"
+                  type="file"
+                  ref="new_image"
+                  accept="image/*"
+                  @change="onNewImageChange"
+                />
+                <span class="file-cta">
+                  <span class="file-icon">
+                    <i class="fas fa-upload"></i>
+                  </span>
+                  <span class="file-label">
+                    Choose an image…
+                  </span>
+                </span>
+                <span class="file-name">
+                  {{ new_image ? new_image.name : "No Image Chosen" }}
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="field is-grouped">
+          <div class="control">
+            <button
+              class="button is-link"
+              :disabled="!new_image"
+              @click="onNewImageUpdate"
+            >
+              Update
+            </button>
+          </div>
+          <div class="control">
+            <button class="button is-link is-light" @click="cancelNewImage">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+      <button
+        class="modal-close is-large"
+        aria-label="close"
+        @click="cancelNewImage"
+      ></button>
+    </div>
   </div>
 </template>
 
@@ -345,12 +405,34 @@ export default {
       new_comment: null,
       comments: [],
       showContactInfo: false,
+      showImageModal: false,
+      new_image: null,
     };
   },
   created() {
     this.fetchData();
   },
   methods: {
+    onNewImageChange() {
+      this.new_image = this.$refs.new_image.files[0];
+    },
+    cancelNewImage() {
+      this.showImageModal = false;
+      this.new_image = null;
+    },
+    onNewImageUpdate() {
+      const fd = new FormData();
+      fd.append("image", this.new_image);
+      this.$http
+        .put(`/services/${this.service._id}/update_image`, fd)
+        .then((res) => {
+          this.service.image = res.data.new_image;
+          this.own_service.image = res.data.new_image;
+          this.showImageModal = false;
+          alert("Image successfully updated");
+        })
+        .catch((err) => alert(`An error occurred: ${err}`));
+    },
     cancelEdit() {
       this.showEditModal = false;
       this.own_service = { ...this.service };
