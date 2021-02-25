@@ -9,7 +9,7 @@
           >Welcome to Voluntary, <u>{{ total_contrib }} hours</u> contributed
           worldwide. {{ num_clients }} Clients, {{ num_mentors }} Mentors.</span
         >
-        &nbsp;
+        <br />
         <a class="has-text-weight-medium" @click="showAnnouncements = true"
           >Show Announcements</a
         >

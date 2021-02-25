@@ -25,7 +25,7 @@ export default {
       parseInt(urlParams.get("rcd")) || Math.floor(Math.random() * 355) + 1;
     document.querySelector(
       "html"
-    ).style.backgroundColor = `hsl(${this.rand_degree}, 100%, 97%)`;
+    ).style.backgroundColor = `hsl(${this.rand_degree}, 100%, 98%)`;
   },
 };
 </script>
