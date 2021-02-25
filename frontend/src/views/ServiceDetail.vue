@@ -135,8 +135,11 @@
           </div>
         </div>
         <!-- <p class="my-3 has-text-weight-medium">
-          **Support Voluntary by making a <a>contribution</a> to one of our
-          partners**
+          **Support Voluntary by making a
+          <a href="/donations" target="_blank" rel="noopener noreferrer"
+            >contribution</a
+          >
+          to another nonprofit**
         </p> -->
         <div class="field is-grouped">
           <div class="control">

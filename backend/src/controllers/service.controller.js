@@ -219,10 +219,14 @@ module.exports = {
       ).lean();
       let num_mins = 0;
       sessions.forEach((session) => (num_mins += session.duration));
+      const num_mentors = await User.countDocuments({ acc_type: "mentor" });
+      const num_clients = await User.countDocuments({ acc_type: "client" });
       res.status(200).json({
         featured_service,
         popular_services,
         total_contrib: Math.round((num_mins / 60) * 10) / 10,
+        num_mentors,
+        num_clients,
       });
     } catch (err) {
       res.status(500).json({ error: err.message });

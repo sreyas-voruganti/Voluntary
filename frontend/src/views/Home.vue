@@ -7,7 +7,7 @@
       <p>
         <span class="title is-5"
           >Welcome to Voluntary, <u>{{ total_contrib }} hours</u> contributed
-          worldwide.</span
+          worldwide. {{ num_clients }} Clients, {{ num_mentors }} Mentors.</span
         >
         &nbsp;
         <a class="has-text-weight-medium" @click="showAnnouncements = true"
@@ -120,6 +120,8 @@ export default {
       total_contrib: 0,
       showAnnouncements: false,
       showHelp: false,
+      num_clients: 0,
+      num_mentors: 0,
     };
   },
   created() {
@@ -129,6 +131,8 @@ export default {
         this.featured_service = res.data.featured_service;
         this.popular_services = res.data.popular_services;
         this.total_contrib = res.data.total_contrib;
+        this.num_clients = res.data.num_clients;
+        this.num_mentors = res.data.num_mentors;
       })
       .catch((err) => alert(`An error occurred: ${err}`));
   },
