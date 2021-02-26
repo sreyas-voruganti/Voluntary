@@ -134,13 +134,13 @@
             </label>
           </div>
         </div>
-        <!-- <p class="my-3 has-text-weight-medium">
+        <p class="my-3 has-text-weight-medium">
           **Support Voluntary by making a
           <a href="/donations" target="_blank" rel="noopener noreferrer"
             >contribution</a
           >
           to another nonprofit**
-        </p> -->
+        </p>
         <div class="field is-grouped">
           <div class="control">
             <button
