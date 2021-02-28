@@ -1,8 +1,9 @@
 <template>
   <nav
-    class="navbar has-shadow is-fixed-top has-background-success-light"
+    class="navbar has-shadow is-fixed-top"
     role="navigation"
     aria-label="main navigation"
+    style="background-color: #bfffd6"
   >
     <div class="navbar-brand">
       <router-link class="navbar-item is-size-4 has-text-weight-medium" to="/">

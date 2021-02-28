@@ -568,5 +568,8 @@ export default {
   border-radius: 2px;
   background-color: rgb(0, 0, 0);
   border-color: rgb(78, 78, 78);
+  object-fit: contain;
+  width: 100%;
+  max-height: 394px;
 }
 </style>
