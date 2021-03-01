@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema(
     },
     contrib_key: {
       type: String,
-      default: Math.random().toString(36).substring(2),
+      default: () => Math.random().toString(36).substring(2),
     },
     acc_type: {
       type: String,

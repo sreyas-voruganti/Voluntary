@@ -566,7 +566,7 @@ export default {
   border-style: solid;
   border-width: 5px;
   border-radius: 2px;
-  background-color: rgb(0, 0, 0);
+  background-color: rgb(33, 33, 33);
   border-color: rgb(78, 78, 78);
   object-fit: contain;
   width: 100%;

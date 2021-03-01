@@ -31,11 +31,11 @@
     <div class="container my-5 is-flex mobile-cont p-3" v-if="featured_service">
       <div class="container">
         <p class="title is-4 my-3">
-          <i class="fas fa-award"></i> Today's Featured Service:
+          <i class="fas fa-award"></i> Featured Service:
         </p>
         <FeaturedService :service="featured_service" class="mobile-feat" />
       </div>
-      <div class="container">
+      <div class="container" style="max-width: 55%">
         <p class="title is-4 my-3">
           <i class="fas fa-fire"></i> Popular Services:
         </p>

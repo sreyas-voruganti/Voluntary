@@ -184,9 +184,9 @@ module.exports = {
   },
   home: async (req, res) => {
     try {
-      const featured_service = await Service.findById(
-        config.site_vars.featured_service
-      ).populate("user", "_id name pp");
+      const all_services = await Service.find().populate("user", "_id name pp");
+      const featured_service =
+        all_services[Math.floor(Math.random() * all_services.length)];
       const raw_popular_services = await Service.aggregate([
         {
           $match: { unlisted: false },
