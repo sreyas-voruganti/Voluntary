@@ -35,7 +35,7 @@
         </p>
         <FeaturedService :service="featured_service" class="mobile-feat" />
       </div>
-      <div class="container" style="max-width: 55%">
+      <div class="mobile-popular container">
         <p class="title is-4 my-3">
           <i class="fas fa-fire"></i> Popular Services:
         </p>
@@ -152,6 +152,11 @@ export default {
   }
   .mobile-feat {
     margin-right: 0px;
+  }
+}
+@media (min-width: 600px) {
+  .mobile-popular {
+    width: 45%;
   }
 }
 </style>
