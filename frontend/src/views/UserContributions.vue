@@ -8,8 +8,11 @@
       <p>
         <a @click="share" class="mr-2">Share</a>
         <a @click="integrity" class="mr-2">Our Integrity System</a>
-        <span class="has-text-weight-medium"
-          >Generate Certificate (coming soon)</span
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://forms.gle/Gy4sN2hgSKHynssQ6"
+          >Generate Certificate</a
         >
       </p>
       <label class="checkbox mt-2">
