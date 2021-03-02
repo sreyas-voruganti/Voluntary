@@ -10,13 +10,20 @@
           worldwide. {{ num_clients }} Clients, {{ num_mentors }} Mentors.</span
         >
         <br />
-        <a class="has-text-weight-medium" @click="showAnnouncements = true"
+        <a
+          class="has-text-weight-medium has-text-link"
+          @click="showAnnouncements = true"
           >Show Announcements</a
         >
-        <a class="has-text-weight-medium ml-2" @click="showHelp = true"
+        <a
+          class="has-text-weight-medium ml-2 has-text-danger"
+          @click="showHelp = true"
           >Show Help</a
         >
-        <router-link class="has-text-weight-medium ml-2" to="/services/recent"
+        <router-link
+          class="has-text-weight-medium ml-2"
+          style="color: #a87932"
+          to="/services/recent"
           >View Recent Services</router-link
         >
         <a
@@ -24,7 +31,17 @@
           href="https://forms.gle/Ceaxu6QAJTvuqzga8"
           target="_blank"
           rel="noopener noreferrer"
+          style="color: #a832a4"
           >Join Our Team</a
+        >
+        <a
+          class="has-text-weight-medium ml-2"
+          href="https://discord.gg/3ZNHJdHEYG"
+          style="color: #298037"
+          target="_blank"
+          rel="noopener noreferrer"
+          v-show="getUserType == 'mentor'"
+          >Mentors: Join Our Discord</a
         >
       </p>
     </div>
@@ -135,6 +152,11 @@ export default {
         this.num_mentors = res.data.num_mentors;
       })
       .catch((err) => alert(`An error occurred: ${err}`));
+  },
+  computed: {
+    getUserType() {
+      return this.$store.state.user.acc_type;
+    },
   },
 };
 </script>
