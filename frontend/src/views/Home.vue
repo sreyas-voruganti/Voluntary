@@ -168,7 +168,7 @@ export default {
 .mobile-feat {
   margin-right: 30px;
 }
-@media (max-width: 600px) {
+@media (max-width: 700px) {
   .mobile-cont {
     flex-direction: column;
   }
@@ -176,7 +176,7 @@ export default {
     margin-right: 0px;
   }
 }
-@media (min-width: 600px) {
+@media (min-width: 700px) {
   .mobile-popular {
     width: 55%;
   }

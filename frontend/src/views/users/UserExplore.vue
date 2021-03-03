@@ -10,7 +10,7 @@
     </div>
     <div>
       <span class="is-size-4" v-show="isLoading">Loading your results...</span>
-      <div v-show="!isLoading" class="user-grid">
+      <div v-show="!isLoading" class="user-grid mr-3">
         <div
           class="box user-box has-text-centered m-3 "
           v-for="user in users"
@@ -88,9 +88,16 @@ export default {
   margin-left: auto;
   margin-right: auto;
 }
-.user-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 220px);
-  grid-gap: 20px;
+@media (min-width: 520px) {
+  .user-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 220px);
+    grid-gap: 20px;
+  }
+}
+@media (max-width: 520px) {
+  .user-box {
+    width: 100%;
+  }
 }
 </style>
