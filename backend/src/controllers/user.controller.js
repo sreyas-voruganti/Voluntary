@@ -182,7 +182,7 @@ module.exports = {
       const users = await User.find(
         {
           name: { $regex: req.query.q, $options: "i" },
-          acc_type: "mentor",
+          acc_type: req.query.clients ? "client" : "mentor",
         },
         "-google_id -google_refresh_token -contrib_key"
       ).lean();
@@ -194,7 +194,7 @@ module.exports = {
   all: async (req, res) => {
     try {
       const users = await User.find(
-        { acc_type: "mentor" },
+        { acc_type: req.query.clients ? "client" : "mentor" },
         "-google_id -google_refresh_token -contrib_key"
       ).lean();
       res.status(200).json(users);

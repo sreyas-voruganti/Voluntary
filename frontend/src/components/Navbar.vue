@@ -35,7 +35,14 @@
           <i class="fas fa-user-alt mr-1"></i> Profile
         </a>
         <a class="navbar-item" @click="navigatePage('/users/explore')">
-          <i class="fas fa-users mr-1"></i> Explore Mentors
+          <i class="fas fa-user-friends mr-1"></i> Explore Mentors
+        </a>
+        <a
+          class="navbar-item"
+          @click="navigatePage('/clients/explore')"
+          v-if="getUserType == 'mentor'"
+        >
+          <i class="fas fa-users mr-1"></i> Explore Clients
         </a>
         <div
           class="navbar-item has-dropdown is-hoverable"
@@ -88,7 +95,10 @@
         >
           <i class="fas fa-plus mr-1"></i> Explore Listings
         </a> -->
-        <div class="navbar-item has-dropdown is-hoverable">
+        <div
+          class="navbar-item has-dropdown is-hoverable"
+          v-show="getUserType == 'mentor'"
+        >
           <a class="navbar-link"
             ><i class="fas fa-bell mr-1"></i>
             {{ notifications.length }} Notifications

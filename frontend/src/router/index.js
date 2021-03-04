@@ -74,6 +74,14 @@ const routes = [
     component: () => import("../views/users/UserExplore.vue"),
   },
   {
+    path: "/clients/explore",
+    name: "ClientExplore",
+    component: () => import("../views/users/ClientExplore.vue"),
+    meta: {
+      mentorPage: true,
+    },
+  },
+  {
     path: "/users/:user_id",
     name: "UserDetail",
     component: () => import("../views/UserDetail.vue"),
