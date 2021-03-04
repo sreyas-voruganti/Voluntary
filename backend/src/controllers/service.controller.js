@@ -30,6 +30,7 @@ module.exports = {
         "_id name pp"
       );
       if (!service) return res.sendStatus(404);
+      await service.viewOnce();
       const num_sessions = await Session.countDocuments({
         service: service._id,
         status: "conf",
@@ -154,7 +155,9 @@ module.exports = {
           { description: { $regex: req.query.q, $options: "i" } },
         ],
         unlisted: false,
-      }).populate("user", "_id name pp");
+      })
+        .sort("-createdAt")
+        .populate("user", "_id name pp");
       res.status(200).json(services);
     } catch (e) {
       res.status(500).json({ error: e.message });
@@ -162,10 +165,9 @@ module.exports = {
   },
   all_services: async (req, res) => {
     try {
-      const services = await Service.find({ unlisted: false }).populate(
-        "user",
-        "_id name pp"
-      );
+      const services = await Service.find({ unlisted: false })
+        .sort("-createdAt")
+        .populate("user", "_id name pp");
       res.status(200).json(services);
     } catch (e) {
       res.status(500).json({ error: e.message });

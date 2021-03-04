@@ -20,6 +20,10 @@
         ><i class="far fa-check-circle"></i> &nbsp; {{ num_sessions }} Confirmed
         Sessions</span
       >
+      <span class="ml-3"
+        ><i class="fas fa-eye"></i> &nbsp; Viewed
+        {{ service.views }} Times</span
+      >
     </p>
     <div class="tags mb-2">
       <span class="tag is-primary is-light" v-show="service.unlisted"

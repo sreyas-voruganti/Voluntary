@@ -49,6 +49,10 @@ const serviceSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    views: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
@@ -81,6 +85,16 @@ serviceSchema.methods.updateImage = async function (new_image_name) {
     this.image = new_image_name;
     await this.save();
     return this.image;
+  } catch (e) {
+    throw new Error(e);
+  }
+};
+
+serviceSchema.methods.viewOnce = async function () {
+  try {
+    this.views++;
+    await this.save();
+    return;
   } catch (e) {
     throw new Error(e);
   }
