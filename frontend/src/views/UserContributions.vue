@@ -152,7 +152,7 @@ export default {
           this.sessions = res.data.sessions;
           this.user = res.data.user;
         })
-        .catch((err) => alert(`An error occurred: ${err}`));
+        .catch((err) => alert(`Incorrect contribution key: ${err}`));
     },
   },
   computed: {

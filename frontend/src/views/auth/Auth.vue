@@ -266,7 +266,7 @@ export default {
   computed: {
     getUrl() {
       const sp = new URLSearchParams(
-        `client_id=836522334018-qed384ump69o2g0fvubmkuidvt44bbgv.apps.googleusercontent.com&redirect_uri=${config.baseUrl}/auth/google&response_type=code&access_type=offline&scope=https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email&prompt=consent`
+        `client_id=836522334018-qed384ump69o2g0fvubmkuidvt44bbgv.apps.googleusercontent.com&redirect_uri=${config.apiBaseUrl}/auth/google&response_type=code&access_type=offline&scope=https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email&prompt=consent`
       );
       const state = {
         redirect: this.$route.query.r,

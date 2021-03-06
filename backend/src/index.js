@@ -4,7 +4,7 @@ const { socket } = require("./socket");
 const mongoose = require("mongoose");
 
 mongoose
-  .connect(config.db.url, {
+  .connect(config.db_url, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
