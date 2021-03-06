@@ -1,10 +1,10 @@
 <template>
-  <div class="container mt-6" v-if="services">
+  <div class="container mt-6 px-3" v-if="services">
     <div>
       <input
         class="input"
         type="text"
-        placeholder="Search for services"
+        :placeholder="`Search ${totalLength} total services`"
         v-model="search"
       />
       <div class="my-1">
@@ -53,6 +53,7 @@ export default {
       services: [],
       search: null,
       isLoading: false,
+      totalLength: 0,
     };
   },
   created() {
@@ -70,7 +71,10 @@ export default {
     onEmpty() {
       this.$http
         .get("/services/all")
-        .then((res) => (this.services = res.data))
+        .then((res) => {
+          this.services = res.data;
+          this.totalLength = res.data.length;
+        })
         .catch((err) => console.log(err));
     },
   },
@@ -91,8 +95,11 @@ export default {
 </script>
 
 <style scoped>
-.service-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 360px);
+@media (min-width: 600px) {
+  .service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 360px);
+    grid-gap: 20px;
+  }
 }
 </style>

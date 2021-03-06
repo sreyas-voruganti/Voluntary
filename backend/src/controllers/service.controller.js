@@ -30,6 +30,7 @@ module.exports = {
         "_id name pp"
       );
       if (!service) return res.sendStatus(404);
+      await service.viewOnce();
       const num_sessions = await Session.countDocuments({
         service: service._id,
         status: "conf",
@@ -40,7 +41,6 @@ module.exports = {
         .lean();
       res.status(200).json({
         service,
-        avg_satis: await service.getAvgSatis(),
         did_report: service.didReport(req.user._id),
         num_sessions,
         comments,
@@ -87,9 +87,10 @@ module.exports = {
       const session = await Session.create({
         user: req.user._id,
         service: service._id,
-        time: req.body.time,
+        time: new Date(req.body.time),
         duration: req.body.duration,
-        satisfaction: req.body.satisfaction,
+        mentor: service.user.toString(),
+        description: req.body.description,
       });
       sendNotif(
         [service.user.toString()],
@@ -104,22 +105,16 @@ module.exports = {
   },
   service_sessions: async (req, res) => {
     try {
-      const pending_sessions = await Session.find(
-        {
-          service: req.params.service_id,
-          status: "pend_conf",
-        },
-        "-satisfaction"
-      )
+      const pending_sessions = await Session.find({
+        service: req.params.service_id,
+        status: "pend_conf",
+      })
         .populate("user", "id name")
         .lean();
-      const confirmed_sessions = await Session.find(
-        {
-          service: req.params.service_id,
-          status: "conf",
-        },
-        "-satisfaction"
-      )
+      const confirmed_sessions = await Session.find({
+        service: req.params.service_id,
+        status: "conf",
+      })
         .populate("user", "id name")
         .lean();
       res
@@ -135,7 +130,7 @@ module.exports = {
       const session = await Session.findByIdAndUpdate(req.params.session_id, {
         status: "conf",
       });
-      const new_session = await Session.findById(session._id, "-satisfaction")
+      const new_session = await Session.findById(session._id)
         .populate("user", "id name")
         .lean();
       res.status(204).json(new_session);
@@ -160,7 +155,9 @@ module.exports = {
           { description: { $regex: req.query.q, $options: "i" } },
         ],
         unlisted: false,
-      }).populate("user", "_id name pp");
+      })
+        .sort("-createdAt")
+        .populate("user", "_id name pp");
       res.status(200).json(services);
     } catch (e) {
       res.status(500).json({ error: e.message });
@@ -168,10 +165,9 @@ module.exports = {
   },
   all_services: async (req, res) => {
     try {
-      const services = await Service.find({ unlisted: false }).populate(
-        "user",
-        "_id name pp"
-      );
+      const services = await Service.find({ unlisted: false })
+        .sort("-createdAt")
+        .populate("user", "_id name pp");
       res.status(200).json(services);
     } catch (e) {
       res.status(500).json({ error: e.message });
@@ -190,9 +186,9 @@ module.exports = {
   },
   home: async (req, res) => {
     try {
-      const featured_service = await Service.findById(
-        config.site_vars.featured_service
-      ).populate("user", "_id name pp");
+      const all_services = await Service.find().populate("user", "_id name pp");
+      const featured_service =
+        all_services[Math.floor(Math.random() * all_services.length)];
       const raw_popular_services = await Service.aggregate([
         {
           $match: { unlisted: false },
@@ -225,10 +221,14 @@ module.exports = {
       ).lean();
       let num_mins = 0;
       sessions.forEach((session) => (num_mins += session.duration));
+      const num_mentors = await User.countDocuments({ acc_type: "mentor" });
+      const num_clients = await User.countDocuments({ acc_type: "client" });
       res.status(200).json({
         featured_service,
         popular_services,
         total_contrib: Math.round((num_mins / 60) * 10) / 10,
+        num_mentors,
+        num_clients,
       });
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -288,6 +288,64 @@ module.exports = {
     try {
       await Comment.findByIdAndDelete(req.params.comment_id);
       res.sendStatus(200);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
+  user_service_sessions: async (req, res) => {
+    try {
+      const pending_sessions = await Session.find({
+        service: req.params.service_id,
+        status: "pend_conf",
+        user: req.user._id,
+      })
+        .populate("user", "id name")
+        .lean();
+      const confirmed_sessions = await Session.find({
+        service: req.params.service_id,
+        status: "conf",
+        user: req.user._id,
+      })
+        .populate("user", "id name")
+        .lean();
+      res
+        .status(200)
+        .json({ pending: pending_sessions, confirmed: confirmed_sessions });
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
+  recent_services: async (req, res) => {
+    try {
+      const recent_sessions = await Session.find(
+        {
+          user: req.user._id,
+        },
+        "_id service"
+      )
+        .sort("-createdAt")
+        .limit(5)
+        .lean();
+      const service_ids = [];
+      recent_sessions.forEach((d) => service_ids.push(d.service));
+      const services = await Service.find(
+        {
+          _id: { $in: service_ids },
+        },
+        "-user_reports"
+      ).populate("user", "_id name pp");
+      res.status(200).json(services);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
+  update_image: async (req, res) => {
+    try {
+      const service = await Service.findById(req.params.service_id);
+      if (service.user.toString() != req.user._id.toString())
+        return res.sendStatus(401);
+      const new_image = await service.updateImage(req.file.filename);
+      res.status(200).json({ new_image });
     } catch (e) {
       res.status(500).json({ error: e.message });
     }

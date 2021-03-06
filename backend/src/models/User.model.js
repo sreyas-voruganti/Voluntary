@@ -33,11 +33,12 @@ const userSchema = new mongoose.Schema(
     },
     contrib_key: {
       type: String,
-      default: Math.random().toString(36).substring(2),
+      default: () => Math.random().toString(36).substring(2),
     },
-    mentor: {
-      type: Boolean,
-      default: false,
+    acc_type: {
+      type: String,
+      default: "client",
+      enum: ["client", "mentor"],
     },
   },
   {

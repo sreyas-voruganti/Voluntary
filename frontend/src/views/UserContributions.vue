@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-6" style="width: 700px" v-if="user">
+  <div class="container mt-6 px-3" style="max-width: 700px" v-if="user">
     <div class="is-flex is-flex-direction-column mb-3">
       <span class="has-text-weight-medium is-size-4"
         >{{ user.name }} contributed <u>{{ getTotalHours }}</u> total
@@ -8,8 +8,11 @@
       <p>
         <a @click="share" class="mr-2">Share</a>
         <a @click="integrity" class="mr-2">Our Integrity System</a>
-        <span class="has-text-weight-medium"
-          >Generate Certificate (coming soon)</span
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://forms.gle/Gy4sN2hgSKHynssQ6"
+          >Generate Certificate</a
         >
       </p>
       <label class="checkbox mt-2">
@@ -58,6 +61,7 @@
           <th>Client</th>
           <th>Date</th>
           <th>Service</th>
+          <th>Description</th>
         </tr>
         <tr v-for="session in sessions" :key="session._id">
           <td>{{ session.duration }}</td>
@@ -71,6 +75,15 @@
             <router-link :to="`/services/${session.service._id}`">{{
               session.service.title
             }}</router-link>
+          </td>
+          <td>
+            <a
+              @click="showDescription(session.description)"
+              v-if="session.description"
+            >
+              View Description
+            </a>
+            <span v-else>n/a</span>
           </td>
         </tr>
       </table>
@@ -103,6 +116,9 @@ export default {
     this.getPlain();
   },
   methods: {
+    showDescription(description) {
+      alert(`Description: ${description}`);
+    },
     getTime(time) {
       return moment(time).format("ddd, MMM D YYYY, h:mm A");
     },

@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
+import store from "../store";
 
 Vue.use(VueRouter);
 
@@ -11,9 +12,9 @@ const routes = [
     component: Home,
   },
   {
-    path: "/about",
-    name: "About",
-    component: () => import("../views/About.vue"),
+    path: "/donations",
+    name: "Donations",
+    component: () => import("../views/Donations.vue"),
   },
   {
     path: "/auth",
@@ -35,6 +36,9 @@ const routes = [
     path: "/services/create",
     name: "ServiceForm",
     component: () => import("../views/ServiceForm.vue"),
+    meta: {
+      mentorPage: true,
+    },
   },
   {
     path: "/services/explore",
@@ -50,6 +54,14 @@ const routes = [
     path: "/services/own",
     name: "OwnServices",
     component: () => import("../views/services/OwnServices.vue"),
+    meta: {
+      mentorPage: true,
+    },
+  },
+  {
+    path: "/services/recent",
+    name: "RecentServices",
+    component: () => import("../views/services/RecentServices.vue"),
   },
   {
     path: "/services/:service_id",
@@ -62,6 +74,14 @@ const routes = [
     component: () => import("../views/users/UserExplore.vue"),
   },
   {
+    path: "/clients/explore",
+    name: "ClientExplore",
+    component: () => import("../views/users/ClientExplore.vue"),
+    meta: {
+      mentorPage: true,
+    },
+  },
+  {
     path: "/users/:user_id",
     name: "UserDetail",
     component: () => import("../views/UserDetail.vue"),
@@ -71,6 +91,35 @@ const routes = [
     name: "UserContributions",
     component: () => import("../views/UserContributions.vue"),
   },
+  // {
+  //   path: "/listings/create",
+  //   name: "ListingForm",
+  //   component: () => import("../views/listings/ListingForm.vue"),
+  //   meta: {
+  //     clientPage: true,
+  //   },
+  // },
+  // {
+  //   path: "/listings/own",
+  //   name: "OwnListings",
+  //   component: () => import("../views/listings/OwnListings.vue"),
+  //   meta: {
+  //     clientPage: true,
+  //   },
+  // },
+  // {
+  //   path: "/listings/explore",
+  //   name: "ListingExplore",
+  //   component: () => import("../views/listings/ListingExplore.vue"),
+  //   meta: {
+  //     mentorPage: true,
+  //   },
+  // },
+  // {
+  //   path: "/listings/:listing_id",
+  //   name: "ListingDetail",
+  //   component: () => import("../views/listings/ListingDetail.vue"),
+  // },
   {
     path: "*",
     name: "NotFound",
@@ -105,6 +154,34 @@ router.beforeEach((to, from, next) => {
     next({
       path: "/",
     });
+  } else {
+    next();
+  }
+});
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.mentorPage) {
+    if (!from.name) {
+      setTimeout(() => {
+        if (store.state.user.acc_type != "mentor") {
+          next({
+            path:
+              "/404?msg=You're trying to reach a mentor page with a client account type, change this in your account settings",
+          });
+        } else {
+          next();
+        }
+      }, 1000);
+    } else {
+      if (store.state.user.acc_type != "mentor") {
+        next({
+          path:
+            "/404?msg=You're trying to reach a mentor page with a client account type, change this in your account settings",
+        });
+      } else {
+        next();
+      }
+    }
   } else {
     next();
   }

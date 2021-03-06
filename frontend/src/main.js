@@ -1,32 +1,28 @@
 import Vue from "vue";
-import Vuex from "vuex";
 import App from "./App.vue";
 import router from "./router";
 import http from "./http";
+import store from "./store";
 
 Vue.config.productionTip = false;
 
 Vue.prototype.$http = http;
 
-Vue.use(Vuex);
-
-const store = new Vuex.Store({
-  state: {
-    isAuthenticated: null,
-  },
-  mutations: {
-    authenticate(state) {
-      state.isAuthenticated = true;
-    },
-    logout(state) {
-      state.isAuthenticated = false;
-    },
-  },
-});
-
 if (localStorage.getItem("token")) {
-  http.defaults.headers.common["Authorization"] = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
+  http.defaults.headers.common["Authorization"] = token;
   store.commit("authenticate");
+  http
+    .get("/users/me/init")
+    .then((res) => store.commit("set_user", res.data))
+    .catch((err) => {
+      console.log(err);
+      delete http.defaults.headers.common["Authorization"];
+      localStorage.removeItem("token");
+      localStorage.removeItem("user_id");
+      store.commit("logout");
+      router.push("/auth");
+    });
 }
 
 new Vue({

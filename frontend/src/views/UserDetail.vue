@@ -1,18 +1,17 @@
 <template>
   <div v-if="user">
-    <div
-      class="is-fullwidth has-background-light is-flex is-flex-direction-row p-6"
-    >
+    <div class="is-fullwidth has-background-light is-flex p-6 top-sec">
       <figure class="image is-128x128">
         <img class="is-rounded" :src="user.pp" />
       </figure>
       <div class="is-flex is-flex-direction-column ml-5 mt-1">
         <span class="is-size-3 has-text-weight-medium">{{ user.name }}</span>
-        <span class="is-size-5">Joined {{ getCreated }}</span>
-        <span class="is-size-6"
-          >Average Satisfaction: {{ avg_satis || "-" }}/5</span
+        <span class="is-size-5" v-if="user.acc_type == 'mentor'"
+          ><i class="fas fa-chalkboard-teacher"></i> Mentor</span
         >
-        <span class="is-size-6" v-if="owns"
+        <span class="is-size-5" v-else><i class="far fa-user"></i> Client</span>
+        <span class="is-size-5">Joined {{ getCreated }}</span>
+        <span class="is-size-6" v-if="owns && user.acc_type == 'mentor'"
           ><router-link
             :to="`/users/${user._id}/contributions?contrib_key=${contrib_key}`"
             >View Contributions</router-link
@@ -34,6 +33,7 @@
           <li
             :class="{ 'is-active': tab == 'Services' }"
             @click="tab = 'Services'"
+            v-show="user.acc_type == 'mentor'"
           >
             <a>
               <span class="icon is-small"
@@ -54,7 +54,7 @@
           </li>
         </ul>
       </div>
-      <div v-if="tab == 'About'">
+      <div v-if="tab == 'About'" class="px-3">
         <span>{{ user.bio ? user.bio : "This user doesn't have a bio." }}</span>
       </div>
       <div v-else-if="tab == 'Services'">
@@ -83,6 +83,17 @@
           <label class="label">Birthday</label>
           <div class="control">
             <input class="input" type="date" v-model="compDob" />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Account Type</label>
+          <div class="control">
+            <div class="select">
+              <select v-model="own_user.acc_type">
+                <option :disabled="services.length > 0">client</option>
+                <option>mentor</option>
+              </select>
+            </div>
           </div>
         </div>
         <div class="field">
@@ -150,7 +161,6 @@ export default {
       tab: "About",
       services: [],
       synced: false,
-      avg_satis: null,
       contrib_key: null,
     };
   },
@@ -164,7 +174,6 @@ export default {
           await this.$http.get(`/users/${this.$route.params.user_id}`)
         ).data;
         this.user = m_data.user;
-        this.avg_satis = m_data.avg_satis;
         this.contrib_key = m_data.contrib_key;
         this.own_user = { ...this.user };
         this.services = (
@@ -183,14 +192,18 @@ export default {
           name: this.own_user.name,
           bio: this.own_user.bio,
           dob: this.own_user.dob,
+          acc_type: this.own_user.acc_type,
         })
         .then((res) => {
           this.own_user.name = res.data.name;
           this.own_user.bio = res.data.bio;
           this.own_user.dob = res.data.dob;
+          this.own_user.acc_type = res.data.acc_type;
           this.user.name = res.data.name;
           this.user.bio = res.data.bio;
           this.user.dob = res.data.dob;
+          this.user.acc_type = res.data.acc_type;
+          this.$store.commit("set_acc_type", res.data.acc_type);
           alert("Profile updated successfully.");
         })
         .catch((err) => alert(`An error occurred: ${err}`));
@@ -257,9 +270,19 @@ export default {
 </script>
 
 <style scoped>
-.service-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 360px);
-  grid-gap: 20px;
+@media (min-width: 600px) {
+  .service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 360px);
+    grid-gap: 20px;
+  }
+}
+.top-sec {
+  flex-direction: row;
+}
+@media (max-width: 600px) {
+  .top-sec {
+    flex-direction: column;
+  }
 }
 </style>

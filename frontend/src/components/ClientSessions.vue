@@ -33,7 +33,7 @@ export default {
   },
   created() {
     this.$http
-      .get(`/services/${this.service_id}/sessions`)
+      .get(`/services/${this.service_id}/sessions/own`)
       .then((res) => (this.sessions = res.data.pending))
       .catch((err) => alert(`An error occured: ${err}`));
   },

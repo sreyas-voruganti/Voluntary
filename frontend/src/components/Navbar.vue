@@ -1,44 +1,104 @@
 <template>
   <nav
-    class="navbar has-shadow is-fixed-top has-background-success-light"
+    class="navbar has-shadow is-fixed-top"
     role="navigation"
     aria-label="main navigation"
+    style="background-color: #bfffd6"
   >
     <div class="navbar-brand">
       <router-link class="navbar-item is-size-4 has-text-weight-medium" to="/">
         <span class="mr-2"><i class="far fa-newspaper"></i></span>
         <span>Voluntary</span>
       </router-link>
+      <a
+        role="button"
+        @click="showMobileNav = !showMobileNav"
+        :class="{ 'navbar-burger': true, 'is-active': showMobileNav }"
+        data-target="navBar"
+        v-show="!$route.meta.authPage"
+      >
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
     </div>
-    <div class="navbar-menu" v-show="!$route.meta.authPage">
+    <div
+      :class="{ 'navbar-menu': true, 'is-active': showMobileNav }"
+      v-show="!$route.meta.authPage"
+      id="navBar"
+    >
       <div class="navbar-start">
-        <a class="navbar-item" @click="$router.push('/')">
+        <a class="navbar-item" @click="navigatePage('/')">
           <i class="fas fa-home mr-1"></i> Home
         </a>
         <a class="navbar-item" :href="`/users/${getUserId}?rcd=${rcd}`">
           <i class="fas fa-user-alt mr-1"></i> Profile
         </a>
-        <a class="navbar-item" @click="$router.push('/users/explore')">
-          <i class="fas fa-users mr-1"></i> Explore Users
+        <a class="navbar-item" @click="navigatePage('/users/explore')">
+          <i class="fas fa-user-friends mr-1"></i> Explore Mentors
         </a>
-        <div class="navbar-item has-dropdown is-hoverable">
+        <a
+          class="navbar-item"
+          @click="navigatePage('/clients/explore')"
+          v-if="getUserType == 'mentor'"
+        >
+          <i class="fas fa-users mr-1"></i> Explore Clients
+        </a>
+        <div
+          class="navbar-item has-dropdown is-hoverable"
+          v-if="getUserType == 'mentor'"
+        >
           <a class="navbar-link">
             <i class="far fa-newspaper mr-1"></i> Services
           </a>
           <div class="navbar-dropdown">
-            <a class="navbar-item" @click="$router.push('/services/own')">
+            <a class="navbar-item" @click="navigatePage('/services/own')">
               <i class="far fa-newspaper mr-1"></i> Your Services
             </a>
-            <a class="navbar-item" @click="$router.push('/services/explore')">
+            <a class="navbar-item" @click="navigatePage('/services/explore')">
               <i class="fas fa-globe-americas mr-1"></i> Explore Services
             </a>
+            <a class="navbar-item" @click="navigatePage('/services/recent')">
+              <i class="fas fa-backward mr-1"></i> Recent Services
+            </a>
             <hr class="navbar-divider" />
-            <a class="navbar-item" @click="$router.push('/services/create')">
+            <a class="navbar-item" @click="navigatePage('/services/create')">
               <i class="fas fa-plus mr-1"></i> Create Service
             </a>
           </div>
         </div>
-        <div class="navbar-item has-dropdown is-hoverable">
+        <a
+          class="navbar-item"
+          @click="navigatePage('/services/explore')"
+          v-else
+        >
+          <i class="fas fa-globe-americas mr-1"></i> Explore Services
+        </a>
+        <a
+          class="navbar-item"
+          @click="navigatePage('/services/recent')"
+          v-show="getUserType == 'client'"
+        >
+          <i class="fas fa-backward mr-1"></i> Recent Services
+        </a>
+        <!-- <a
+          class="navbar-item"
+          @click="$router.push('/listings/create')"
+          v-show="getUserType == 'client'"
+        >
+          <i class="fas fa-plus mr-1"></i> Create Listing
+        </a>
+        <a
+          class="navbar-item"
+          @click="$router.push('/listings/explore')"
+          v-show="getUserType == 'mentor'"
+        >
+          <i class="fas fa-plus mr-1"></i> Explore Listings
+        </a> -->
+        <div
+          class="navbar-item has-dropdown is-hoverable"
+          v-show="getUserType == 'mentor'"
+        >
           <a class="navbar-link"
             ><i class="fas fa-bell mr-1"></i>
             {{ notifications.length }} Notifications
@@ -87,6 +147,7 @@ export default {
     return {
       socket: null,
       notifications: [],
+      showMobileNav: false,
     };
   },
   created() {
@@ -108,10 +169,13 @@ export default {
   },
   computed: {
     getUserId() {
-      return localStorage.getItem("user_id");
+      return this.$store.state.user._id || localStorage.getItem("user_id");
     },
     isAuthenticated() {
       return this.$store.state.isAuthenticated;
+    },
+    getUserType() {
+      return this.$store.state.user.acc_type;
     },
   },
   methods: {
@@ -144,6 +208,10 @@ export default {
     },
     getDate(date) {
       return moment(date).fromNow();
+    },
+    navigatePage(path) {
+      this.showMobileNav = false;
+      this.$router.push(path);
     },
   },
 };

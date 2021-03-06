@@ -1,32 +1,59 @@
 <template>
   <div>
-    <div class="notification m-5 is-primary is-light">
+    <div
+      class="notification mt-5 is-primary is-light"
+      style="width: 85%; margin: 0 auto"
+    >
       <p>
         <span class="title is-5"
-          >Welcome to Voluntary, <u>{{ total_contrib }}</u> Hours Contributed
-          Worldwide.</span
+          >Welcome to Voluntary, <u>{{ total_contrib }} hours</u> contributed
+          worldwide. {{ num_clients }} Clients, {{ num_mentors }} Mentors.</span
         >
-        &nbsp;
-        <a class="has-text-weight-medium" @click="showAnnouncements = true"
+        <br />
+        <a
+          class="has-text-weight-medium has-text-link"
+          @click="showAnnouncements = true"
           >Show Announcements</a
         >
-        <a class="has-text-weight-medium ml-2" @click="showHelp = true"
+        <a
+          class="has-text-weight-medium ml-2 has-text-danger"
+          @click="showHelp = true"
           >Show Help</a
+        >
+        <router-link
+          class="has-text-weight-medium ml-2"
+          style="color: #a87932"
+          to="/services/recent"
+          >View Recent Services</router-link
+        >
+        <a
+          class="has-text-weight-medium ml-2"
+          href="https://forms.gle/Ceaxu6QAJTvuqzga8"
+          target="_blank"
+          rel="noopener noreferrer"
+          style="color: #a832a4"
+          >Join Our Team</a
+        >
+        <a
+          class="has-text-weight-medium ml-2"
+          href="https://discord.gg/3ZNHJdHEYG"
+          style="color: #298037"
+          target="_blank"
+          rel="noopener noreferrer"
+          v-show="getUserType == 'mentor'"
+          >Mentors: Join Our Discord</a
         >
       </p>
     </div>
-    <div
-      class="container my-5 is-flex has-flex-direction-row"
-      v-if="featured_service"
-    >
-      <div class="container" style="max-width: 50%">
-        <p class="title is-4 mb-3">
-          <i class="fas fa-award"></i> Today's Featured Service:
+    <div class="container my-5 is-flex mobile-cont p-3" v-if="featured_service">
+      <div class="mobile-feat-two container">
+        <p class="title is-4 my-3">
+          <i class="fas fa-award"></i> Featured Service:
         </p>
-        <FeaturedService :service="featured_service" />
+        <FeaturedService :service="featured_service" class="mobile-feat" />
       </div>
-      <div class="container" style="max-width: 50%">
-        <p class="title is-4 mb-3">
+      <div class="mobile-popular container">
+        <p class="title is-4 my-3">
           <i class="fas fa-fire"></i> Popular Services:
         </p>
         <PopularServices :services="popular_services" />
@@ -110,20 +137,51 @@ export default {
       total_contrib: 0,
       showAnnouncements: false,
       showHelp: false,
+      num_clients: 0,
+      num_mentors: 0,
     };
   },
   created() {
-    setTimeout(() => {
-      if (!this.showAnnouncements) this.showHelp = true;
-    }, 3500);
     this.$http
       .get("/services/home")
       .then((res) => {
         this.featured_service = res.data.featured_service;
         this.popular_services = res.data.popular_services;
         this.total_contrib = res.data.total_contrib;
+        this.num_clients = res.data.num_clients;
+        this.num_mentors = res.data.num_mentors;
       })
       .catch((err) => alert(`An error occurred: ${err}`));
   },
+  computed: {
+    getUserType() {
+      return this.$store.state.user.acc_type;
+    },
+  },
 };
 </script>
+
+<style scoped>
+.mobile-cont {
+  flex-direction: row;
+}
+.mobile-feat {
+  margin-right: 30px;
+}
+@media (max-width: 700px) {
+  .mobile-cont {
+    flex-direction: column;
+  }
+  .mobile-feat {
+    margin-right: 0px;
+  }
+}
+@media (min-width: 700px) {
+  .mobile-popular {
+    width: 55%;
+  }
+  .mobile-feat-two {
+    width: 45%;
+  }
+}
+</style>

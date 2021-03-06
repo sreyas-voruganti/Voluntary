@@ -1,5 +1,5 @@
 <template>
-  <div class="container px-6">
+  <div class="container px-3">
     <section
       class="hero is-light mt-6"
       style="border-radius: 10px; background: linear-gradient(0deg, rgba(189,255,225,1) 0%, rgba(184,246,255,1) 100%); box-shadow: 10px 10px 5px lightgrey;"
@@ -11,12 +11,35 @@
         <p class="subtitle is-4">
           Free Lessons from Volunteer Mentors
         </p>
-        <a class="button is-light is-danger is-large mt-3" :href="getUrl">
+        <button
+          class="button is-light is-danger is-large mt-3"
+          @click="onClick"
+          :disabled="accType == 'choose'"
+        >
           <span class="icon">
             <i class="fab fa-google"></i>
           </span>
           <span>Continue with Google</span>
-        </a>
+        </button>
+        <div class="field mt-2">
+          <label class="label"
+            >Account Type
+            <a
+              @click="showTypeModal = true"
+              class="has-text-weight-medium has-text-link"
+              >Info</a
+            ></label
+          >
+          <div class="control">
+            <div class="select is-success">
+              <select v-model="accType">
+                <option disabled>choose</option>
+                <option>client</option>
+                <option>mentor</option>
+              </select>
+            </div>
+          </div>
+        </div>
         <p class="mt-1">
           By continuing you agree to our
           <a
@@ -207,6 +230,25 @@
         @click="showTermsModal = false"
       ></button>
     </div>
+    <div :class="{ modal: true, 'is-active': showTypeModal }">
+      <div class="modal-background" @click="showTypeModal = false"></div>
+      <div class="modal-content box">
+        <h4 class="title is-4">About Account Types</h4>
+        <p>
+          Your account type is either a client or mentor, choose client if you
+          want to just take sessions from mentors, otherwise choose mentor to
+          take sessions, and offer your own sessions through a service.
+        </p>
+        <p class="has-text-weight-medium mt-2">
+          *Your account type can be changed from your account settings.
+        </p>
+      </div>
+      <button
+        class="modal-close is-large"
+        aria-label="close"
+        @click="showTypeModal = false"
+      ></button>
+    </div>
   </div>
 </template>
 
@@ -217,15 +259,27 @@ export default {
   data() {
     return {
       showTermsModal: false,
+      showTypeModal: false,
+      accType: "choose",
     };
   },
   computed: {
     getUrl() {
-      if (!this.$route.query.r) {
-        return `https://accounts.google.com/o/oauth2/v2/auth?client_id=836522334018-qed384ump69o2g0fvubmkuidvt44bbgv.apps.googleusercontent.com&redirect_uri=${config.baseUrl}/auth/google&response_type=code&access_type=offline&scope=https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email&prompt=consent`;
-      } else {
-        return `https://accounts.google.com/o/oauth2/v2/auth?client_id=836522334018-qed384ump69o2g0fvubmkuidvt44bbgv.apps.googleusercontent.com&redirect_uri=${config.baseUrl}/auth/google&response_type=code&access_type=offline&scope=https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email&state=${this.$route.query.r}&prompt=consent`;
-      }
+      const sp = new URLSearchParams(
+        `client_id=836522334018-qed384ump69o2g0fvubmkuidvt44bbgv.apps.googleusercontent.com&redirect_uri=${config.baseUrl}/auth/google&response_type=code&access_type=offline&scope=https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email&prompt=consent`
+      );
+      const state = {
+        redirect: this.$route.query.r,
+        acc_type: this.accType,
+      };
+      if (Object.keys(state).length > 0)
+        sp.append("state", JSON.stringify(state));
+      return "https://accounts.google.com/o/oauth2/v2/auth?" + sp.toString();
+    },
+  },
+  methods: {
+    onClick() {
+      window.location.href = this.getUrl;
     },
   },
 };

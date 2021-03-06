@@ -1,10 +1,10 @@
 <template>
   <div class="container mt-6 p-3">
     <span class="is-size-3" v-if="!services.length"
-      >You don't have any services yet, create one
-      <router-link to="/services/create">here</router-link>.</span
+      >You haven't submitted a session for a service yet, find one
+      <router-link to="/services/explore">here</router-link>.</span
     >
-    <span class="is-size-3" v-else>Your Services</span>
+    <span class="is-size-3" v-else>Recent Services</span>
     <div class="service-grid">
       <SmallService
         v-for="service in services"
@@ -18,7 +18,7 @@
 <script>
 import SmallService from "@/components/SmallService.vue";
 export default {
-  name: "OwnServices",
+  name: "RecentServices",
   components: {
     SmallService,
   },
@@ -29,7 +29,7 @@ export default {
   },
   created() {
     this.$http
-      .get(`/users/${localStorage.getItem("user_id")}/services`)
+      .get("/services/recent")
       .then((res) => (this.services = res.data))
       .catch((err) => alert(`An error occurred: ${err}`));
   },

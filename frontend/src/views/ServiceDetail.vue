@@ -1,14 +1,10 @@
 <template>
   <div
     v-if="service"
-    class="container"
+    class="container p-3"
     style="max-width: 700px; margin-top: 25px"
   >
-    <div class="notification is-success mb-0" v-show="showSessionSuccess">
-      <button class="delete" @click="showSessionSuccess = false"></button>
-      Session claim successfully submitted
-    </div>
-    <p class="is-size-2">{{ service.title }}</p>
+    <p class="is-size-3">{{ service.title }}</p>
     <p class="mb-3">
       <span
         ><i class="far fa-user"></i> &nbsp;
@@ -21,12 +17,12 @@
         {{ getCreatedDate }}</span
       >
       <span class="ml-3"
-        ><i class="far fa-smile"></i> &nbsp; {{ avg_satis || "-" }}/5 Average
-        Satisfaction</span
-      >
-      <span class="ml-3"
         ><i class="far fa-check-circle"></i> &nbsp; {{ num_sessions }} Confirmed
         Sessions</span
+      >
+      <span class="ml-3"
+        ><i class="fas fa-eye"></i> &nbsp; Viewed
+        {{ service.views }} Times</span
       >
     </p>
     <div class="tags mb-2">
@@ -63,6 +59,13 @@
         v-if="owns"
       >
         <i class="fas fa-edit mr-1"></i> Edit Service
+      </button>
+      <button
+        class="button is-link is-light"
+        @click="showImageModal = true"
+        v-if="owns"
+      >
+        <i class="far fa-image mr-1"></i> Change Image
       </button>
       <button
         class="button is-light is-success"
@@ -104,33 +107,27 @@
             ></label
           >
           <div class="control">
-            <input
-              class="input"
-              type="number"
-              min="30"
-              v-model="session.duration"
-              step="30"
-              onkeydown="return false"
-              max="120"
-            />
+            <div class="select">
+              <select v-model="session.duration">
+                <option>30</option>
+                <option>45</option>
+                <option>60</option>
+                <option>75</option>
+                <option>90</option>
+                <option>105</option>
+                <option>120</option>
+              </select>
+            </div>
           </div>
         </div>
         <div class="field">
-          <label class="label"
-            >Satisfaction
-            <span class="has-text-weight-medium"
-              >(how satisfied were you [1 - lowest, 5 - highest])</span
-            ></label
-          >
+          <label class="label">Short Description</label>
           <div class="control">
-            <input
-              class="input"
-              type="number"
-              min="1"
-              max="5"
-              v-model="session.satisfaction"
-              onkeydown="return false"
-            />
+            <textarea
+              class="textarea"
+              placeholder="A short description about what happened during the session"
+              v-model="session.description"
+            ></textarea>
           </div>
         </div>
         <div class="field">
@@ -141,6 +138,13 @@
             </label>
           </div>
         </div>
+        <p class="my-3 has-text-weight-medium">
+          **Support Voluntary by making a
+          <a href="/donations" target="_blank" rel="noopener noreferrer"
+            >contribution</a
+          >
+          to another nonprofit**
+        </p>
         <div class="field is-grouped">
           <div class="control">
             <button
@@ -306,6 +310,59 @@
         @click="showContactInfo = false"
       ></button>
     </div>
+    <div :class="{ modal: true, 'is-active': showImageModal }">
+      <div class="modal-background" @click="cancelNewImage"></div>
+      <div class="modal-content box">
+        <div class="field">
+          <label class="label">New Image</label>
+          <div class="control">
+            <div class="file has-name is-fullwidth is-light">
+              <label class="file-label">
+                <input
+                  class="file-input"
+                  type="file"
+                  ref="new_image"
+                  accept="image/*"
+                  @change="onNewImageChange"
+                />
+                <span class="file-cta">
+                  <span class="file-icon">
+                    <i class="fas fa-upload"></i>
+                  </span>
+                  <span class="file-label">
+                    Choose an image…
+                  </span>
+                </span>
+                <span class="file-name">
+                  {{ new_image ? new_image.name : "No Image Chosen" }}
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="field is-grouped">
+          <div class="control">
+            <button
+              class="button is-link"
+              :disabled="!new_image"
+              @click="onNewImageUpdate"
+            >
+              Update
+            </button>
+          </div>
+          <div class="control">
+            <button class="button is-link is-light" @click="cancelNewImage">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+      <button
+        class="modal-close is-large"
+        aria-label="close"
+        @click="cancelNewImage"
+      ></button>
+    </div>
   </div>
 </template>
 
@@ -328,12 +385,9 @@ export default {
       showSessionModal: false,
       session: {
         duration: 60,
-        satisfaction: 3,
       },
       agreeSessionTerms: false,
-      showSessionSuccess: false,
       showSessionsModal: false,
-      avg_satis: 3,
       did_report: false,
       showEditModal: false,
       num_sessions: 0,
@@ -341,12 +395,34 @@ export default {
       new_comment: null,
       comments: [],
       showContactInfo: false,
+      showImageModal: false,
+      new_image: null,
     };
   },
   created() {
     this.fetchData();
   },
   methods: {
+    onNewImageChange() {
+      this.new_image = this.$refs.new_image.files[0];
+    },
+    cancelNewImage() {
+      this.showImageModal = false;
+      this.new_image = null;
+    },
+    onNewImageUpdate() {
+      const fd = new FormData();
+      fd.append("image", this.new_image);
+      this.$http
+        .put(`/services/${this.service._id}/update_image`, fd)
+        .then((res) => {
+          this.service.image = res.data.new_image;
+          this.own_service.image = res.data.new_image;
+          this.showImageModal = false;
+          alert("Image successfully updated");
+        })
+        .catch((err) => alert(`An error occurred: ${err}`));
+    },
     cancelEdit() {
       this.showEditModal = false;
       this.own_service = { ...this.service };
@@ -378,7 +454,6 @@ export default {
         this.own_service = { ...this.service };
         this.own_service.tags = this.own_service.tags.join(", ");
         this.did_report = service_data.did_report;
-        this.avg_satis = service_data.avg_satis;
       } catch (err) {
         console.log(err);
         if (err.response.status == 404) {
@@ -390,7 +465,6 @@ export default {
       this.showSessionModal = false;
       this.session = {
         duration: 30,
-        satisfaction: 1,
       };
       this.agreeSessionTerms = false;
     },
@@ -412,14 +486,14 @@ export default {
           "You cannot submit a session that started more than 24 hours ago."
         );
       this.$http
-        .post(`/services/${this.service._id}/sessions`, this.session, {
+        .post(`/services/${this.service._id}/sessions`, {
           duration: this.session.duration,
-          satisfaction: this.session.satisfaction,
-          time: new Date(this.session.time).toUTCString(),
+          description: this.session.description,
+          time: new Date(this.session.time).toISOString(),
         })
         .then(() => {
           this.cancelSession();
-          this.showSessionSuccess = true;
+          alert("Session successfully submitted");
         })
         .catch((err) => {
           if (err.response.data.code === 230) {
@@ -481,7 +555,7 @@ export default {
       if (
         this.session.time &&
         this.session.duration &&
-        this.session.satisfaction &&
+        this.session.description &&
         this.agreeSessionTerms
       )
         return false;
@@ -496,7 +570,10 @@ export default {
   border-style: solid;
   border-width: 5px;
   border-radius: 2px;
-  background-color: rgb(0, 0, 0);
+  background-color: rgb(33, 33, 33);
   border-color: rgb(78, 78, 78);
+  object-fit: contain;
+  width: 100%;
+  max-height: 394px;
 }
 </style>

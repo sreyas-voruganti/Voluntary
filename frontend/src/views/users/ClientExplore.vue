@@ -4,7 +4,7 @@
       <input
         class="input mr-2"
         type="text"
-        :placeholder="`Search ${totalMentorCount} total mentors`"
+        :placeholder="`Search ${totalClientCount} total clients`"
         v-model="search"
       />
     </div>
@@ -32,13 +32,13 @@
 
 <script>
 export default {
-  name: "UserExplore",
+  name: "ClientExplore",
   data() {
     return {
       users: [],
       search: null,
       isLoading: false,
-      totalMentorCount: 0,
+      totalClientCount: 0,
     };
   },
   created() {
@@ -48,17 +48,17 @@ export default {
     onSearch() {
       if (this.search) {
         this.$http
-          .get(`/users/search?q=${this.search}`)
+          .get(`/users/search?clients=true&q=${this.search}`)
           .then((res) => (this.users = res.data))
           .catch((err) => console.log(err));
       }
     },
     onEmpty() {
       this.$http
-        .get("/users/all")
+        .get("/users/all?clients=true")
         .then((res) => {
           this.users = res.data;
-          this.totalMentorCount = res.data.length;
+          this.totalClientCount = res.data.length;
         })
         .catch((err) => console.log(err));
     },

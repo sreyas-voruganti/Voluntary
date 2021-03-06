@@ -1,5 +1,5 @@
 <template>
-  <div class="container my-6" style="max-width: 700px">
+  <div class="container my-6 px-3" style="max-width: 700px">
     <p class="title is-3 mb-3">Create a Service</p>
     <div class="box">
       <div class="field">

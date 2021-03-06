@@ -7,10 +7,17 @@ const sessionSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    mentor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
     service: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Service",
-      required: true,
+    },
+    listing: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Listing",
     },
     time: {
       type: Date,
@@ -25,11 +32,7 @@ const sessionSchema = new mongoose.Schema(
       default: "pend_conf",
       enum: ["pend_conf", "conf", "verified"],
     },
-    satisfaction: {
-      type: Number,
-      required: true,
-    },
-    vid_name: String,
+    description: String,
   },
   {
     timestamps: true,

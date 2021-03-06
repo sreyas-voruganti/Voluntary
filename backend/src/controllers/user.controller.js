@@ -19,15 +19,16 @@ module.exports = {
         `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${tokens.access_token}`
       );
       let user = await User.findOne({ google_id: user_data.id });
+      const state = JSON.parse(req.query.state);
       if (user) {
         const token = jwt.sign({ id: user._id }, config.secret);
-        if (!req.query.state) {
+        if (!state.redirect) {
           res.redirect(
             `${config.frontend_url}/authenticate?token=${token}&id=${user._id}`
           );
         } else {
           res.redirect(
-            `${config.frontend_url}/authenticate?token=${token}&id=${user._id}&r=${req.query.state}`
+            `${config.frontend_url}/authenticate?token=${token}&id=${user._id}&r=${state.redirect}`
           );
         }
       } else {
@@ -38,6 +39,7 @@ module.exports = {
           pp: user_data.picture,
           google_refresh_token: tokens.refresh_token,
           google_access_token: tokens.access_token,
+          acc_type: state.acc_type,
         });
         const token = jwt.sign({ id: user._id }, config.secret);
         res.redirect(
@@ -65,22 +67,12 @@ module.exports = {
         "-google_refresh_token -google_access_token -google_id"
       );
       if (!user) return res.sendStatus(404);
-      const services = await Service.find({ user: user._id }, "_id").lean();
-      const service_ids = [];
-      services.forEach((service) => service_ids.push(service._id.toString()));
-      const sessions = await Session.find(
-        { service: { $in: service_ids }, status: "conf" },
-        "_id satisfaction"
-      ).lean();
-      let num = 0;
-      sessions.forEach((session) => (num += session.satisfaction));
       res.status(200).json({
         user,
         contrib_key:
           req.user._id.toString() == user._id.toString()
             ? user.contrib_key
             : null,
-        avg_satis: Math.round((num / sessions.length) * 10) / 10,
       });
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -94,10 +86,16 @@ module.exports = {
           name: req.body.name,
           bio: req.body.bio,
           dob: req.body.dob,
+          acc_type: req.body.acc_type,
         },
         { new: true }
       );
-      res.status(200).json({ name: user.name, bio: user.bio, dob: user.dob });
+      res.status(200).json({
+        name: user.name,
+        bio: user.bio,
+        dob: user.dob,
+        acc_type: user.acc_type,
+      });
     } catch (e) {
       res.status(500).json({ error: e.message });
     }
@@ -154,28 +152,22 @@ module.exports = {
       });
       let sessions;
       if (req.query.start && req.query.end) {
-        sessions = await Session.find(
-          {
-            service: { $in: service_ids },
-            status: "conf",
-            time: {
-              $gte: new Date(req.query.start),
-              $lte: new Date(req.query.end),
-            },
+        sessions = await Session.find({
+          service: { $in: service_ids },
+          status: "conf",
+          time: {
+            $gte: new Date(req.query.start),
+            $lte: new Date(req.query.end),
           },
-          "-satisfaction"
-        )
+        })
           .populate("user", "_id name")
           .populate("service", "_id title")
           .lean();
       } else {
-        sessions = await Session.find(
-          {
-            service: { $in: service_ids },
-            status: "conf",
-          },
-          "-satisfaction"
-        )
+        sessions = await Session.find({
+          service: { $in: service_ids },
+          status: "conf",
+        })
           .populate("user", "_id name")
           .populate("service", "_id title")
           .lean();
@@ -190,6 +182,7 @@ module.exports = {
       const users = await User.find(
         {
           name: { $regex: req.query.q, $options: "i" },
+          acc_type: req.query.clients ? "client" : "mentor",
         },
         "-google_id -google_refresh_token -contrib_key"
       ).lean();
@@ -201,10 +194,18 @@ module.exports = {
   all: async (req, res) => {
     try {
       const users = await User.find(
-        {},
+        { acc_type: req.query.clients ? "client" : "mentor" },
         "-google_id -google_refresh_token -contrib_key"
       ).lean();
       res.status(200).json(users);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
+  wc_user_init: async (req, res) => {
+    try {
+      const user = await User.findById(req.user._id).lean();
+      res.status(200).json(user);
     } catch (e) {
       res.status(500).json({ error: e.message });
     }

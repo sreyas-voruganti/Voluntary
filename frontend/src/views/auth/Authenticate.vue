@@ -22,6 +22,7 @@ export default {
             localStorage.setItem("token", token);
             localStorage.setItem("user_id", this.$route.query.id);
             this.$store.commit("authenticate");
+            this.fetchInitUser();
             if (!this.$route.query.r) {
               this.$router.push("/");
             } else {
@@ -33,6 +34,18 @@ export default {
         })
         .catch((err) => console.log(err));
     }
+  },
+  methods: {
+    fetchInitUser() {
+      this.$http
+        .get("/users/me/init")
+        .then((res) => this.$store.commit("set_user", res.data))
+        .catch((err) =>
+          alert(
+            `An error occurred: ${err}, try reloading or clearing your cookies.`
+          )
+        );
+    },
   },
 };
 </script>
