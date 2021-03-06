@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import store from "../store";
+import http from '../http';
 
 Vue.use(VueRouter);
 
@@ -137,6 +138,24 @@ const isLoggedIn = () => {
   if (localStorage.getItem("token")) return true;
   return false;
 };
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.authPage && isLoggedIn()) {
+    let token = localStorage.getItem('token');
+    http.get(`/auth/token/verify`, {
+      headers: {
+        'Authorization': token
+      }
+    })
+      .then(() => next())
+      .catch(err => {
+        next({
+          path: '/auth',
+          query: { r: to.fullPath }
+        })
+      });
+  }
+})
 
 router.beforeEach((to, from, next) => {
   if (!to.meta.authPage && !isLoggedIn()) {
