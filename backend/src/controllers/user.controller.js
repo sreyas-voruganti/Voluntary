@@ -21,7 +21,10 @@ module.exports = {
       let user = await User.findOne({ google_id: user_data.id });
       const state = JSON.parse(req.query.state);
       if (user) {
-        const token = jwt.sign({ id: user._id }, config.secret);
+        const token = jwt.sign({ id: user._id }, config.secret, {
+          algorithm: 'RS256',
+          expiresIn: '7d'
+        });
         if (!state.redirect) {
           res.redirect(
             `${config.frontend_url}/authenticate?token=${token}&id=${user._id}`
@@ -210,4 +213,16 @@ module.exports = {
       res.status(500).json({ error: e.message });
     }
   },
+  verify_token: (req, res) => {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).json({ error: "Authentication required." });
+    }
+    jwt.verify(token, config.secret, (err) => {
+      if (err) {
+        return res.status(401).json({ error: "Invalid token," });
+      }
+      return res.sendStatus(200);
+    });
+  }
 };
