@@ -350,4 +350,16 @@ module.exports = {
       res.status(500).json({ error: e.message });
     }
   },
+  change_accepting: async (req, res) => {
+    try {
+      const service = await Service.findById(req.params.service_id);
+      if (service.user.toString() != req.user._id.toString())
+        return res.sendStatus(401);
+      service.accepting_clients = !service.accepting_clients;
+      await service.save();
+      res.status(200).json({ accepting_clients: service.accepting_clients });
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  },
 };

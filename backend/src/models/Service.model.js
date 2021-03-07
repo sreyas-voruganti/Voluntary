@@ -53,6 +53,10 @@ const serviceSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    accepting_clients: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,

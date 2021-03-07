@@ -71,9 +71,28 @@
         class="button is-light is-success"
         v-else
         @click="showContactInfo = true"
+        :disabled="!service.accepting_clients"
       >
         <i class="fas fa-envelope mr-1"></i>
-        Contact Mentor
+        {{
+          service.accepting_clients
+            ? "Contact Mentor"
+            : "Not Accepting New Clients"
+        }}
+      </button>
+      <button
+        class="button is-success is-light"
+        @click="changeAccepting"
+        v-if="service.accepting_clients && owns"
+      >
+        Accepting New Clients
+      </button>
+      <button
+        class="button is-danger is-light"
+        @click="changeAccepting"
+        v-if="!service.accepting_clients && owns"
+      >
+        Not Accepting New Clients
       </button>
       <button
         class="button is-light is-danger"
@@ -403,6 +422,14 @@ export default {
     this.fetchData();
   },
   methods: {
+    changeAccepting() {
+      this.$http
+        .put(`/services/${this.service._id}/update_accepting`)
+        .then(
+          (res) => (this.service.accepting_clients = res.data.accepting_clients)
+        )
+        .catch((err) => alert(`An error occurred: ${err}`));
+    },
     onNewImageChange() {
       this.new_image = this.$refs.new_image.files[0];
     },

@@ -34,5 +34,6 @@ router.put(
   ServiceController.update_image
 );
 router.delete("/comments/:comment_id", ServiceController.delete_comment);
+router.put("/:service_id/update_accepting", ServiceController.change_accepting);
 
 module.exports = router;
