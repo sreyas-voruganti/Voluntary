@@ -139,23 +139,6 @@ const isLoggedIn = () => {
   return false;
 };
 
-router.beforeEach((to, from, next) => {
-  if (to.meta.authPage && isLoggedIn()) {
-    let token = localStorage.getItem('token');
-    http.get(`/auth/token/verify`, {
-      headers: {
-        'Authorization': token
-      }
-    })
-      .then(() => next())
-      .catch(err => {
-        next({
-          path: '/auth',
-          query: { r: to.fullPath }
-        })
-      });
-  }
-})
 
 router.beforeEach((to, from, next) => {
   if (!to.meta.authPage && !isLoggedIn()) {

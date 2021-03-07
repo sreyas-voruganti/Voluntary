@@ -213,16 +213,16 @@ module.exports = {
       res.status(500).json({ error: e.message });
     }
   },
-  verify_token: (req, res) => {
-    const token = req.headers.authorization;
-    if (!token) {
-      return res.status(401).json({ error: "Authentication required." });
-    }
-    jwt.verify(token, config.secret, (err) => {
-      if (err) {
-        return res.status(401).json({ error: "Invalid token," });
-      }
-      return res.sendStatus(200);
-    });
-  }
+  // verify_token: (req, res) => {
+  //   const token = req.headers.authorization;
+  //   if (!token) {
+  //     return res.status(401).json({ error: "Authentication required." });
+  //   }
+  //   jwt.verify(token, config.secret, (err) => {
+  //     if (err) {
+  //       return res.status(401).json({ error: "Invalid token," });
+  //     }
+  //     return res.sendStatus(200);
+  //   });
+  // }
 };
