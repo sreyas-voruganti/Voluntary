@@ -3,16 +3,15 @@ const User = require("../models/User.model");
 const Session = require("../models/Session.model");
 const Service = require("../models/Service.model");
 const jwt = require("jsonwebtoken");
-const config = require("../../config");
 const axios = require("axios");
 
 module.exports = {
   auth_google: async (req, res) => {
     try {
       const oauth2Client = new google.auth.OAuth2(
-        config.google_keys.client_id,
-        config.google_keys.client_secret,
-        config.google_keys.callback_url
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        process.env.GOOGLE_CALLBACK_URL
       );
       const { tokens } = await oauth2Client.getToken(req.query.code);
       const { data: user_data } = await axios.get(
@@ -21,14 +20,14 @@ module.exports = {
       let user = await User.findOne({ google_id: user_data.id });
       const state = JSON.parse(req.query.state);
       if (user) {
-        const token = jwt.sign({ id: user._id }, config.secret);
+        const token = jwt.sign({ id: user._id }, process.env.SECRET);
         if (!state.redirect) {
           res.redirect(
-            `${config.frontend_url}/authenticate?token=${token}&id=${user._id}`
+            `${process.env.FRONTEND_URL}/authenticate?token=${token}&id=${user._id}`
           );
         } else {
           res.redirect(
-            `${config.frontend_url}/authenticate?token=${token}&id=${user._id}&r=${state.redirect}`
+            `${process.env.FRONTEND_URL}/authenticate?token=${token}&id=${user._id}&r=${state.redirect}`
           );
         }
       } else {
@@ -41,21 +40,21 @@ module.exports = {
           google_access_token: tokens.access_token,
           acc_type: state.acc_type,
         });
-        const token = jwt.sign({ id: user._id }, config.secret);
+        const token = jwt.sign({ id: user._id }, process.env.SECRET);
         res.redirect(
-          `${config.frontend_url}/authenticate?token=${token}&id=${user._id}`
+          `${process.env.FRONTEND_URL}/authenticate?token=${token}&id=${user._id}`
         );
       }
     } catch (err) {
       console.log(err);
-      res.redirect(`${config.frontend_url}/authenticate?err=true`);
+      res.redirect(`${process.env.FRONTEND_URL}/authenticate?err=true`);
     }
   },
   token_valid: (req, res) => {
     const token = req.query.token;
     if (!token)
       return res.status(400).json({ error: "Token query param is required." });
-    jwt.verify(token, config.secret, (err) => {
+    jwt.verify(token, process.env.SECRET, (err) => {
       if (err) return res.status(200).json({ valid: false });
       res.status(200).json({ valid: true });
     });

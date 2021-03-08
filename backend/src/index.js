@@ -1,19 +1,21 @@
-const config = require("../config");
+require("dotenv").config();
 const app = require("./app");
 const { socket } = require("./socket");
 const mongoose = require("mongoose");
 
 mongoose
-  .connect(config.db_url, {
+  .connect(process.env.DB_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
   })
   .then(() => {
-    app.listen(config.port, () => {
-      socket.listen(config.socket_port, () => {
+    app.listen(parseInt(process.env.PORT), () => {
+      socket.listen(parseInt(process.env.SOCKET_PORT), () => {
         console.log(
-          `Voluntary Backend Successfully Started: (HTTP: ${config.port}, SOCKET: ${config.socket_port})`
+          `Voluntary Backend Successfully Started: (HTTP: ${parseInt(
+            process.env.PORT
+          )}, SOCKET: ${parseInt(process.env.SOCKET_PORT)})`
         );
       });
     });

@@ -3,7 +3,6 @@ const User = require("../models/User.model");
 const Session = require("../models/Session.model");
 const Comment = require("../models/Comment.model");
 const { sendNotif } = require("../socket");
-const config = require("../../config");
 const antiFraud = require("../anti_fraud");
 
 module.exports = {
@@ -95,7 +94,7 @@ module.exports = {
       sendNotif(
         [service.user.toString()],
         "new_session_claim",
-        `New session claim on [${service.title}](${config.frontend_url}/services/${service._id})`
+        `New session claim on [${service.title}](${process.env.FRONTEND_URL}/services/${service._id})`
       );
       res.status(201).json(session);
     } catch (e) {

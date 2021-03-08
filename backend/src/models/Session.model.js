@@ -33,6 +33,12 @@ const sessionSchema = new mongoose.Schema(
       enum: ["pend_conf", "conf", "verified"],
     },
     description: String,
+    proof_video: {
+      type: String,
+      get: (rawVideo) => {
+        return `${process.env.BASE_URL}/uploads/${rawVideo}`;
+      },
+    },
   },
   {
     timestamps: true,

@@ -8,7 +8,6 @@ const { ApolloServer, AuthenticationError } = require("apollo-server-express");
 const { typeDefs, resolvers } = require("./schema");
 const cors = require("cors");
 const morgan = require("morgan");
-const config = require("../config");
 const jwt = require("jsonwebtoken");
 const User = require("./models/User.model");
 const util = require("util");
@@ -24,7 +23,7 @@ const graphql_server = new ApolloServer({
     try {
       const token = req.headers.authorization;
       if (!token) throw new AuthenticationError("No token found in header");
-      const payload = await jwt_verify(token, config.secret);
+      const payload = await jwt_verify(token, process.env.SECRET);
       const user = await User.findById(payload.id);
       if (!user) throw new AuthenticationError("Invalid Token");
       return { user };

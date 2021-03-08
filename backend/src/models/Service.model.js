@@ -1,6 +1,4 @@
 const mongoose = require("mongoose");
-const config = require("../../config");
-const Session = require("./Session.model");
 const { promisify } = require("util");
 const fs = require("fs");
 
@@ -32,7 +30,7 @@ const serviceSchema = new mongoose.Schema(
       type: String,
       required: true,
       get: (rawImage) => {
-        return `${config.base_url}/uploads/${rawImage}`;
+        return `${process.env.BASE_URL}/uploads/${rawImage}`;
       },
     },
     user_reports: [
