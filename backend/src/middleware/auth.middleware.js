@@ -8,11 +8,15 @@ module.exports = (req, res, next) => {
   }
   jwt.verify(token, process.env.SECRET, (err, payload) => {
     if (err) {
-      return res.status(400).json({ error: "Invalid token," });
+      if (err.name == "TokenExpiredError")
+        return res
+          .status(400)
+          .json({ expired: true, error: `Token expired at ${err.expiredAt}` });
+      return res.status(400).json({ error: "Invalid token" });
     }
     User.findById(payload.id)
       .then((user) => {
-        if (!user) return res.status(400).json({ error: "Invalid token," });
+        if (!user) return res.status(400).json({ error: "Invalid token" });
         req.user = user;
         next();
       })

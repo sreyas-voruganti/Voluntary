@@ -20,7 +20,9 @@ module.exports = {
       let user = await User.findOne({ google_id: user_data.id });
       const state = JSON.parse(req.query.state);
       if (user) {
-        const token = jwt.sign({ id: user._id }, process.env.SECRET);
+        const token = jwt.sign({ id: user._id }, process.env.SECRET, {
+          expiresIn: parseInt(process.env.TOKEN_LIFE_SECONDS),
+        });
         if (!state.redirect) {
           res.redirect(
             `${process.env.FRONTEND_URL}/authenticate?token=${token}&id=${user._id}`
@@ -40,7 +42,9 @@ module.exports = {
           google_access_token: tokens.access_token,
           acc_type: state.acc_type,
         });
-        const token = jwt.sign({ id: user._id }, process.env.SECRET);
+        const token = jwt.sign({ id: user._id }, process.env.SECRET, {
+          expiresIn: parseInt(process.env.TOKEN_LIFE_SECONDS),
+        });
         res.redirect(
           `${process.env.FRONTEND_URL}/authenticate?token=${token}&id=${user._id}`
         );

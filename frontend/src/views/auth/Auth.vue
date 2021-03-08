@@ -263,6 +263,10 @@ export default {
       accType: "choose",
     };
   },
+  created() {
+    if (this.$route.query.expired)
+      alert("Your session has expired, please login again.");
+  },
   computed: {
     getUrl() {
       const sp = new URLSearchParams(

@@ -21,7 +21,11 @@ if (localStorage.getItem("token")) {
       localStorage.removeItem("token");
       localStorage.removeItem("user_id");
       store.commit("logout");
-      router.push("/auth");
+      if (err.response.data.expired) {
+        router.push("/auth?expired=true");
+      } else {
+        router.push("/auth");
+      }
     });
 }
 
