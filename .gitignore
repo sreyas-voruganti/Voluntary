@@ -111,4 +111,4 @@ uploads
 
 # Prod Conf Files
 fconf.js
-bconf.js
+b.env
