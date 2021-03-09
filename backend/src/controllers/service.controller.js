@@ -185,35 +185,19 @@ module.exports = {
   },
   home: async (req, res) => {
     try {
-      const all_services = await Service.find().populate("user", "_id name pp");
+      const all_services = await Service.find({
+        accepting_clients: true,
+        unlisted: false,
+      }).populate("user", "_id name pp");
       const featured_service =
         all_services[Math.floor(Math.random() * all_services.length)];
-      const raw_popular_services = await Service.aggregate([
-        {
-          $match: { unlisted: false },
-        },
-        {
-          $lookup: {
-            from: "sessions",
-            localField: "_id",
-            foreignField: "service",
-            as: "sessions",
-          },
-        },
-        {
-          $set: { sessions: { $size: "$sessions" } },
-        },
-        {
-          $sort: { sessions: -1 },
-        },
-        {
-          $limit: 5,
-        },
-      ]);
-      const popular_services = await User.populate(raw_popular_services, {
-        path: "user",
-        select: ["_id", "name", "pp"],
-      });
+      const recommended_services = await Service.find({
+        unlisted: false,
+        accepting_clients: true,
+      })
+        .sort("views")
+        .limit(6)
+        .populate("user", "_id name pp");
       const sessions = await Session.find(
         { status: "conf" },
         "_id duration"
@@ -224,7 +208,7 @@ module.exports = {
       const num_clients = await User.countDocuments({ acc_type: "client" });
       res.status(200).json({
         featured_service,
-        popular_services,
+        recommended_services,
         total_contrib: Math.round((num_mins / 60) * 10) / 10,
         num_mentors,
         num_clients,

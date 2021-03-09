@@ -54,9 +54,9 @@
       </div>
       <div class="mobile-popular container">
         <p class="title is-4 my-3">
-          <i class="fas fa-fire"></i> Popular Services:
+          <i class="fas fa-fire"></i> Recommended Services:
         </p>
-        <PopularServices :services="popular_services" />
+        <PopularServices :services="recommended_services" />
       </div>
     </div>
     <div :class="{ modal: true, 'is-active': showAnnouncements }">
@@ -133,7 +133,7 @@ export default {
   data() {
     return {
       featured_service: null,
-      popular_services: [],
+      recommended_services: [],
       total_contrib: 0,
       showAnnouncements: false,
       showHelp: false,
@@ -146,7 +146,7 @@ export default {
       .get("/services/home")
       .then((res) => {
         this.featured_service = res.data.featured_service;
-        this.popular_services = res.data.popular_services;
+        this.recommended_services = res.data.recommended_services;
         this.total_contrib = res.data.total_contrib;
         this.num_clients = res.data.num_clients;
         this.num_mentors = res.data.num_mentors;
