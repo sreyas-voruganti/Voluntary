@@ -196,7 +196,7 @@ module.exports = {
         accepting_clients: true,
       })
         .sort("views")
-        .limit(6)
+        .limit(10)
         .populate("user", "_id name pp");
       const sessions = await Session.find(
         { status: "conf" },
