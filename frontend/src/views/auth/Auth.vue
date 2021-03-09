@@ -50,6 +50,29 @@
         </p>
       </div>
     </section>
+    <section
+      class="hero is-light my-5 p-5 has-background-warning-light"
+      style="border-radius: 10px; box-shadow: 10px 10px 5px lightgrey;"
+    >
+      <h4 class="title is-3">About Us</h4>
+      <p class="is-size-4">
+        We're a nonprofit service that offers free 1-on-1 lessons and services
+        from voluntary high school mentors from around the country.
+      </p>
+      <h4 class="title is-4 mt-4 mb-2">Clients</h4>
+      <p class="is-size-4">
+        Join as a client and learn from a variety of mentors from around the
+        country and a variety of services for free.
+      </p>
+      <img src="Services.png" class="mt-3" />
+      <h4 class="title is-4 mt-4 mb-2">Mentors</h4>
+      <p class="is-size-4">
+        Join as a mentor and teach your interest to a variety of clients from
+        around the country, earning volunteer hours for every minute that you
+        teach.
+      </p>
+      <img src="CertExample.png" class="mt-3" style="max-width: 700px" />
+    </section>
     <div :class="{ modal: true, 'is-active': showTermsModal }">
       <div class="modal-background" @click="showTermsModal = false"></div>
       <div class="modal-content box">
