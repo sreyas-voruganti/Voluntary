@@ -1,5 +1,5 @@
 <template>
-  <div class="box p-3" style="max-height: 530px; overflow-y: scroll;">
+  <div class="box p-3">
     <div v-for="service in services" :key="service._id" class="p-2 m-2">
       <article class="media">
         <figure class="media-left">
