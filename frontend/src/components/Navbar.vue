@@ -3,7 +3,7 @@
     class="navbar has-shadow is-fixed-top"
     role="navigation"
     aria-label="main navigation"
-    style="background-color: #bfffd6"
+    style="background-color: #bfffd6;"
   >
     <div class="navbar-brand">
       <router-link class="navbar-item is-size-4 has-text-weight-medium" to="/">
@@ -101,11 +101,17 @@
         >
           <a class="navbar-link"
             ><i class="fas fa-bell mr-1"></i>
-            {{ notifications.length }} Notifications
+            <span
+              :class="{
+                'has-text-danger': notifications.length,
+                'has-text-weight-bold': notifications.length,
+              }"
+              >{{ notifications.length }} Notifications</span
+            >
           </a>
           <div class="navbar-dropdown p-3">
             <div
-              style="width: 250px"
+              style="width: 250px;"
               class="is-flex is-flex-direction-column notif-container"
             >
               <a v-if="notifications.length" @click="markAll"

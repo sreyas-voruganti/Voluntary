@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-6 px-3" style="max-width: 700px" v-if="user">
+  <div class="container mt-6 px-3" style="max-width: 700px;" v-if="user">
     <div class="is-flex is-flex-direction-column mb-3">
       <span class="has-text-weight-medium is-size-4"
         >{{ user.name }} contributed <u>{{ getTotalHours }}</u> total
@@ -12,7 +12,7 @@
           target="_blank"
           rel="noopener noreferrer"
           href="https://forms.gle/Gy4sN2hgSKHynssQ6"
-          >Generate Certificate</a
+          >Request Certificate</a
         >
       </p>
       <label class="checkbox mt-2">
@@ -27,7 +27,7 @@
               <input
                 class="input mr-3"
                 type="datetime-local"
-                style="max-width: 200px"
+                style="max-width: 200px;"
                 v-model="timeframe.start"
               />
             </div>
@@ -38,7 +38,7 @@
               <input
                 class="input"
                 type="datetime-local"
-                style="max-width: 200px"
+                style="max-width: 200px;"
                 v-model="timeframe.end"
               />
             </div>
@@ -46,7 +46,7 @@
         </div>
         <button
           class="button is-light"
-          style="max-width: 300px"
+          style="max-width: 300px;"
           @click="getTimeframe"
           :disabled="!(timeframe.start && timeframe.end)"
         >
