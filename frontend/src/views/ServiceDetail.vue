@@ -17,10 +17,6 @@
         {{ getCreatedDate }}</span
       >
       <span class="ml-3"
-        ><i class="far fa-check-circle"></i> &nbsp; {{ num_sessions }} Confirmed
-        Sessions</span
-      >
-      <span class="ml-3"
         ><i class="fas fa-eye"></i> &nbsp; Viewed
         {{ service.views }} Times</span
       >
@@ -409,7 +405,6 @@ export default {
       showSessionsModal: false,
       did_report: false,
       showEditModal: false,
-      num_sessions: 0,
       showComments: false,
       new_comment: null,
       comments: [],
@@ -476,7 +471,6 @@ export default {
           await this.$http.get(`/services/${this.$route.params.service_id}`)
         ).data;
         this.service = service_data.service;
-        this.num_sessions = service_data.num_sessions;
         this.comments = service_data.comments;
         this.own_service = { ...this.service };
         this.own_service.tags = this.own_service.tags.join(", ");
