@@ -30,10 +30,6 @@ module.exports = {
       );
       if (!service) return res.sendStatus(404);
       await service.viewOnce();
-      const num_sessions = await Session.countDocuments({
-        service: service._id,
-        status: "conf",
-      });
       const comments = await Comment.find({ service: req.params.service_id })
         .populate("user", "_id name pp")
         .sort("-createdAt")
@@ -41,7 +37,6 @@ module.exports = {
       res.status(200).json({
         service,
         did_report: service.didReport(req.user._id),
-        num_sessions,
         comments,
       });
     } catch (err) {
